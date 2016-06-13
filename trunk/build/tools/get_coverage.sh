@@ -7,7 +7,7 @@ SRC_RANGE="a1:d16000"
 
 DST_FILE="asm.xlsx"
 DST_SHEET="asm"
-DST_RANGE="a1"
+DST_RANGE="a1:d16000"
 
 cp ../gui_debugger/asm.xlsx .
 

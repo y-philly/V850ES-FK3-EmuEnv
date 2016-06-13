@@ -440,7 +440,7 @@ static void device_supply_clock_can_snd(DeviceType *device)
 }
 static void recv_can_data_start(DeviceType *device, uint32 channel,  uint32 msg_id)
 {
-	printf("recv_can_data_start:ch=%u msg_id=%u\n", channel, msg_id);
+	//printf("recv_can_data_start:ch=%u msg_id=%u\n", channel, msg_id);
 	//set DN
 	//set MUC
 	*(CanDevice.module.channel[channel].msg[msg_id].ctrl) |= (1U << CAN_READ_C1MCTRLm_DN);
@@ -451,7 +451,7 @@ static void recv_can_data_start(DeviceType *device, uint32 channel,  uint32 msg_
 static void recv_can_data_end(DeviceType *device, uint32 channel,  uint32 msg_id)
 {
 	uint8 i;
-	printf("recv_can_data_end\n");
+	//printf("recv_can_data_end\n");
 
 	//set DN
 	//clear MUC
@@ -472,22 +472,22 @@ static void recv_can_data_end(DeviceType *device, uint32 channel,  uint32 msg_id
 static void recv_can_data_intr(DeviceType *device, uint32 channel,  uint32 msg_id)
 {
 	uint16 data;
-	printf("recv_can_data_intr:enter\n");
+	//printf("recv_can_data_intr:enter\n");
 
 
 	data = *CanDevice.module.channel[channel].ie;
-	if ((data & CAN_READ_C1IE_CIE1) == 0U) {
-		printf("recv_can_data_intr:exit:not C1IE ie set\n");
+	if ((data & (1U << CAN_READ_C1IE_CIE1)) == 0U) {
+		//printf("recv_can_data_intr:exit:not C1IE ie set\n");
 		return;
 	}
 	data = *CanDevice.module.channel[channel].msg[msg_id].ctrl;
-	if ((data & CAN_READ_C1MCTRLm_IE) == 0U) {
-		printf("recv_can_data_intr:exit:not C1MCTRLm ie set\n");
+	if ((data & (1U << CAN_READ_C1MCTRLm_IE)) == 0U) {
+		//printf("recv_can_data_intr:exit:not C1MCTRLm ie set\n");
 		return;
 	}
 
 
-	printf("recv_can_data_intr\n");
+	//printf("recv_can_data_intr\n");
 
 	//set CINTS1
 	*(CanDevice.module.channel[channel].ints) |= (1U << CAN_READ_C1INTS_CINTS1);
@@ -958,7 +958,7 @@ void can_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data)
 
 		rdata = (uint16*)&cpu->io_mem2r.data[off];
 		can_set_c1ie(data, rdata);
-		printf("########### CAN_ADDR_C1IE=0x%x #############\n", *rdata);
+		//printf("########### CAN_ADDR_C1IE=0x%x #############\n", *rdata);
 		return;
 	}
 	/*
@@ -1002,7 +1002,7 @@ void can_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data)
 
 			rdata = (uint16*)&cpu->io_mem2r.data[off];
 			can_set_c1mctrlm(data, rdata);
-			printf("########### CAN_ADDR_C1MCTRL%d=0x%x #############\n", msg_id, *rdata);
+			//printf("########### CAN_ADDR_C1MCTRL%d=0x%x #############\n", msg_id, *rdata);
 			return;
 		}
 	}

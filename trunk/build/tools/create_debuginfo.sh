@@ -23,7 +23,7 @@ SRC_RANGE="a3:d16000"
 
 DST_FILE="Debugger.xlsx"
 DST_SHEET="asm"
-DST_RANGE="b5"
+DST_RANGE="b5:e16000"
 
 ruby excel_range_copy.rb  ${SRC_FILE} ${SRC_SHEET} ${SRC_RANGE} ${DST_FILE} ${DST_SHEET} ${DST_RANGE}
 

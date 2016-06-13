@@ -40,7 +40,8 @@ class ExcelRangeCopy
 	end
 	def self.copy(src_sheet_name, src_range, dst_sheet_name, dst_range)
 	    p "Range Copy start"
-	    @@work_src.Worksheets(src_sheet_name).Range(src_range).Copy(@@work_dst.Worksheets(dst_sheet_name).Range(dst_range))
+	    #@@work_src.Worksheets(src_sheet_name).Range(src_range).Copy(@@work_dst.Worksheets(dst_sheet_name).Range(dst_range))
+	    @@work_dst.Worksheets(dst_sheet_name).Range(dst_range).Value = @@work_src.Worksheets(src_sheet_name).Range(src_range).Value
 	    p "Range Copy end"
 	end
 	def self.fin(flag)

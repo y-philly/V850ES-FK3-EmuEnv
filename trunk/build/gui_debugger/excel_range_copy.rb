@@ -1,9 +1,5 @@
 #! ruby -Ks
 require 'win32ole'
-require './excel_reader'
-require './spread_sheet_reader'
-require './excel_writer'
-require 'timeout'
 
 class ExcelRangeCopy
     	@@work_src = nil

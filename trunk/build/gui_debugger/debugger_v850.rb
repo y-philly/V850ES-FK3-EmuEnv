@@ -372,7 +372,7 @@ class DebuggerV850
 			absPath = fso.GetAbsolutePathName(path)
 
 			excel = WIN32OLE.new('Excel.Application')
-			excel.visible = true
+			excel.visible = false
 			@@ex = excel
 
 			workbook = excel.Workbooks.Open absPath
@@ -380,6 +380,9 @@ class DebuggerV850
 			SymbolInfo.load("../symbol.txt", workbook)
 			AsmInfo.init()
 			AsmInfo.load("../asm.dump", workbook)
+			workbook.close(:SaveChanges => true)
+			workbook = nil
+			
 			excel.quit
 			excel = nil
 			@@work = workbook

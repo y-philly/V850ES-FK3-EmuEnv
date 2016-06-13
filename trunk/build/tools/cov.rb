@@ -1,8 +1,8 @@
 #! ruby -Ks
 require 'win32ole'
-require './excel_reader'
-require './spread_sheet_reader'
-require './excel_writer'
+require '../gui_debugger/excel_reader'
+require '../gui_debugger/spread_sheet_reader'
+require '../gui_debugger/excel_writer'
 
 
 class PcInfo
@@ -24,7 +24,7 @@ end
 class AsmInfo
 	@@table
 	def self.init()
-		File.open("./table.dump", "r") do |file|
+		File.open("../gui_debugger/table.dump", "r") do |file|
 			@@table = Marshal.restore(file)
 		end
 	end

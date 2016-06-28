@@ -70,7 +70,8 @@ static void dbg_do_serial_recvbuf(DbgCmdType *cmd);
 static void dbg_do_can_recvbuf(DbgCmdType *cmd);
 
 static void dbg_do_adc_cmd(DbgCmdType *cmd);
-static bool dbg_adc_recv(uint8 ch, uint16 *data);
+static bool dbg_adc_ada0_recv(uint8 ch, uint16 *data);
+static bool dbg_adc_ada1_recv(uint8 ch, uint16 *data);
 static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd);
 
 bool debug_is_view_mode(void)
@@ -83,8 +84,9 @@ bool is_debug_mode(void)
 	return dbg_info.cmd_mode == DBG_MODE_CMD;
 }
 
-static DeviceAdcOpType dbg_adc_ops = {
-		dbg_adc_recv,
+static DeviceAdcOpType dbg_adc_ops[2] = {
+		{dbg_adc_ada0_recv},
+		{dbg_adc_ada1_recv}
 };
 
 static DeviceSerialOpType dbg_serial_ops = {
@@ -116,7 +118,7 @@ void debug_init(CpuManagerType *cpu, DeviceType *device)
 	dbg_info.device = device;
 
 	device_serial_register_ops(device->dev.serial, UDnCH0, &dbg_serial_ops);
-	device_adc_register_ops(device->dev.adc, &dbg_adc_ops);
+	device_adc_register_ops(device->dev.adc, dbg_adc_ops);
 	device_can_register_ops(device->dev.can, &dbg_can_ops);
 
 	hash_init();
@@ -726,18 +728,21 @@ static int dbg_serial_rcvin(char *str, int len, DbgCmdType *cmd)
 	return 0;
 }
 /*
- * A -1:256 全て
- * A 1:256　　１チャネル
+ * A 0:-1:256 0コントローラのチャンネル全て
+ * A 0:1:256　　0コントローラの１チャネル
  */
 static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 {
 	int i;
 	char *p;
 	int p_len = len -1;
+	char *p_cntl;
+	int len_cntl;
 	char *p_ch;
 	int len_ch;
 	char *p_val;
 	int len_val;
+	int colon_count = 0;
 	int res;
 
 	if (p_len == 0) {
@@ -751,23 +756,38 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 	/*
 	 * ":" を探し，"\0"に変更する
 	 */
+	len_cntl = -1;
 	len_ch = -1;
 	len_val = 0;
-	p_ch = p;
+	p_cntl = p;
 	for (i = 0; i < p_len; i++) {
 		if (len_ch != -1) {
 			len_val++;
 		}
 		else if (p[i] == ':') {
 			p[i] = '\0';
-			len_ch = i;
-			p_val = &p[i+1];
+			if (colon_count == 0) {
+				len_cntl = i;
+				p_ch = &p[i+1];
+				colon_count++;
+			}
+			else if (colon_count == 1) {
+				len_ch = i;
+				p_val = &p[i+1];
+				colon_count++;
+			}
 		}
 	}
-	if (len_ch == -1) {
+	if (len_cntl == -1 || len_ch == -1 || len_val == 0) {
 		return -1;
 	}
 
+	res = getvalue10(--p_cntl, len_cntl + 1, (uint32*)&cmd->adc_cntl);
+	//printf("p_ch=%c len_ch=%d res=%d\n", *p_ch, len_ch, res);
+	fflush(stdout);
+	if (res < 0) {
+		return -1;
+	}
 	res = getvalue10(--p_ch, len_ch + 1, (uint32*)&cmd->adc_ch);
 	//printf("p_ch=%c len_ch=%d res=%d\n", *p_ch, len_ch, res);
 	fflush(stdout);
@@ -780,6 +800,7 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 	if (res < 0) {
 		return -1;
 	}
+
 	return 0;
 }
 void dbg_do_serial_recvbuf(DbgCmdType *cmd)
@@ -917,30 +938,55 @@ bool dbg_can_send(uint32 ch, uint32 msg_id, uint8 *data, uint8 dlc)
 /*
  * ADC
  */
-static uint16 adc_data[16];
-static void dbg_do_adc_cmd(DbgCmdType *cmd)
+static uint16 adc_ada0_data[9];
+static uint16 adc_ada1_data[10];
+static void do_adc_cmd(uint8 ch, uint8 ch_num, uint16 *data_buf, uint16 data)
 {
 	int i;
-	if (cmd->adc_ch == -1) {
-		for (i = 0; i < 16; i++) {
-			adc_data[i] = (uint16)cmd->adc_data;
+	if (ch == -1) {
+		for (i = 0; i < ch_num; i++) {
+			data_buf[i] = data;
 		}
 	}
-	else if (cmd->adc_ch < 16) {
-		adc_data[cmd->adc_ch] = (uint16)cmd->adc_data;
+	else if (ch < ch_num) {
+		data_buf[ch] = data;
 		//printf("SET:ch=%u adc_data=%u\n", cmd->adc_ch, adc_data[cmd->adc_ch]);
 		fflush(stdout);
 	}
+
 	return;
 }
 
-static bool dbg_adc_recv(uint8 ch, uint16 *data)
+static void dbg_do_adc_cmd(DbgCmdType *cmd)
 {
-	if (ch < 16) {
-		*data = adc_data[ch];
-		//printf("REF:ch=%u adc_data=%u\n", ch, adc_data[ch]);
-		fflush(stdout);
+
+	if (cmd->adc_cntl == 0) {
+		do_adc_cmd(cmd->adc_ch, 9, adc_ada0_data, (uint16)cmd->adc_data);
 	}
+	else if (cmd->adc_cntl == 1) {
+		do_adc_cmd(cmd->adc_ch, 10, adc_ada1_data, (uint16)cmd->adc_data);
+	}
+
+	return;
+}
+
+static bool dbg_adc_ada0_recv(uint8 ch, uint16 *data)
+{
+		if (ch < 9) {
+			*data = adc_ada0_data[ch];
+			//printf("REF:ch=%u adc_data=%u\n", ch, adc_data[ch]);
+			fflush(stdout);
+		}
+	return TRUE;
+}
+
+static bool dbg_adc_ada1_recv(uint8 ch, uint16 *data)
+{
+		if (ch < 10) {
+			*data = adc_ada1_data[ch];
+			//printf("REF:ch=%u adc_data=%u\n", ch, adc_data[ch]);
+			fflush(stdout);
+		}
 	return TRUE;
 }
 

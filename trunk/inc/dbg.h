@@ -58,7 +58,8 @@ typedef struct {
 	char		 symbol_name[1024];
 	char		 serial_buffer[1024];
 	uint32		 serial_buflen;
-	int			 adc_ch; /* -1 ‚Ìê‡‚Í‘S‚Ä */
+	uint8		 adc_cntl;
+	int			 adc_ch; /* -1 ï¿½Ìê‡ï¿½Í‘Sï¿½ï¿½ */
 	uint32		 adc_data;
 } DbgCmdType;
 

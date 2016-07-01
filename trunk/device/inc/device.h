@@ -58,6 +58,11 @@ extern void device_supply_clock_can(DeviceType *device);
 extern void device_supply_clock_adc(DeviceType *device);
 
 /*
+ * デバイスクロック参照
+ */
+extern void device_print_clock(DeviceType *device);
+
+/*
  * 割込み関数
  */
 extern void device_raise_int(DeviceType *device, uint16 intno);

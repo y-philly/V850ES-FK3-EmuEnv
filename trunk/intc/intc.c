@@ -234,7 +234,7 @@ static void intc_raise(CpuManagerType *cpu, uint32 intno)
 	cpu->cpu.pc = INTC_MASK_INTR_ADDR(intno);
 
 	if (intno >= 100) {
-		printf("RAISED INT(%d):waiting_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
+		//printf("RAISED INT(%d):waiting_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
 	}
 	return;
 }

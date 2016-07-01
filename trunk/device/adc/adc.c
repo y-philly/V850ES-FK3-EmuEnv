@@ -1,4 +1,5 @@
 #include "device/inc/adc.h"
+#include <stdio.h>
 
 typedef enum {
 	ADC_MODE_STOP,
@@ -50,6 +51,8 @@ void device_init_adc(DeviceType *device)
 {
 	int i;
 	int cntl;
+	
+	//printf("AD init\n");
 
 	device->dev.adc = &AdcDevice;
 	AdcDevice[MPU_ADC_ADA0].adc_data = adc_ada0_data;
@@ -88,39 +91,44 @@ void device_supply_clock_adc(DeviceType *device)
 	uint8 data;
 	uint8 cntl;
 
-	for (cntl = 0; cntl < MPU_ADC_ADA_NUM; cntl ++) {
+	for (cntl = 0; cntl < MPU_ADC_ADA_NUM; cntl++) {
 		(void)device_io_read8(device, MPU_ADC_ADDR_AdAnM0(cntl), &data);
 		if ((data & (1U << MPU_ADC_ADDR_AdAnM0_ADAnCE)) == 0U) {
 			/*
 			 * AD•ÏŠ·“®ì’âŽ~
 			 */
 			AdcDevice[cntl].mode = ADC_MODE_STOP;
-			return;
+			continue;
 		}
 		if ((data & (1U << MPU_ADC_ADDR_AdAnM0_ADAnPS)) == 0U) {
+			//printf("AD%d OFF\n",cntl);
 			/*
 			 * AD“dŒ¹OFF
 			 */
 			AdcDevice[cntl].mode = ADC_MODE_STOP;
-			return;
+			continue;
 		}
 		if (AdcDevice[cntl].mode == ADC_MODE_STOP) {
+			//printf("AD%d RUN START\n", cntl);
 			AdcDevice[cntl].mode = ADC_MODE_RUN;
 			(void)device_io_write8(device, MPU_ADC_ADDR_AdAnM0(cntl), (data | MPU_ADC_ADDR_AdAnM0_ADAnEF));
 		}
 		if (AdcDevice[cntl].cnt < AdcDevice[cntl].conv_interval_clock) {
+			//printf("AD%d cut %d\n", cntl, AdcDevice[cntl].cnt);
 			AdcDevice[cntl].cnt++;
-			return;
+			continue;
 		}
 
 
 		if (AdcDevice[cntl].ops != NULL) {
 			for (i = 0; i < AdcDevice[cntl].adc_data_num; i++) {
 				AdcDevice[cntl].ops[cntl].recv(i, &(AdcDevice[cntl].adc_data[i]));
-				(void)device_io_write16(device, MPU_ADC_ADDR_ADAnCRm(cntl,i), AdcDevice[cntl].adc_data[i]);
+				(void)device_io_write16(device, MPU_ADC_ADDR_ADAnCRm(cntl,i), (AdcDevice[cntl].adc_data[i] << 6));
+				//printf("AD%d RUN DATA WRITE %d\n", cntl, AdcDevice[cntl].adc_data[i]);
 			}
 		}
 
+		//printf("AD%d STOP\n", cntl);
 		data &= ~(1U << MPU_ADC_ADDR_AdAnM0_ADAnEF);
 		data &= ~(1U << MPU_ADC_ADDR_AdAnM0_ADAnCE);
 		(void)device_io_write8(device, MPU_ADC_ADDR_AdAnM0(cntl), data);

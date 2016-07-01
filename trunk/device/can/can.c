@@ -1,6 +1,7 @@
 #include "device/inc/can.h"
 #include "cpu.h"
 #include "reg.h"
+#include <stdio.h>
 #define CAN_CHANNEL_NUM		5U
 #define CAN_MSGBUF_NUM		32U
 

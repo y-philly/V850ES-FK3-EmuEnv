@@ -389,6 +389,9 @@ void debugger_getcmd(DbgCmdType *cmd)
 	case 'n':
 		cmd->id = DBG_CMD_ID_NEXT;
 		break;
+	case 'e':
+		cmd->id = DBG_CMD_ID_ELAPSED_TIME;
+		break;
 	default:
 		break;
 	}
@@ -684,6 +687,10 @@ int debugger_docmd(DbgCmdType *cmd)
 		need_recv_cmd = TRUE;
 		dbg_do_adc_cmd(cmd);
 		break;
+	case DBG_CMD_ID_ELAPSED_TIME:
+		device_print_clock(dbg_info.device);
+		need_recv_cmd = TRUE;
+		break;
 	case DBG_CMD_ID_UNKNOWN:
 	default:
 		printf("Unknown command:%c\n", cmd->cmd_char);
@@ -738,9 +745,9 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 	int p_len = len -1;
 	char *p_cntl;
 	int len_cntl;
-	char *p_ch;
+	char *p_ch = NULL;
 	int len_ch;
-	char *p_val;
+	char *p_val = NULL;
 	int len_val;
 	int colon_count = 0;
 	int res;
@@ -752,6 +759,8 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 	//2文字移行をシリアル入力文字列とみなす．
 	p = &str[1];
 	p[p_len] = '\0';
+	
+	//printf("srial_str=%s\n srial=%s\n", str,p);
 
 	/*
 	 * ":" を探し，"\0"に変更する
@@ -772,7 +781,7 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 				colon_count++;
 			}
 			else if (colon_count == 1) {
-				len_ch = i;
+				len_ch = i-(len_cntl+1);
 				p_val = &p[i+1];
 				colon_count++;
 			}
@@ -783,19 +792,19 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 	}
 
 	res = getvalue10(--p_cntl, len_cntl + 1, (uint32*)&cmd->adc_cntl);
-	//printf("p_ch=%c len_ch=%d res=%d\n", *p_ch, len_ch, res);
+	//printf("p_cntl=%d len_cntl=%d res=%d\n", cmd->adc_cntl, len_cntl, res);
 	fflush(stdout);
 	if (res < 0) {
 		return -1;
 	}
 	res = getvalue10(--p_ch, len_ch + 1, (uint32*)&cmd->adc_ch);
-	//printf("p_ch=%c len_ch=%d res=%d\n", *p_ch, len_ch, res);
+	//("p_ch=%d len_ch=%d res=%d\n", cmd->adc_ch, len_ch, res);
 	fflush(stdout);
 	if (res < 0) {
 		return -1;
 	}
 	res = getvalue10(--p_val, len_val + 1, &cmd->adc_data);
-	//printf("res=%d\n", res);
+	//printf("p_val=%s val=%d len=%d res=%d\n",  p_val,cmd->adc_data, len_val, res);
 	fflush(stdout);
 	if (res < 0) {
 		return -1;
@@ -940,17 +949,19 @@ bool dbg_can_send(uint32 ch, uint32 msg_id, uint8 *data, uint8 dlc)
  */
 static uint16 adc_ada0_data[9];
 static uint16 adc_ada1_data[10];
-static void do_adc_cmd(uint8 ch, uint8 ch_num, uint16 *data_buf, uint16 data)
+static void do_adc_cmd(sint8 ch, uint8 ch_num, uint16 *data_buf, uint16 data)
 {
 	int i;
+	//printf("ch == %d \n", ch);
 	if (ch == -1) {
 		for (i = 0; i < ch_num; i++) {
 			data_buf[i] = data;
+			//printf("SET:ch=%u adc_data=%u\n", i, data_buf[i]);
 		}
 	}
 	else if (ch < ch_num) {
 		data_buf[ch] = data;
-		//printf("SET:ch=%u adc_data=%u\n", cmd->adc_ch, adc_data[cmd->adc_ch]);
+		//printf("SET:ch=%u adc_data=%u\n", ch, data_buf[ch]);
 		fflush(stdout);
 	}
 
@@ -959,7 +970,7 @@ static void do_adc_cmd(uint8 ch, uint8 ch_num, uint16 *data_buf, uint16 data)
 
 static void dbg_do_adc_cmd(DbgCmdType *cmd)
 {
-
+	//printf("SET:cntl = %u\n",cmd->adc_cntl);
 	if (cmd->adc_cntl == 0) {
 		do_adc_cmd(cmd->adc_ch, 9, adc_ada0_data, (uint16)cmd->adc_data);
 	}

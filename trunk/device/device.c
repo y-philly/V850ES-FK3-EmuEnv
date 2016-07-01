@@ -25,6 +25,11 @@ void device_supply_clock(DeviceType *device)
 	return;
 }
 
+void device_print_clock(DeviceType *device)
+{
+	printf("clock = %I64u\n", device->clock);
+	return;
+}
 
 static int device_get_iomem(DeviceType *device, uint32 addr, uint32 **addrp)
 {

@@ -197,7 +197,7 @@ class ElfDebugInfo
     def initialize(f, l, a)
     	self.file = f
     	self.lineno = l
-    	self.addr = a.hex
+    	self.addr = a
     end
 
 end
@@ -213,28 +213,10 @@ class ElfDebugManager
       self.debugs[self.debugs.length] = ElfDebugInfo.new(f, l, a);
     end
 
-    def search_source(addr)
-    	min=99999
-    	ret = nil
+    def search_line(addr)
     	self.debugs.each do |elm|
-    	    if elm.addr > addr
-    		tmp = elm.addr - addr
-    	    else
-    		tmp = addr - elm.addr
-    	    end
-    
-    	    if tmp < min
-    		min = tmp
-    		ret = elm
-    	    end
-    	end
-    	return ret
-    end
-
-    def search_addr(f, l)
-    	self.debugs.each do |elm|
-    	    if f == elm.file && l == elm.lineno
-    		return elm
+    	    if addr == elm.addr
+    		return elm.lineno
     	    end
     	end
     	return nil
@@ -248,10 +230,8 @@ class SourceInfo
     	@mgr = ElfDebugManager.new()
     	f = open(path, "r")
     	f.each { | line|
-    		elm = line.split()
-    		if elm.length == 3
-    			@mgr.add(elm[0], elm[1], elm[2])
-    		end
+    		elm = line.split(":")
+    		@mgr.add(nil, elm[0].strip.to_i, elm[1].strip)
     		#p line
     	}
     	f.close
@@ -264,63 +244,37 @@ end
 
 class AsmInfo
     @lastno
-    @table
+    @source
+
     def self.init()
 	@lastno = -1
-	@table = Array.new()
 	p "AsmInfo.init:start"
-	SourceInfo.init("../line.txt")
+	SourceInfo.init("../asm_line.txt")
+	@source = SourceInfo.get()
+	File.open("./source.dump", "wb") do |file|
+	    Marshal.dump(@source, file)
+	end
 	p "AsmInfo.init:end"
     end
-    def self.load_table()
-	File.open("./table.dump", "r") do |file|
-	    @table = Marshal.restore(file)
+
+    def self.load_source()
+	File.open("./source.dump", "r") do |file|
+	    @source = Marshal.restore(file)
 	end
     end
+
     def self.load(path, workbook)
 	p "AsmInfo.load:start"
 	#writer = ExcelWriter.new(workbook, "ASM")
 	f_asm = open("asm.csv", "w")
-	array = Array.new()
 
-	mgr = SourceInfo.get()
 	f = open(path, "r")
-	l = 3
-	@table[@table.length] = "NONE" + "," + "NONE"
-	@table[@table.length] = "NONE" + "," + "NONE"
-	@table[@table.length] = "NONE" + "," + "NONE"
 	f.each { | line|
-	    array = line.split(":")
-	    if array.length >= 2
-		if array[0].split().length == 1
-		        pcaddr =  "0x" + array[0].strip
-			elm = mgr.search_source(pcaddr.hex)
-			#writer.set(l, 2, pcaddr)
-			#writer.set(l, 3, elm.file)
-			#writer.set(l, 4, elm.lineno)
-			#writer.set(l, 5, array[1].strip)
-			#p pcaddr
-			#p elm
-			f_asm.print(pcaddr + ",")
-			f_asm.print(elm.file + ",")
-			f_asm.print(elm.lineno + ",")
-			f_asm.print("\"" + array[1].strip + "\", \n")
-			@table[@table.length] = pcaddr + "," + l.to_s
-		else
-			#writer.set(l, 2, array[0].strip)
-			#writer.merge_row(l, "B", "D")
-			f_asm.print(array[0].split()[1].strip + ", \n")
-			@table[@table.length] = "NONE" + "," + "NONE"
-		end
-		l = l + 1
-	    end
-	    #p array
+		str = line.chomp
+		f_asm.print("'" + str + "',\n")
 	}
 	f_asm.close
 	f.close
-	File.open("./table.dump", "wb") do |file|
-	    Marshal.dump(@table, file)
-	end
 	p "AsmInfo.load:End"
     end
 
@@ -333,27 +287,18 @@ class AsmInfo
 	    last_line = line
 	}
 	f.close
-	caddr="0x" + last_line.strip
+	caddr = last_line.strip
 
-	#p last_line
-	#p @table.length.to_s
-	l = -1
-	@table.each { |elm|
-	    pcaddr = elm.split(",")[0]
-	    #p pcaddr
-	    if pcaddr == caddr
-	    	l = elm.split(",")[1].to_i
-		#p pcaddr + ":" + l.to_s
-		break
-	    end
-	}
+	#p "update:" + caddr
+	l = @source.search_line(caddr)
+	#p "update:" + l.to_s
 
 	if l != $lastno
 		if @lastno >= 0
 			writer.clear_set(@lastno, 1, "")
 		end
 		if l > 0
-			writer.active_set(l, 1, "??")
+			writer.active_set(l, 1, ">")
 			@lastno = l
 		end
 	end
@@ -423,7 +368,7 @@ class DebuggerV850
 			@@work = workbook
 
 			AsmInfo.init()
-			AsmInfo.load_table()
+			AsmInfo.load_source()
 			while is_fin == false do
 				begin
 					CpuInfo.load("../cpuinfo.txt", workbook)

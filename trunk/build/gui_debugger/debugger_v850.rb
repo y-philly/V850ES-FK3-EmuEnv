@@ -219,7 +219,7 @@ class ElfDebugManager
     		return elm.lineno
     	    end
     	end
-    	return nil
+    	return -1
     end
 
 end
@@ -271,7 +271,9 @@ class AsmInfo
 	f = open(path, "r")
 	f.each { | line|
 		str = line.chomp
-		f_asm.print("'" + str + "',\n")
+		str = str.gsub(/,/ , '  ')
+		str = str.gsub(/\t/, '    ')
+		f_asm.print("\"" + str + "\",\n")
 	}
 	f_asm.close
 	f.close
@@ -291,13 +293,13 @@ class AsmInfo
 
 	#p "update:" + caddr
 	l = @source.search_line(caddr)
-	#p "update:" + l.to_s
 
 	if l != $lastno
-		if @lastno >= 0
-			writer.clear_set(@lastno, 1, "")
-		end
-		if l > 0
+		if (l > 0) && (l != @lastno)
+			#p "update:" + l.to_s + ":lastno=" + @lastno.to_s
+			if (@lastno != -1)
+				writer.clear_set(@lastno, 1, "")
+			end
 			writer.active_set(l, 1, ">")
 			@lastno = l
 		end
@@ -381,6 +383,10 @@ class DebuggerV850
 					end
 				rescue =>e
 				    p "error skip"
+					r = File.exist?("state.txt")
+					if r == false
+					    is_fin = true
+					end
 				    sleep(1)
 				end
 			end 

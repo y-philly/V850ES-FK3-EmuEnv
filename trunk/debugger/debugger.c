@@ -16,6 +16,7 @@
 #include "device/inc/can.h"
 #include "device/inc/adc.h"
 #include "hash.h"
+static uint32 dbg_return_addr = -1;
 
 #define HASH_ID_PC	0
 
@@ -131,6 +132,10 @@ void debug_init(CpuManagerType *cpu, DeviceType *device)
 void set_force_break(void)
 {
 	dbg_info.cmd_mode = DBG_MODE_CMD;
+
+	if (dbg_return_addr != -1) {
+		del_break(&dbg_info, dbg_return_addr);
+	}
 	return;
 }
 
@@ -165,7 +170,7 @@ static int set_break(DebugInfoType *dbg, uint32 break_addr)
 {
 	if (dbg->last_setted_breakp == (SOFTWARE_BREAK_POINTS_NUM -1)) {
 		/*
-		 * 0”Ô–Ú‚Í‘‚«Š·‚¦‚Å‚«‚È‚¢‚à‚Ì‚Æ‚µ‚Äˆµ‚¤(ƒŠƒZƒbƒgŠ„‚İ‚Íí‚ÉƒuƒŒ[ƒN‘ÎÛ)
+		 * 0ç•ªç›®ã¯æ›¸ãæ›ãˆã§ããªã„ã‚‚ã®ã¨ã—ã¦æ‰±ã†(ãƒªã‚»ãƒƒãƒˆå‰²è¾¼ã¿ã¯å¸¸ã«ãƒ–ãƒ¬ãƒ¼ã‚¯å¯¾è±¡)
 		 */
 		dbg->last_setted_breakp = 1;
 	}
@@ -187,8 +192,8 @@ static int set_intr(DebugInfoType *dbg, uint32 intno)
 
 
 /*
- * ‚Psæ“¾‚·‚éD
- * ‰üsƒR[ƒh‚ÍŠÜ‚Ü‚È‚¢D
+ * ï¼‘è¡Œå–å¾—ã™ã‚‹ï¼
+ * æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã¯å«ã¾ãªã„ï¼
  */
 static int getline(char *line, int size)
 {
@@ -213,10 +218,10 @@ static int getvalue16(char *str, int len, uint32 *value)
 	long long ret;
 
 	if (p_len == 0) {
-		//‚P•¶š‚Ì‚İ‚È‚ç‚ÎƒXƒLƒbƒv
+		//ï¼‘æ–‡å­—ã®ã¿ãªã‚‰ã°ã‚¹ã‚­ãƒƒãƒ—
 		return -1;
 	}
-	//2•¶šˆÚs‚ğ”’l‚Æ‚İ‚È‚·D
+	//2æ–‡å­—ç§»è¡Œã‚’æ•°å€¤ã¨ã¿ãªã™ï¼
 	p = &str[1];
 	p[p_len] = '\0';
 
@@ -237,10 +242,10 @@ static int getvalue10(char *str, int len, uint32 *value)
 	long ret;
 
 	if (p_len == 0) {
-		//‚P•¶š‚Ì‚İ‚È‚ç‚ÎƒXƒLƒbƒv
+		//ï¼‘æ–‡å­—ã®ã¿ãªã‚‰ã°ã‚¹ã‚­ãƒƒãƒ—
 		return -1;
 	}
-	//2•¶šˆÚs‚ğ”’l‚Æ‚İ‚È‚·D
+	//2æ–‡å­—ç§»è¡Œã‚’æ•°å€¤ã¨ã¿ãªã™ï¼
 	p = &str[1];
 	p[p_len] = '\0';
 
@@ -299,14 +304,14 @@ static int parse_print(char *line, int len, DbgCmdType *cmd)
 }
 
 /*
- * b <ƒAƒhƒŒƒX”Ô’n(hex)>FƒuƒŒ[ƒNİ’è‚·‚éD
- * b <ƒAƒhƒŒƒX”Ô’n(hex)>FƒuƒŒ[ƒN‰ğœ‚·‚éD
- * i <Š„‚İ”Ô†>		FŠ„‚İƒgƒŠƒK‚·‚éD
- * s <ƒTƒCƒY>			Fƒƒ‚ƒŠQÆƒTƒCƒY
- * o <ƒIƒtƒZƒbƒg>		FƒIƒtƒZƒbƒg
- * v				FÀs‚µ‚½–½—ßƒR[ƒh‚ğ•\¦‚·‚é(ƒgƒOƒ‹İ’è‚Æ‚·‚é)
- * n				FƒXƒeƒbƒvÀs‚·‚éD
- * c				FŸ‚Ì–½—ßˆÚs‚ğ˜A‘±Às‚·‚éD
+ * b <ã‚¢ãƒ‰ãƒ¬ã‚¹ç•ªåœ°(hex)>ï¼šãƒ–ãƒ¬ãƒ¼ã‚¯è¨­å®šã™ã‚‹ï¼
+ * b <ã‚¢ãƒ‰ãƒ¬ã‚¹ç•ªåœ°(hex)>ï¼šãƒ–ãƒ¬ãƒ¼ã‚¯è§£é™¤ã™ã‚‹ï¼
+ * i <å‰²è¾¼ã¿ç•ªå·>		ï¼šå‰²è¾¼ã¿ãƒˆãƒªã‚¬ã™ã‚‹ï¼
+ * s <ã‚µã‚¤ã‚º>			ï¼šãƒ¡ãƒ¢ãƒªå‚ç…§ã‚µã‚¤ã‚º
+ * o <ã‚ªãƒ•ã‚»ãƒƒãƒˆ>		ï¼šã‚ªãƒ•ã‚»ãƒƒãƒˆ
+ * v				ï¼šå®Ÿè¡Œã—ãŸå‘½ä»¤ã‚³ãƒ¼ãƒ‰ã‚’è¡¨ç¤ºã™ã‚‹(ãƒˆã‚°ãƒ«è¨­å®šã¨ã™ã‚‹)
+ * n				ï¼šã‚¹ãƒ†ãƒƒãƒ—å®Ÿè¡Œã™ã‚‹ï¼
+ * c				ï¼šæ¬¡ã®å‘½ä»¤ç§»è¡Œã‚’é€£ç¶šå®Ÿè¡Œã™ã‚‹ï¼
  *
  */
 void debugger_getcmd(DbgCmdType *cmd)
@@ -388,6 +393,9 @@ void debugger_getcmd(DbgCmdType *cmd)
 		break;
 	case 'n':
 		cmd->id = DBG_CMD_ID_NEXT;
+		break;
+	case 'r':
+		cmd->id = DBG_CMD_ID_FUNC_RETURN;
 		break;
 	case 'e':
 		cmd->id = DBG_CMD_ID_ELAPSED_TIME;
@@ -525,7 +533,7 @@ static void debug_stack_out(void)
 	 * show stack
 	 */
 	//uint32 stack_addr = CpuManager.cpu.r[3];
-	uint32 stack_addr = 0x03ff8a58;//TODO –ˆ‰ñ‘‚«Š·‚¦‚é‚Ì‚Í–Ê“|‚È‚Ì‚ÅC‘Îô‚ª•K—vD
+	uint32 stack_addr = 0x03ff8a58;//TODO æ¯å›æ›¸ãæ›ãˆã‚‹ã®ã¯é¢å€’ãªã®ã§ï¼Œå¯¾ç­–ãŒå¿…è¦ï¼
 	uint32 start_addr;
 	uint32 *regaddr;
 	uint32 size = 512;
@@ -548,8 +556,8 @@ static void debug_stack_out(void)
 	//write(fd, buffer, strlen(buffer));
 
 	/*
-	 * ƒXƒ^ƒbƒN‚ÍƒAƒhƒŒƒX”Ô’n‚ª¬‚³‚¢•ûŒü‚É‰„‚Ñ‚é‚½‚ß
-	 * ¬‚³‚¢•û‚©‚ç‡”Ô‚É•\¦‚·‚éD
+	 * ã‚¹ã‚¿ãƒƒã‚¯ã¯ã‚¢ãƒ‰ãƒ¬ã‚¹ç•ªåœ°ãŒå°ã•ã„æ–¹å‘ã«å»¶ã³ã‚‹ãŸã‚
+	 * å°ã•ã„æ–¹ã‹ã‚‰é †ç•ªã«è¡¨ç¤ºã™ã‚‹ï¼
 	 */
 	start_addr = (uint32)regaddr;
 	regaddr = (uint32*)start_addr;
@@ -608,6 +616,7 @@ void debug_prof_out(void)
 	return;
 }
 
+
 int debugger_docmd(DbgCmdType *cmd)
 {
 	int need_recv_cmd = FALSE;
@@ -618,7 +627,12 @@ int debugger_docmd(DbgCmdType *cmd)
 	case DBG_CMD_ID_CONT:
 		dbg_info.cmd_mode = DBG_MODE_CONT;
 		//printf("$Enter CPU MODE\n");
-		fflush(stdout);
+		//fflush(stdout);
+		break;
+	case DBG_CMD_ID_FUNC_RETURN:
+		dbg_return_addr = dbg_info.cpu->cpu.r[31U];
+		set_break(&dbg_info, dbg_return_addr);
+		dbg_info.cmd_mode = DBG_MODE_CONT;
 		break;
 	case DBG_CMD_ID_INTR:
 		if (cmd->intno != -1) {
@@ -719,10 +733,10 @@ static int dbg_serial_rcvin(char *str, int len, DbgCmdType *cmd)
 	int p_len = len -1;
 
 	if (p_len == 0) {
-		//‚P•¶š‚Ì‚İ‚È‚ç‚ÎƒXƒLƒbƒv
+		//ï¼‘æ–‡å­—ã®ã¿ãªã‚‰ã°ã‚¹ã‚­ãƒƒãƒ—
 		return -1;
 	}
-	//2•¶šˆÚs‚ğƒVƒŠƒAƒ‹“ü—Í•¶š—ñ‚Æ‚İ‚È‚·D
+	//2æ–‡å­—ç§»è¡Œã‚’ã‚·ãƒªã‚¢ãƒ«å…¥åŠ›æ–‡å­—åˆ—ã¨ã¿ãªã™ï¼
 	p = &str[1];
 	p[p_len] = '\0';
 
@@ -735,8 +749,8 @@ static int dbg_serial_rcvin(char *str, int len, DbgCmdType *cmd)
 	return 0;
 }
 /*
- * A 0:-1:256 0ƒRƒ“ƒgƒ[ƒ‰‚Ìƒ`ƒƒƒ“ƒlƒ‹‘S‚Ä
- * A 0:1:256@@0ƒRƒ“ƒgƒ[ƒ‰‚Ì‚Pƒ`ƒƒƒlƒ‹
+ * A 0:-1:256 0ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã®ãƒãƒ£ãƒ³ãƒãƒ«å…¨ã¦
+ * A 0:1:256ã€€ã€€0ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã®ï¼‘ãƒãƒ£ãƒãƒ«
  */
 static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 {
@@ -753,17 +767,17 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 	int res;
 
 	if (p_len == 0) {
-		//‚P•¶š‚Ì‚İ‚È‚ç‚ÎƒXƒLƒbƒv
+		//ï¼‘æ–‡å­—ã®ã¿ãªã‚‰ã°ã‚¹ã‚­ãƒƒãƒ—
 		return -1;
 	}
-	//2•¶šˆÚs‚ğƒVƒŠƒAƒ‹“ü—Í•¶š—ñ‚Æ‚İ‚È‚·D
+	//2æ–‡å­—ç§»è¡Œã‚’ã‚·ãƒªã‚¢ãƒ«å…¥åŠ›æ–‡å­—åˆ—ã¨ã¿ãªã™ï¼
 	p = &str[1];
 	p[p_len] = '\0';
 	
 	//printf("srial_str=%s\n srial=%s\n", str,p);
 
 	/*
-	 * ":" ‚ğ’T‚µC"\0"‚É•ÏX‚·‚é
+	 * ":" ã‚’æ¢ã—ï¼Œ"\0"ã«å¤‰æ›´ã™ã‚‹
 	 */
 	len_cntl = -1;
 	len_ch = -1;
@@ -960,7 +974,7 @@ static void do_adc_cmd(sint8 ch, uint8 ch_num, uint16 *data_buf, uint16 data)
 		}
 	}
 	else if (ch < ch_num) {
-		data_buf[ch] = data;
+		data_buf[(uint8)ch] = data;
 		//printf("SET:ch=%u adc_data=%u\n", ch, data_buf[ch]);
 		fflush(stdout);
 	}

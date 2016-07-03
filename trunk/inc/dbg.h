@@ -1,4 +1,4 @@
-#ifndef _DBG_H_
+﻿#ifndef _DBG_H_
 #define _DBG_H_
 
 #include "std_types.h"
@@ -46,6 +46,7 @@ typedef enum {
 	DBG_CMD_ID_CAN_RCVIN,
 	DBG_CMD_ID_ADC,
 	DBG_CMD_ID_ELAPSED_TIME,
+	DBG_CMD_ID_FUNC_RETURN,
 	DBG_CMD_ID_UNKNOWN
 } DbgCmdIdType;
 
@@ -60,7 +61,7 @@ typedef struct {
 	char		 serial_buffer[1024];
 	uint32		 serial_buflen;
 	uint8		 adc_cntl;
-	int			 adc_ch; /* -1 �ｿｽﾌ場合�ｿｽﾍ全�ｿｽ�ｿｽ */
+	int			 adc_ch; /* -1 ?ｿｽﾌ場合?ｿｽﾍ全?ｿｽ?ｿｽ */
 	uint32		 adc_data;
 } DbgCmdType;
 

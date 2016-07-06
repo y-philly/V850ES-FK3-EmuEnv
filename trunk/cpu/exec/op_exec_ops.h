@@ -1,8 +1,8 @@
-#ifndef _OP_EXEC_OPS_H_
+ï»¿#ifndef _OP_EXEC_OPS_H_
 #define _OP_EXEC_OPS_H_
 
 /*
- * ƒ[ƒh–½—ß
+ * ãƒ­ãƒ¼ãƒ‰å‘½ä»¤
  */
 extern int op_exec_ldb(CpuManagerType *cpu);
 extern int op_exec_ldhw(CpuManagerType *cpu);
@@ -11,7 +11,7 @@ extern int op_exec_sldh(CpuManagerType *cpu);
 extern int op_exec_sldw(CpuManagerType *cpu);
 
 /*
- * ƒXƒgƒA–½—ß
+ * ã‚¹ãƒˆã‚¢å‘½ä»¤
  */
 extern int op_exec_sstb(CpuManagerType *cpu);
 extern int op_exec_ssth(CpuManagerType *cpu);
@@ -20,18 +20,18 @@ extern int op_exec_sthw(CpuManagerType *cpu);
 extern int op_exec_sstw(CpuManagerType *cpu);
 
 /*
- * æZ–½—ß
+ * ä¹—ç®—å‘½ä»¤
  */
 extern int op_exec_mulhi(CpuManagerType *cpu);
 extern int op_exec_mulh_1(CpuManagerType *cpu);
 extern int op_exec_mulh_2(CpuManagerType *cpu);
 
 /*
- * œZ–½—ß
+ * é™¤ç®—å‘½ä»¤
  */
 
 /*
- * Zp‰‰Z–½—ß
+ * ç®—è¡“æ¼”ç®—å‘½ä»¤
  */
 extern int op_exec_addi(CpuManagerType *cpu);
 extern int op_exec_movea(CpuManagerType *cpu);
@@ -47,14 +47,14 @@ extern int op_exec_subr(CpuManagerType *cpu);
 extern int op_exec_setf(CpuManagerType *cpu);
 
 /*
- * –O˜a‰‰Z–½—ß
+ * é£½å’Œæ¼”ç®—å‘½ä»¤
  */
 extern int op_exec_satsubi(CpuManagerType *cpu);
 extern int op_exec_satadd_1(CpuManagerType *cpu);
 extern int op_exec_satadd_2(CpuManagerType *cpu);
 
 /*
- * ˜_—‰‰Z–½—ß
+ * è«–ç†æ¼”ç®—å‘½ä»¤
  */
 extern int op_exec_and(CpuManagerType *cpu);
 extern int op_exec_andi(CpuManagerType *cpu);
@@ -76,7 +76,7 @@ extern int op_exec_zxb(CpuManagerType *cpu);
 extern int op_exec_zxh(CpuManagerType *cpu);
 
 /*
- * •ªŠò–½—ß
+ * åˆ†å²å‘½ä»¤
  */
 extern int op_exec_jr(CpuManagerType *cpu);
 extern int op_exec_jmp(CpuManagerType *cpu);
@@ -85,11 +85,11 @@ extern int op_exec_cmp_2(CpuManagerType *cpu);
 extern int op_exec_bcond(CpuManagerType *cpu);
 
 /*
- * ƒrƒbƒg–½—ß
+ * ãƒ“ãƒƒãƒˆå‘½ä»¤
  */
 extern int op_exec_tst1_8(CpuManagerType *cpu);
 /*
- * “Áê–½—ß
+ * ç‰¹æ®Šå‘½ä»¤
  */
 extern int op_exec_diei(CpuManagerType *cpu);
 extern int op_exec_ldsr(CpuManagerType *cpu);
@@ -98,11 +98,12 @@ extern int op_exec_nop(CpuManagerType *cpu);
 extern int op_exec_reti(CpuManagerType *cpu);
 extern int op_exec_halt(CpuManagerType *cpu);
 extern int op_exec_trap(CpuManagerType *cpu);
+extern int op_exec_switch(CpuManagerType *cpu);
 
 
 
 /*
- * ƒfƒBƒoƒbƒO‹@”\—p–½—ß
+ * ãƒ‡ã‚£ãƒãƒƒã‚°æ©Ÿèƒ½ç”¨å‘½ä»¤
  */
 
 #include "dbg.h"

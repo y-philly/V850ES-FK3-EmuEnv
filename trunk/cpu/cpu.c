@@ -77,6 +77,7 @@ int cpu_exec(void)
 	 */
 	ret = OpDecode(CpuManager.current_code, &CpuManager.decoded_code);
 	if (ret < 0) {
+		printf("Decode Error\n");
 		return ret;
 	}
 
@@ -85,6 +86,7 @@ int cpu_exec(void)
 	 */
 	ret = OpExec(&CpuManager);
 	if (ret < 0) {
+		printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n", CpuManager.current_code[0], CpuManager.current_code[1], CpuManager.decoded_code.type_id);
 		return ret;
 	}
 

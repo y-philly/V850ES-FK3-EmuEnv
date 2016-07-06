@@ -95,7 +95,7 @@
 #define SOP_CODE_STSR		(0b000010)	/* format9:6 26-21 */
 #define OP_CODE_SUB			(0b001101)	/* format1:6 */
 #define OP_CODE_SUBR		(0b001100)	/* format1:6 */
-/* SWITCH */
+#define OP_CODE_SWITCH		(0b000010)	/* format1:6 */
 #define OP_CODE_SXB			(0b000101)	/* format1:6 */
 #define OP_CODE_SXH			(0b000111)	/* format1:6 */
 
@@ -109,5 +109,7 @@
 #define OP_CODE_XORI		(0b110101)	/* format6:6 */
 #define OP_CODE_ZXB			(0b000100)	/* format1:6 */
 #define OP_CODE_ZXH			(0b000110)	/* format1:6 */
+
+
 
 #endif /* _OP_CODE_H_ */

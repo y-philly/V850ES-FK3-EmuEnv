@@ -151,7 +151,11 @@ static int OpExec1(CpuManagerType *cpu)
 	case OP_CODE_TST:
 		ret = op_exec_tst(cpu);
 		break;
+	case OP_CODE_SWITCH:
+		ret = op_exec_switch(cpu);
+		break;
 	default:
+		printf("OpExec1 Error:Unknown OP:0x%x\n", cpu->decoded_code.type1.opcode);
 		break;
 	}
 	return ret;
@@ -186,6 +190,7 @@ static int OpExec2(CpuManagerType *cpu)
 		ret = op_exec_shr_2(cpu);
 		break;
 	default:
+		printf("OpExec2 Error:Unknown OP:0x%x\n", cpu->decoded_code.type2.opcode);
 		break;
 	}
 	return ret;
@@ -199,6 +204,7 @@ static int OpExec3(CpuManagerType *cpu)
 		ret = op_exec_bcond(cpu);
 		break;
 	default:
+		printf("OpExec3 Error:Unknown OP:0x%x\n", cpu->decoded_code.type3.opcode);
 		break;
 	}
 	return ret;
@@ -233,6 +239,7 @@ static int OpExec4(CpuManagerType *cpu)
 		ret = op_exec_ssth(cpu);
 		break;
 	default:
+		printf("OpExec4 Error:Unknown OP:0x%x\n", cpu->decoded_code.type4_1.opcode);
 		break;
 	}
 	return ret;
@@ -248,6 +255,7 @@ static int OpExec5(CpuManagerType *cpu)
 		ret = op_exec_jr(cpu);
 		break;
 	default:
+		printf("OpExec5 Error:Unknown OP:0x%x\n", cpu->decoded_code.type5.opcode);
 		break;
 	}
 	return ret;
@@ -285,6 +293,7 @@ static int OpExec6(CpuManagerType *cpu)
 		ret = op_exec_xori(cpu);
 		break;
 	default:
+		printf("OpExec6 Error:Unknown OP:0x%x\n", cpu->decoded_code.type6.opcode);
 		break;
 	}
 	return ret;
@@ -310,6 +319,7 @@ static int OpExec7(CpuManagerType *cpu)
 		ret = op_exec_sthw(cpu);
 		break;
 	default:
+		printf("OpExec7 Error:Unknown OP:0x%x\n", cpu->decoded_code.type7.opcode);
 		break;
 	}
 	return ret;
@@ -349,6 +359,7 @@ static int OpExec9(CpuManagerType *cpu)
 		ret = op_exec_stsr(cpu);
 		break;
 	default:
+		printf("OpExec9 Error:Unknown OP:0x%x\n", cpu->decoded_code.type9.opcode);
 		break;
 	}
 	return ret;
@@ -373,6 +384,7 @@ static int OpExec10(CpuManagerType *cpu)
 		ret = op_exec_trap(cpu);
 		break;
 	default:
+		printf("OpExec10 Error:Unknown OP:0x%x\n", cpu->decoded_code.type10.opcode);
 		break;
 	}
 	return ret;
@@ -387,6 +399,7 @@ static int OpExec11(CpuManagerType *cpu)
 		//TODO
 		break;
 	default:
+		printf("OpExec11 Error:Unknown OP:0x%x\n", cpu->decoded_code.type11.opcode);
 		break;
 	}
 	return ret;
@@ -401,6 +414,7 @@ static int OpExec12(CpuManagerType *cpu)
 		//TODO
 		break;
 	default:
+		printf("OpExec12 Error:Unknown OP:0x%x\n", cpu->decoded_code.type10.sub);
 		break;
 	}
 
@@ -409,6 +423,7 @@ static int OpExec12(CpuManagerType *cpu)
 
 static int OpExec13(CpuManagerType *cpu)
 {
+	printf("OpExec13 Error:Unknown OP\n");
 	return -1;
 }
 

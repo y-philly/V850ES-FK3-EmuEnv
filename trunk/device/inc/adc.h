@@ -46,7 +46,7 @@
  * A/D•ÏŠ·Œ‹‰ÊƒŒƒWƒXƒ^ m
  */
 #define MPU_ADC_ADDR_ADAnCRm_BASE				(0xFFFFF210U)
-#define MPU_ADC_ADDR_ADAnCRm(cntl,pchannel)		((MPU_ADC_ADDR_ADAnCRm_BASE + ((cntl) * 0x2)) + ((pchannel) * 2U))
+#define MPU_ADC_ADDR_ADAnCRm(cntl,pchannel)		((MPU_ADC_ADDR_ADAnCRm_BASE + ((cntl) * 0x40)) + ((pchannel) * 2U))
 
 typedef struct {
 	bool (*recv) (uint8 ch, uint16 *data);

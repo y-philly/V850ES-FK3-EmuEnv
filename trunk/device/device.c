@@ -9,6 +9,7 @@ void device_init(DeviceType *device)
 	device_init_serial(device);
 	device_init_can(device);
 	device_init_adc(device);
+	device_init_wdg(device);
 	return;
 }
 
@@ -21,7 +22,7 @@ void device_supply_clock(DeviceType *device)
 	device_supply_clock_serial(device);
 	device_supply_clock_can(device);
 	device_supply_clock_adc(device);
-
+	device_supply_clock_wdg(device);
 	return;
 }
 

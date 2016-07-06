@@ -25,6 +25,7 @@ VPATH	+= $(ROOTDIR)/device/timer_m
 VPATH	+= $(ROOTDIR)/device/serial
 VPATH	+= $(ROOTDIR)/device/can
 VPATH	+= $(ROOTDIR)/device/adc
+VPATH	+= $(ROOTDIR)/device/wdg
 VPATH	+= $(ROOTDIR)/lib
 
 CFLAGS	:= $(WFLAGS)
@@ -54,6 +55,7 @@ OBJS	+= timer.o
 OBJS	+= timer_m.o
 OBJS	+= can.o
 OBJS	+= adc.o
+OBJS	+= wdg.o
 OBJS	+= serial.o
 OBJS	+= debugger.o
 OBJS	+= symbol.o

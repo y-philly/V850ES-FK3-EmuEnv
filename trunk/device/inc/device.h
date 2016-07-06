@@ -32,6 +32,10 @@ typedef struct {
 		 * adc object
 		 */
 		void *adc;
+		/*
+		 * wdg object
+		 */
+		void *wdg;
 	} dev;
 } DeviceType;
 
@@ -46,6 +50,7 @@ extern void device_init_timer_m(DeviceType *device);
 extern void device_init_serial(DeviceType *device);
 extern void device_init_can(DeviceType *device);
 extern void device_init_adc(DeviceType *device);
+extern void device_init_wdg(DeviceType *device);
 
 /*
  * デバイスクロック共有
@@ -56,6 +61,7 @@ extern void device_supply_clock_timer_m(DeviceType *device);
 extern void device_supply_clock_serial(DeviceType *device);
 extern void device_supply_clock_can(DeviceType *device);
 extern void device_supply_clock_adc(DeviceType *device);
+extern void device_supply_clock_wdg(DeviceType *device);
 
 /*
  * デバイスクロック参照

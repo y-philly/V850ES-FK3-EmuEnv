@@ -41,12 +41,12 @@ int op_exec_ldsr(CpuManagerType *cpu)
 	int ret;
 	uint32 *sysreg;
 	/*
-	 * [ƒ†[ƒU[ƒYƒ}ƒjƒ…ƒAƒ‹‚©‚ç”²ˆ]
-	 * ’ˆÓ ‚±‚Ì–½—ß‚Å‚ÍCƒjƒ‚ƒjƒbƒN‹Lq‚Ì“s‡ãCƒ\[ƒXEƒŒƒWƒXƒ^‚ð reg2‚Æ‚µ‚Ä‚¢‚Ü‚·‚ªC
-	 * ƒIƒyƒR[ƒhã‚Íreg1‚ÌƒtƒB[ƒ‹ƒh‚ðŽg—p‚µ‚Ä‚¢‚Ü‚·B‚µ‚½‚ª‚Á‚ÄCƒjƒ‚ƒjƒbƒN‹Lq‚Æ
-	 * ƒIƒyƒR[ƒh‚É‚¨‚¢‚ÄCƒŒƒWƒXƒ^Žw’è‚ÌˆÓ–¡•t‚¯‚ª‚Ù‚©‚Ì–½—ß‚ÆˆÙ‚È‚è‚Ü‚·B
-	 * rrrrrF regIDŽw’è
-	 * RRRRRF reg2Žw’è
+	 * [ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚ºãƒžãƒ‹ãƒ¥ã‚¢ãƒ«ã‹ã‚‰æŠœç²‹]
+	 * æ³¨æ„ ã“ã®å‘½ä»¤ã§ã¯ï¼Œãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯è¨˜è¿°ã®éƒ½åˆä¸Šï¼Œã‚½ãƒ¼ã‚¹ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’ reg2ã¨ã—ã¦ã„ã¾ã™ãŒï¼Œ
+	 * ã‚ªãƒšã‚³ãƒ¼ãƒ‰ä¸Šã¯reg1ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ä½¿ç”¨ã—ã¦ã„ã¾ã™ã€‚ã—ãŸãŒã£ã¦ï¼Œãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯è¨˜è¿°ã¨
+	 * ã‚ªãƒšã‚³ãƒ¼ãƒ‰ã«ãŠã„ã¦ï¼Œãƒ¬ã‚¸ã‚¹ã‚¿æŒ‡å®šã®æ„å‘³ä»˜ã‘ãŒã»ã‹ã®å‘½ä»¤ã¨ç•°ãªã‚Šã¾ã™ã€‚
+	 * rrrrrï¼š regIDæŒ‡å®š
+	 * RRRRRï¼š reg2æŒ‡å®š
 	 */
 	uint32 regid = cpu->decoded_code.type9.reg2;
 	uint32 reg2 = cpu->decoded_code.type9.gen;
@@ -130,7 +130,7 @@ int op_exec_reti(CpuManagerType *cpu)
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->cpu.pc, cpu->cpu.eipc));
 		cpu->cpu.pc = cpu->cpu.eipc;
 		cpu->cpu.psw = cpu->cpu.eipsw;
-		//CPU—áŠO‚Ìê‡‚ÍCISPR‚ÌÝ’è‚Ís‚í‚È‚¢‚½‚ß•s—v
+		//CPUä¾‹å¤–ã®å ´åˆã¯ï¼ŒISPRã®è¨­å®šã¯è¡Œã‚ãªã„ãŸã‚ä¸è¦
 		//intc_clr_currlvl_ispr(cpu);
 	}
 	else if (CPU_ISSET_NP(&cpu->cpu)) {
@@ -192,6 +192,52 @@ int op_exec_trap(CpuManagerType *cpu)
 		cpu->cpu.pc = pc;
 	}
 
+	return 0;
+}
+
+int op_exec_switch(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type1.reg1;
+	uint32 reg1_data;
+	uint32 addr;
+	uint32 *addrp;
+	sint32 tmp_pc;
+	uint32 next_pc;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	reg1_data = cpu->cpu.r[reg1];
+
+	addr = (cpu->cpu.pc + 2U) + (reg1_data << 1U);
+	/*
+	 * Load-memory (adr, Half-word)
+	 */
+	cpu_memget_addrp(cpu, addr, &addrp);
+	if (addrp == NULL) {
+		printf("ERROR:SWITCH pc=0x%x reg1=%u(0x%x) addr=0x%x\n", cpu->cpu.pc, reg1, reg1_data, addr);
+		return -1;
+	}
+	/*
+	 * (sign-extend (Load-memory (adr, Half-word) ))
+	 */
+	tmp_pc = (sint32)( *((sint16*)addrp) );
+	/*
+	 * (sign-extend (Load-memory (adr, Half-word) ) ) logically shift left by 1
+	 */
+	tmp_pc <<= 1U;
+
+	/*
+	 * (PC + 2) + (sign-extend (Load-memory (adr, Half-word) ) ) logically shift left by 1
+	 */
+	next_pc = (cpu->cpu.pc + 2U) + ((uint32)tmp_pc);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SWITCH r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], next_pc));
+
+
+
+	cpu->cpu.pc = next_pc;
 	return 0;
 }
 

@@ -46,6 +46,7 @@ OpCodeFormatId OpCode2FormatId(uint8 opcode, uint8 subcode)
 	uint8 opcode4	= ( (opcode  >> 2) & 0x0F );
 	uint8 subcode4	= ( (subcode >> 2) & 0x0F );
 
+	//printf("opcode4 = 0x%x\n", opcode4);
 	ret = op_code2format_lv1[opcode4];
 	if (ret != OP_CODE_FORMAT_UNKNOWN) {
 		return ret;

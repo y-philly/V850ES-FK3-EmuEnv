@@ -43,6 +43,8 @@ int OpDecode(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code)
 	uint16 subcode = ( (code[1] >> 5) & 0x3F );
 	OpCodeFormatId id;
 
+	//printf("code0=0x%x\n", code[0]);
+	//printf("opcode=0x%x\n", opcode);
 	id = OpCode2FormatId(opcode, subcode);
 	if (id == OP_CODE_FORMAT_UNKNOWN) {
 		return -1;

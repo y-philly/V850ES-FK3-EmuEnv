@@ -399,7 +399,7 @@ static int OpExec11(CpuManagerType *cpu)
 		//TODO
 		break;
 	default:
-		printf("OpExec11 Error:Unknown OP:0x%x\n", cpu->decoded_code.type11.opcode);
+		printf("OpExec11 Error:Unknown sub1=0x%x sub2=0x%x\n", cpu->decoded_code.type11.sub1, cpu->decoded_code.type11.sub2);
 		break;
 	}
 	return ret;
@@ -409,12 +409,14 @@ static int OpExec12(CpuManagerType *cpu)
 {
 	int ret = -1;
 
-	switch (cpu->decoded_code.type10.sub) {
+	switch (cpu->decoded_code.type12.sub1) {
 	case SOP_CODE_MUL_12:
-		//TODO
+		ret = op_exec_mulu_12(cpu);
 		break;
 	default:
-		printf("OpExec12 Error:Unknown OP:0x%x\n", cpu->decoded_code.type10.sub);
+		printf("OpExec12 Error:Unknown sub1=0x%x sub2=0x%x imm_low=0x%x imm_high=0x%x\n",
+				cpu->decoded_code.type12.sub1, cpu->decoded_code.type12.sub2,
+				cpu->decoded_code.type12.imml, cpu->decoded_code.type12.immh);
 		break;
 	}
 

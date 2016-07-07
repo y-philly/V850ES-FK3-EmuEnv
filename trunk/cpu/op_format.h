@@ -1,4 +1,4 @@
-#ifndef _OP_FORMAT_H_
+ï»¿#ifndef _OP_FORMAT_H_
 #define _OP_FORMAT_H_
 
 #include "std_types.h"
@@ -33,7 +33,7 @@ extern OpCodeFormatId OpCode2FormatId(uint8 opcode, uint8 subcode);
 
 
 /*
- * reg-reg–½—ßŒ`®
+ * reg-regå‘½ä»¤å½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -41,7 +41,7 @@ typedef struct {
 	uint16 reg2;	/* 15-11 */
 } OpCodeFormatType1;
 /*
- * imm-reg–½—ßŒ`®
+ * imm-regå‘½ä»¤å½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -49,7 +49,7 @@ typedef struct {
 	uint16 reg2;	/* 15-11 */
 } OpCodeFormatType2;
 /*
- * ğŒ•ªŠò–½—ßŒ`®
+ * æ¡ä»¶åˆ†å²å‘½ä»¤å½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-7 */
@@ -57,7 +57,7 @@ typedef struct {
 	uint16 cond;	/* 3-0 */
 } OpCodeFormatType3;
 /*
- * ƒ[ƒh^ƒXƒgƒA–½—ß16ƒrƒbƒgŒ`®
+ * ãƒ­ãƒ¼ãƒ‰ï¼ã‚¹ãƒˆã‚¢å‘½ä»¤16ãƒ“ãƒƒãƒˆå½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-7 */
@@ -72,7 +72,7 @@ typedef struct {
 } OpCodeFormatType4_2;
 
 /*
- * ƒWƒƒƒ“ƒv–½—ßŒ`®
+ * ã‚¸ãƒ£ãƒ³ãƒ—å‘½ä»¤å½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-6 */
@@ -80,7 +80,7 @@ typedef struct {
 	uint16 reg2;	/* 15-11 */
 } OpCodeFormatType5;
 /*
- * 3ƒIƒyƒ‰ƒ“ƒh–½—ßŒ`®
+ * 3ã‚ªãƒšãƒ©ãƒ³ãƒ‰å‘½ä»¤å½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-4 */
@@ -90,7 +90,7 @@ typedef struct {
 } OpCodeFormatType6;
 
 /*
- * ƒ[ƒh^ƒXƒgƒA–½—ß32ƒrƒbƒgŒ`®
+ * ãƒ­ãƒ¼ãƒ‰ï¼ã‚¹ãƒˆã‚¢å‘½ä»¤32ãƒ“ãƒƒãƒˆå½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -101,7 +101,7 @@ typedef struct {
 } OpCodeFormatType7;
 
 /*
- * ƒrƒbƒg‘€ì–½—ßŒ`®
+ * ãƒ“ãƒƒãƒˆæ“ä½œå‘½ä»¤å½¢å¼
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -111,7 +111,7 @@ typedef struct {
 	uint32 disp;	/* 31-16 */
 } OpCodeFormatType8;
 /*
- * Šg’£–½—ßŒ`®1
+ * æ‹¡å¼µå‘½ä»¤å½¢å¼1
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -122,7 +122,7 @@ typedef struct {
 	uint16 rfu1;		/* 20-17 */
 } OpCodeFormatType9;
 /*
- * Šg’£–½—ßŒ`®2
+ * æ‹¡å¼µå‘½ä»¤å½¢å¼2
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -134,7 +134,7 @@ typedef struct {
 	uint16 rfu3;		/* 31-27 */
 } OpCodeFormatType10;
 /*
- * Šg’£–½—ßŒ`®3
+ * æ‹¡å¼µå‘½ä»¤å½¢å¼3
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -146,7 +146,7 @@ typedef struct {
 	uint16 rfu;		/* 20-18 */
 } OpCodeFormatType11;
 /*
- * Šg’£–½—ßŒ`®4
+ * æ‹¡å¼µå‘½ä»¤å½¢å¼4
  */
 typedef struct {
 	uint16 opcode;	/* 10-5 */
@@ -158,7 +158,7 @@ typedef struct {
 	uint16 sub2;	/* 17 */
 } OpCodeFormatType12;
 /*
- * ƒXƒ^ƒbƒN‘€ì–½—ßŒ`®1
+ * ã‚¹ã‚¿ãƒƒã‚¯æ“ä½œå‘½ä»¤å½¢å¼1
  */
 typedef struct {
 	uint16 opcode;	/* 10-6 */

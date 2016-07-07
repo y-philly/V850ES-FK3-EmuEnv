@@ -107,14 +107,14 @@ void debug_cmd(void)
 		}
 		fflush(stdout);
 
-		//’[––‚©‚ç‚ÌóM‘Ò‚¿
+		//ç«¯æœ«ã‹ã‚‰ã®å—ä¿¡å¾…ã¡
 		debugger_getcmd(&cmd);
 
 		if (cmd.id != DBG_CMD_ID_CONT) {
-			//cpu_runƒXƒŒƒbƒh‚ª“®ì‚µ‚Ä‚¢‚éê‡‚ÍCcpu_runƒXƒŒƒbƒh‚Ì’â~‘Ò‚¿
+			//cpu_runã‚¹ãƒ¬ãƒƒãƒ‰ãŒå‹•ä½œã—ã¦ã„ã‚‹å ´åˆã¯ï¼Œcpu_runã‚¹ãƒ¬ãƒƒãƒ‰ã®åœæ­¢å¾…ã¡
 			cpu_stop();
 			//printf("$Enter DEBUG MODE\n");
-			//ƒfƒoƒbƒOˆ—‚ğÀs‚·‚éD
+			//ãƒ‡ãƒãƒƒã‚°å‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹ï¼
 		}
 		need_recv_cmd = debugger_docmd(&cmd);
 
@@ -144,7 +144,7 @@ int main(int argc, const char *argv[])
 
 #if 1
 	/*
-	 * b’è‘ÎˆFƒNƒƒbƒN‰Šú‰»
+	 * æš«å®šå¯¾å‡¦ï¼šã‚¯ãƒ­ãƒƒã‚¯åˆæœŸåŒ–
 	 */
 	{
 		uint32 addr = 0xFFFFF6C2; /* OSTC */
@@ -167,7 +167,7 @@ int main(int argc, const char *argv[])
 	debug_init(&CpuManager, &DeviceManager);
 	debugger_exec_op_bufinit(".\\log.txt");
 
-	//cpu_runƒXƒŒƒbƒh‚ğ‹N“®‚·‚éD
+	//cpu_runã‚¹ãƒ¬ãƒƒãƒ‰ã‚’èµ·å‹•ã™ã‚‹ï¼
 	pthread_create(&thread , NULL , cpu_run , NULL);
 	pthread_mutex_init(&my_mutex, NULL);
 	pthread_cond_init(&my_cv, NULL);
@@ -191,12 +191,12 @@ static void* cpu_run(void *arg)
 
 	while (TRUE) {
 
-		//ƒfƒoƒbƒOó‘Ôƒ`ƒFƒbƒN
-		//ƒfƒoƒbƒOó‘Ô‚Å‚ ‚éê‡‚Í‘Ò‚¿ó‘Ô‚É‚È‚éD
+		//ãƒ‡ãƒãƒƒã‚°çŠ¶æ…‹ãƒã‚§ãƒƒã‚¯
+		//ãƒ‡ãƒãƒƒã‚°çŠ¶æ…‹ã§ã‚ã‚‹å ´åˆã¯å¾…ã¡çŠ¶æ…‹ã«ãªã‚‹ï¼
 		cpu_check_point();
 
 		/*
-		 * ƒfƒoƒCƒXÀs
+		 * ãƒ‡ãƒã‚¤ã‚¹å®Ÿè¡Œ
 		 */
 		device_supply_clock(&DeviceManager);
 
@@ -204,12 +204,12 @@ static void* cpu_run(void *arg)
 			continue;
 		}
 		/*
-		 * ƒyƒ“ƒfƒBƒ“ƒO’†‚ÌŠ„‚è‚İ‚ğ”­¶‚³‚¹‚é
+		 * ãƒšãƒ³ãƒ‡ã‚£ãƒ³ã‚°ä¸­ã®å‰²ã‚Šè¾¼ã¿ã‚’ç™ºç”Ÿã•ã›ã‚‹
 		 */
 		intc_raise_pending_intr(&CpuManager);
 
 		/*
-		 * CPU–½—ß‚ğÀs‚·‚é
+		 * CPUå‘½ä»¤ã‚’å®Ÿè¡Œã™ã‚‹
 		 */
 		ret = cpu_exec();
 		if (ret < 0) {

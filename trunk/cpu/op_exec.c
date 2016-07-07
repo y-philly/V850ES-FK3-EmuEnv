@@ -308,6 +308,11 @@ static int OpExec7(CpuManagerType *cpu)
 {
 	int ret = -1;
 
+	if (( (cpu->decoded_code.type7.opcode >> 1U) & 0x1F ) == OP_CODE_LDBU) {
+		ret = op_exec_ldbu(cpu);
+		return ret;
+	}
+
 	switch (cpu->decoded_code.type7.opcode) {
 	case OP_CODE_LDB:
 		ret = op_exec_ldb(cpu);

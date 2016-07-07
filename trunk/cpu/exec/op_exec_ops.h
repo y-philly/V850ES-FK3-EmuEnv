@@ -5,6 +5,7 @@
  * ロード命令
  */
 extern int op_exec_ldb(CpuManagerType *cpu);
+extern int op_exec_ldbu(CpuManagerType *cpu);
 extern int op_exec_ldhw(CpuManagerType *cpu);
 extern int op_exec_sldb(CpuManagerType *cpu);
 extern int op_exec_sldh(CpuManagerType *cpu);

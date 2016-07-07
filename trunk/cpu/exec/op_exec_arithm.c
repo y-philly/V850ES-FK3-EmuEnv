@@ -394,6 +394,35 @@ int op_exec_movea(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
+int op_exec_mov_6(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type6.reg1;
+	uint32 imm_high_addr;
+	uint32 *imm_high_addrp;
+	uint32 imm_high;
+	uint32 imm_data = cpu->decoded_code.type6.imm;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	imm_high_addr = cpu->cpu.pc + 4U;
+	cpu_memget_addrp(cpu, imm_high_addr, &imm_high_addrp);
+	if (imm_high_addrp == NULL) {
+		printf("ERROR:MOV pc=0x%x reg1=%u(0x%x) addr=0x%x\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], imm_high_addr);
+		return -1;
+	}
+	imm_high = (uint32)(*((uint16*)imm_high_addrp));
+
+	imm_data |= (imm_high << 16U);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: MOV imm32(%d),r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg1, cpu->cpu.r[reg1], imm_data));
+	cpu->cpu.r[reg1] = imm_data;
+
+	cpu->cpu.pc += 6;
+	return 0;
+}
+
+
 int op_exec_movhi(CpuManagerType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type6.reg1;

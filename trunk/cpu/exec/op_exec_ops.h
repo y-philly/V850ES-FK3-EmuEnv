@@ -36,6 +36,7 @@ extern int op_exec_mulu_12(CpuManagerType *cpu);
  */
 extern int op_exec_addi(CpuManagerType *cpu);
 extern int op_exec_movea(CpuManagerType *cpu);
+extern int op_exec_mov_6(CpuManagerType *cpu);
 extern int op_exec_movhi(CpuManagerType *cpu);
 extern int op_exec_mov_1(CpuManagerType *cpu);
 extern int op_exec_mov_2(CpuManagerType *cpu);

@@ -24,7 +24,7 @@ void cpu_memget_addrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp)
 	}
 	else {
 		/*
-		 * ƒfƒoƒCƒXƒƒ‚ƒŠ—Ìˆæƒ`ƒFƒbƒN
+		 * ï¿½Ç¥Ğ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î°ï¿½ï¿½ï¿½ï¿½ï¿½Ã¥ï¿½
 		 */
 		uint32 devaddr = addr & 0x03FFFFFF;
 
@@ -43,7 +43,7 @@ void cpu_memget_addrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp)
 			 * invalid memory
 			 */
 			*addrp = NULL;
-			printf("Invalid memory:not found memory(off=0x%x)\n", addr);
+			printf("0x%x:Invalid memory:not found memory(off=0x%x)\n", cpu->cpu.pc, addr);
 		}
 
 	}
@@ -72,7 +72,7 @@ void cpu_memget_raddrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp)
 	}
 	else {
 		/*
-		 * ƒfƒoƒCƒXƒƒ‚ƒŠ—Ìˆæƒ`ƒFƒbƒN
+		 * ï¿½Ç¥Ğ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î°ï¿½ï¿½ï¿½ï¿½ï¿½Ã¥ï¿½
 		 */
 		uint32 devaddr = addr & 0x03FFFFFF;
 

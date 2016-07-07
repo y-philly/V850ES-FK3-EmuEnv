@@ -64,6 +64,7 @@ int OpExec(CpuManagerType *cpu)
 	default:
 		break;
 	}
+	cpu->cpu.r[0] = 0U;
 	return ret;
 }
 
@@ -274,8 +275,12 @@ static int OpExec6(CpuManagerType *cpu)
 		break;
 	case OP_CODE_MOVEA:
 /*	case OP_CODE_MOV_6: */
-		//MOVE_6 not spported
-		ret = op_exec_movea(cpu);
+		if (cpu->decoded_code.type6.reg2 != 0U) {
+			ret = op_exec_movea(cpu);
+		}
+		else {
+			ret = op_exec_mov_6(cpu);
+		}
 		break;
 	case OP_CODE_MOVHI:
 		ret = op_exec_movhi(cpu);

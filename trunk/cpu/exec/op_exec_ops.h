@@ -25,6 +25,7 @@ extern int op_exec_sstw(CpuManagerType *cpu);
 extern int op_exec_mulhi(CpuManagerType *cpu);
 extern int op_exec_mulh_1(CpuManagerType *cpu);
 extern int op_exec_mulh_2(CpuManagerType *cpu);
+extern int op_exec_mulu_12(CpuManagerType *cpu);
 
 /*
  * 除算命令

@@ -38,7 +38,7 @@ static OpCodeFormatId op_code2format_lv2[FORMALT_LV_NUM] = {
 		OP_CODE_FORMAT_UNKNOWN, /* 15 */
 };
 
-static OpCodeFormatId op_code2format_lv2[FORMALT_LV_NUM];
+//static OpCodeFormatId op_code2format_lv2[FORMALT_LV_NUM];
 
 OpCodeFormatId OpCode2FormatId(uint8 opcode, uint8 subcode)
 {
@@ -59,6 +59,14 @@ OpCodeFormatId OpCode2FormatId(uint8 opcode, uint8 subcode)
 		 * 1	1	1	1	1	0
 		 */
 		return OP_CODE_FORMAT_8;
+	}
+	if ((subcode4 == 4U)) {
+		if (((subcode & 0x02) != 0x0)) {
+			return OP_CODE_FORMAT_12;
+		}
+		else {
+			return OP_CODE_FORMAT_11;
+		}
 	}
 	return op_code2format_lv2[subcode4];
 }

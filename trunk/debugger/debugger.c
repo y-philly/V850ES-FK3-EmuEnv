@@ -136,6 +136,7 @@ void set_force_break(void)
 	if (dbg_return_addr != -1) {
 		del_break(&dbg_info, dbg_return_addr);
 	}
+	debugger_exec_op_bufsync();
 	return;
 }
 

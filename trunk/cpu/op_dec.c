@@ -50,6 +50,42 @@ int OpDecode(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code)
 	if (id == OP_CODE_FORMAT_UNKNOWN) {
 		return -1;
 	}
+	if (id == OP_CODE_FORMAT_5) {
+		/*
+		 * この時点でFORMAT5と判断された場合，
+		 * FORMAT7 or FORMAT13判定が必要となる．
+		 */
+		/*
+		 * 16bit != 0 の場合はFORMAT7 or FORMAT13
+		 */
+		if ((code[1] & 0x0001) != 0) {
+			/*
+			 * reg2 != 0 の場合はFORMAT7
+			 * reg2 == 0 の場合はFORMAT13
+			 */
+			uint16 reg2 = (code[0] >> 11U);
+			if (reg2 != 0U) {
+				id = OP_CODE_FORMAT_7;
+			}
+			else {
+				id = OP_CODE_FORMAT_13;
+			}
+		}
+	}
+	else if (id == OP_CODE_FORMAT_6) {
+		/*
+		 * この時点でFORMAT6と判断された場合，
+		 * FORMAT13判定が必要となる．
+		 */
+		/*
+		 * opcode=0b11001X かつ　reg2==0 の場合はFORMAT13
+		 */
+		uint16 opcode5 = opcode >> 1U;
+		uint16 reg2 = (code[0] >> 11U);
+		if ((opcode5 == 0b1101) && reg2 == 0U) {
+			id = OP_CODE_FORMAT_13;
+		}
+	}
 	decoded_code->type_id = id;
 	return OpDecoder[id].decode(code, decoded_code);
 }

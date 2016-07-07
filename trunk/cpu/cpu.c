@@ -2,11 +2,17 @@
 #include "cpu.h"
 #include "op_dec.h"
 #include "op_exec.h"
+#include <stdio.h>
 
 CpuManagerType CpuManager;
 
+#if 0
 #define TARGET_RAM_ADDR	(0x03FF7000)
 #define TARGET_RAM_SIZE	(1024*32)
+#else
+#define TARGET_RAM_ADDR	(0x03FF0000)
+#define TARGET_RAM_SIZE	(1024*60)
+#endif
 static uint8 cpu_ram_data[TARGET_RAM_SIZE];
 
 #define TARGET_IOMEM1_ADDR	(0x03FFF000)
@@ -68,12 +74,12 @@ int cpu_exec(void)
 	ElfLoaderType *loader = CpuManager.loader;
 
 	/*
-	 * –½—ßæ“¾‚·‚é
+	 * å‘½ä»¤å–å¾—ã™ã‚‹
 	 */
 	loader->get_code(loader, CpuManager.cpu.pc, CpuManager.current_code);
 
 	/*
-	 * ƒfƒR[ƒh
+	 * ãƒ‡ã‚³ãƒ¼ãƒ‰
 	 */
 	ret = OpDecode(CpuManager.current_code, &CpuManager.decoded_code);
 	if (ret < 0) {
@@ -82,7 +88,7 @@ int cpu_exec(void)
 	}
 
 	/*
-	 * –½—ßÀs
+	 * å‘½ä»¤å®Ÿè¡Œ
 	 */
 	ret = OpExec(&CpuManager);
 	if (ret < 0) {

@@ -34,6 +34,8 @@
 #define OP_CODE_JMP			(0b000011)	/* format1:6 */
 #define OP_CODE_JR			(0b11110)	/* format5:5 */
 #define OP_CODE_LDB			(0b111000)	/* format7:6 */
+#define OP_CODE_LDBU		(0b11110)	/* format7:5 */
+
 /* LDBU */
 #define OP_CODE_LDH			(0b111001)	/* format7:6 */
 /* LDHU */

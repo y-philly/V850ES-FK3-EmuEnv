@@ -247,6 +247,38 @@ int op_exec_ldb(CpuManagerType *cpu)
 	return 0;
 }
 
+int op_exec_ldbu(CpuManagerType *cpu)
+{
+	uint32 addr;
+	uint32 *addrp;
+	sint32 disp;
+	uint32 reg1 = cpu->decoded_code.type7.reg1;
+	uint32 reg2 = cpu->decoded_code.type7.reg2;
+	sint32 disp_bit;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	disp_bit = (cpu->decoded_code.type7.opcode & 0x0001);
+	disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) | disp_bit);
+
+	addr = cpu->cpu.r[reg1] + disp;
+
+	cpu_memget_raddrp(cpu, addr, &addrp);
+	if (addrp == NULL) {
+		return -1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.BU disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], *((uint8*)addrp)));
+
+	cpu->cpu.r[reg2] = *((uint8*)addrp);
+
+	cpu->cpu.pc += 4;
+	return 0;
+}
 int op_exec_ldhw(CpuManagerType *cpu)
 {
 	uint32 addr;

@@ -23,14 +23,12 @@ void cpu_memget_addrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp)
 		*addrp = (uint32*)&cpu->loader->ram->data[off];
 	}
 	else {
-		/*
-		 * �ǥХ��������ΰ�����å�
-		 */
 		uint32 devaddr = addr & 0x03FFFFFF;
 
 		if  ((devaddr >= cpu->io_mem1.addr) &&
 				(devaddr <= (cpu->io_mem1.addr + cpu->io_mem1.size))) {
 			off = devaddr - cpu->io_mem1.addr;
+			DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "###0x%x:loadaddr(0x%x)=%s\n", cpu->cpu.pc, addr, addr2devregname(addr)));
 			*addrp = (uint32*)&cpu->io_mem1.data[off];
 		}
 		else if  ((devaddr >= cpu->io_mem2.addr) &&
@@ -43,7 +41,9 @@ void cpu_memget_addrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp)
 			 * invalid memory
 			 */
 			*addrp = NULL;
-			printf("0x%x:Invalid memory:not found memory(off=0x%x)\n", cpu->cpu.pc, addr);
+			printf("0x%x:Invalid memory:not found memory(off=0x%x, ramaddr_start=0x%x, ramaddr_end=0x%x)\n",
+					cpu->cpu.pc, addr,
+					cpu->loader->ram->addr, (cpu->loader->ram->addr + cpu->loader->ram->size));
 		}
 
 	}
@@ -71,14 +71,12 @@ void cpu_memget_raddrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp)
 		*addrp = (uint32*)&cpu->loader->ram->data[off];
 	}
 	else {
-		/*
-		 * �ǥХ��������ΰ�����å�
-		 */
 		uint32 devaddr = addr & 0x03FFFFFF;
 
 		if  ((devaddr >= cpu->io_mem1.addr) &&
 				(devaddr <= (cpu->io_mem1.addr + cpu->io_mem1.size))) {
 			off = devaddr - cpu->io_mem1.addr;
+			DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "###0x%x:loadaddr(0x%x)=%s\n", cpu->cpu.pc, addr, addr2devregname(addr)));
 			*addrp = (uint32*)&cpu->io_mem1.data[off];
 		}
 		else if  ((devaddr >= cpu->io_mem2.addr) &&
@@ -239,7 +237,7 @@ int op_exec_ldb(CpuManagerType *cpu)
 	if (addrp == NULL) {
 		return -1;
 	}
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.B disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], *((sint8*)addrp)));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.B disp16(%d),r%d(0x%x), r%d(0x%x) addr=0x%x:0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], addr, *((sint8*)addrp)));
 
 	cpu->cpu.r[reg2] = *((sint8*)addrp);
 

@@ -20,7 +20,7 @@
 /* DBTRAP */
 #define OP_CODE_DI			(0b111111)	/* format10:6 */
 #define SOP_CODE_DI			(0b001011)	/* format10:6 */
-/* DISPOSE */
+#define OP_CODE_DISPOSE		(0b11001)	/* format13:5 */
 /* DIV */
 /* DIVH */
 /* DIVHU */
@@ -61,7 +61,8 @@
 /* NOT1 */
 #define OP_CODE_OR			(0b001000)	/* format1:6 */
 #define OP_CODE_ORI			(0b110100)	/* format6:6 */
-/* PREPARE */
+#define OP_CODE_PREPARE		(0b11110)	/* format13:5 */
+
 #define OP_CODE_RETI		(0b111111)	/* format10:6 10-5 */
 #define SOP_CODE_RETI		(0b001010)	/* format10:6 26-21 */
 #define OP_CODE_SAR_9		(0b111111)	/* format9:6 10-5 */
@@ -95,6 +96,9 @@
 #define OP_CODE_STW			(0b111011)	/* format7:6 */
 #define OP_CODE_STSR		(0b111111)	/* format9:6 10-5 */
 #define SOP_CODE_STSR		(0b000010)	/* format9:6 26-21 */
+
+#define SOP_CODE_BITOPS		(0b000111)	/* format9:6 26-21 */
+
 #define OP_CODE_SUB			(0b001101)	/* format1:6 */
 #define OP_CODE_SUBR		(0b001100)	/* format1:6 */
 #define OP_CODE_SWITCH		(0b000010)	/* format1:6 */

@@ -154,6 +154,15 @@ int main(int argc, const char *argv[])
 		cpu_memget_addrp(&CpuManager, addr, &addrp);
 		regp = (uint8*)addrp;
 		*regp = 0x01;
+
+		/*
+		 * ロック・レジスタ（ LOCKR）
+		 */
+		addr = 0xFFFFF824;
+		cpu_memget_addrp(&CpuManager, addr, &addrp);
+		regp = (uint8*)addrp;
+		//*regp = 0x01;
+		*regp = 0x00;
 	}
 #endif
 
@@ -213,7 +222,7 @@ static void* cpu_run(void *arg)
 		 */
 		ret = cpu_exec();
 		if (ret < 0) {
-			printf("CPU Exception!!\n");
+			printf("CPU(pc=0x%x) Exception!!\n", CpuManager.cpu.pc);
 			fflush(stdout);
 			set_force_break();
 #if 0

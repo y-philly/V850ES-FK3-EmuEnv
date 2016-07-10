@@ -32,11 +32,11 @@ int op_exec_bcond(CpuManagerType *cpu)
 	sint32 disp;
 
 	disp_u = cpu->decoded_code.type3.disp << 1;
-	disp = op_sign_extend(8, disp_u);//1ƒrƒbƒgƒVƒtƒg‚µ‚½‚Ì‚ÅC7Ë8‚Æ‚È‚Á‚½D
+	disp = op_sign_extend(8, disp_u);//1ï¿½rï¿½bï¿½gï¿½Vï¿½tï¿½gï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ÅC7ï¿½ï¿½8ï¿½Æ‚È‚ï¿½ï¿½ï¿½ï¿½D
 
 	switch (cond) {
 	/*
-	 * •„†•t‚«®”
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	case 0b1110:	//BGE
 		if ((flg_s ^ flg_ov) == FALSE) {
@@ -60,7 +60,7 @@ int op_exec_bcond(CpuManagerType *cpu)
 		break;
 
 	/*
-	 * ®”•„†‚È‚µ®”
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	case 0b1011:	//BH
 		if ((flg_cy | flg_z) == FALSE) {
@@ -86,7 +86,7 @@ int op_exec_bcond(CpuManagerType *cpu)
 		break;
 
 	/*
-	 * ‹¤’Ê
+	 * ï¿½ï¿½ï¿½ï¿½
 	 */
 	case 0b0010:	//BE
 /*	case 0b0010: */	//BZ
@@ -101,7 +101,7 @@ int op_exec_bcond(CpuManagerType *cpu)
 		break;
 
 	/*
-	 * ‚»‚Ì‘¼
+	 * ï¿½ï¿½ï¿½Ì‘ï¿½
 	 */
 	case 0b0100:	//BN
 		if ((flg_s) == TRUE) {
@@ -162,7 +162,13 @@ int op_exec_jr(CpuManagerType *cpu)
 	}
 	disp = op_sign_extend(21, cpu->decoded_code.type5.disp);
 	pc += disp;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JR disp22(%d):0x%x\n", cpu->cpu.pc, disp, pc));
+
+	if (reg2 == 0) {
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JR disp22(%d):0x%x\n", cpu->cpu.pc, disp, pc));
+	}
+	else {
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JARL disp22(%d):0x%x r%u(0x%x)\n", cpu->cpu.pc, disp, pc, reg2, cpu->cpu.r[reg2]));
+	}
 
 	cpu->cpu.pc = pc;
 	return 0;

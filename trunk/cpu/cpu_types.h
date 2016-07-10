@@ -1,4 +1,4 @@
-#ifndef _CPU_TYPES_H_
+ï»¿#ifndef _CPU_TYPES_H_
 #define _CPU_TYPES_H_
 
 #include "std_types.h"
@@ -84,9 +84,9 @@ typedef struct {
 	uint16 				current_code[OP_DECODE_MAX];
 	OpDecodedCodeType	decoded_code;
 	TargetRamType		ram;
-	TargetRamType		io_mem1; /* “à‘ ü•ÓI/O */
-	TargetRamType		io_mem2; /* ƒvƒƒOƒ‰ƒ}ƒuƒ‹I/O */
-	TargetRamType		io_mem2r; /* CAN§ŒäƒŒƒWƒXƒ^—p */
+	TargetRamType		io_mem1; /* å†…è”µå‘¨è¾ºI/O */
+	TargetRamType		io_mem2; /* ãƒ—ãƒ­ã‚°ãƒ©ãƒãƒ–ãƒ«I/O */
+	TargetRamType		io_mem2r; /* CANåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ç”¨ */
 } CpuManagerType;
 
 static inline sint32 op_addi(
@@ -239,14 +239,14 @@ static inline sint32 op_xori(
 }
 
 /*
- * w’è‚³‚ê‚½bit‚É•„†ƒrƒbƒg‚ª‚ ‚éê‡‚Í31bit‚Ü‚Å1–„‚ß‚·‚é(•„†Šg’£)
+ * æŒ‡å®šã•ã‚ŒãŸbitã«ç¬¦å·ãƒ“ãƒƒãƒˆãŒã‚ã‚‹å ´åˆã¯31bitã¾ã§1åŸ‹ã‚ã™ã‚‹(ç¬¦å·æ‹¡å¼µ)
  */
 static inline sint32 op_sign_extend(uint32 bit, uint32 data)
 {
 	int i;
 	if (data & (1 << bit)) {
 		for (i = bit; i < 32; i++) {
-			data = ( data | (1 << i) );//•„†Šg’£‚·‚é
+			data = ( data | (1 << i) );//ç¬¦å·æ‹¡å¼µã™ã‚‹
 		}
 	}
 	return data;
@@ -254,7 +254,7 @@ static inline sint32 op_sign_extend(uint32 bit, uint32 data)
 #define OP_FORMAT2_IMM_SIGN_EXTEND(data)	op_sign_extend(4, (data))
 
 /*
- * w’è‚³‚ê‚½bit‚©‚ç31bit‚Ü‚Å‚O–„‚ß‚·‚é
+ * æŒ‡å®šã•ã‚ŒãŸbitã‹ã‚‰31bitã¾ã§ï¼åŸ‹ã‚ã™ã‚‹
  */
 static inline uint32 op_zero_extend(uint32 bit, uint32 data)
 {
@@ -266,5 +266,61 @@ static inline uint32 op_zero_extend(uint32 bit, uint32 data)
 }
 #define OP_FORMAT2_IMM_ZERO_EXTEND(data)	op_zero_extend(5, (data))
 
+static inline char *addr2devregname(uint32 addr)
+{
+	switch (addr) {
+	case 0xFFFFF1FE:
+		return "PSC";
+	case 0xFFFFF308:
+		return "SELCNT0";
+	case 0xFFFFF30A:
+		return "SELCNT1";
+	case 0xFFFFF30C:
+		return "SELCNT2";
+	case 0xFFFFF30E:
+		return "SELCNT3";
+	case 0xFFFFF3F8:
+		return "SELCNT4";
+	case 0xFFFFF3FA:
+		return "SELCNT5";
+	case 0xFFFFF3F0:
+		return "SSCGCTL";
+	case 0xFFFFF3F1:
+		return "SFC0";
+	case 0xFFFFF3F2:
+		return "SFC1";
+	case 0xFFFFF6C0:
+		return "OSTS";
+	case 0xFFFFF6C1:
+		return "PLLS";
+	case 0xFFFFF6C2:
+		return "OSTC";
+	case 0xFFFFF80C:
+		return "RCM";
+	case 0xFFFFF820:
+		return "PSMR";
+	case 0xFFFFF824:
+		return "LOCKR";
+	case 0xFFFFF828:
+		return "PCC";
+	case 0xFFFFF82C:
+		return "PLLCTL";
+	case 0xFFFFF82E:
+		return "CCLS";
+	case 0xFFFFF82F:
+		return "PCLM";
+	case 0xFFFFF860:
+		return "MCM";
+	case 0xFFFFF870:
+		return "CLM";
+	case 0xFFFFF8B0:
+		return "PRSM0";
+	case 0xFFFFF8B1:
+		return "PRSCM0";
+	default:
+		break;
+	}
+	return "NULL";
+}
 
 #endif /* _CPU_TYPES_H_ */

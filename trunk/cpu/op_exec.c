@@ -173,7 +173,12 @@ static int OpExec2(CpuManagerType *cpu)
 		ret = op_exec_cmp_2(cpu);
 		break;
 	case OP_CODE_MOV_2:
-		ret = op_exec_mov_2(cpu);
+		if (cpu->decoded_code.type2.reg2 != 0) {
+			ret = op_exec_mov_2(cpu);
+		}
+		else {
+			//TODO CALLT
+		}
 		break;
 	case OP_CODE_MULH_2:
 		ret = op_exec_mulh_2(cpu);
@@ -338,16 +343,27 @@ static int OpExec7(CpuManagerType *cpu)
 static int OpExec8(CpuManagerType *cpu)
 {
 	int ret = -1;
-#if 1
-	//TODO
-	ret = op_exec_tst1_8(cpu);
-#endif
+
+	switch (cpu->decoded_code.type8.sub) {
+	case 0b11:
+		ret = op_exec_tst1_8(cpu);
+		break;
+	case 0b00:
+		ret = op_exec_set1_8(cpu);
+		break;
+	case 0b01:
+	case 0b10:
+	default:
+		printf("OpExec8 Error:Unknown OP:0x%x sub=0x%x\n", cpu->decoded_code.type8.opcode, cpu->decoded_code.type8.sub);
+		break;
+	}
 	return ret;
 }
 
 static int OpExec9(CpuManagerType *cpu)
 {
 	int ret = -1;
+	uint16 subopbits = (cpu->decoded_code.type9.rfu1 & 0x0003);
 
 	switch (cpu->decoded_code.type9.sub) {
 	case SOP_CODE_LDSR:
@@ -368,6 +384,19 @@ static int OpExec9(CpuManagerType *cpu)
 	case SOP_CODE_STSR:
 		ret = op_exec_stsr(cpu);
 		break;
+	case SOP_CODE_BITOPS:
+		switch (subopbits) {
+		case 0b00:
+			//TODO
+		case 0b01:
+			//TODO
+		case 0b10:
+			//TODO
+		case 0b11:
+			//TODO
+		default:
+			break;
+		}
 	default:
 		printf("OpExec9 Error:Unknown OP:0x%x\n", cpu->decoded_code.type9.opcode);
 		break;
@@ -378,6 +407,7 @@ static int OpExec9(CpuManagerType *cpu)
 static int OpExec10(CpuManagerType *cpu)
 {
 	int ret = -1;
+	uint16 retibits = (cpu->decoded_code.type10.rfu2 & 0x0003);
 
 	switch (cpu->decoded_code.type10.sub) {
 	case SOP_CODE_DI:
@@ -388,7 +418,19 @@ static int OpExec10(CpuManagerType *cpu)
 		ret = op_exec_halt(cpu);
 		break;
 	case SOP_CODE_RETI:
-		ret = op_exec_reti(cpu);
+		switch (retibits) {
+		case 0b00:
+			ret = op_exec_reti(cpu);
+			break;
+		case 0b01:
+		case 0b10:
+			//TODO CTRET
+			printf("OpExec10 Error:Unknown(CTRET) OP:0x%x\n", cpu->decoded_code.type10.opcode);
+			break;
+		case 0b11:
+		default:
+			break;
+		}
 		break;
 	case SOP_CODE_TRAP:
 		ret = op_exec_trap(cpu);
@@ -435,8 +477,19 @@ static int OpExec12(CpuManagerType *cpu)
 
 static int OpExec13(CpuManagerType *cpu)
 {
-	printf("OpExec13 Error:Unknown OP\n");
-	return -1;
+	int ret = -1;
+	switch (cpu->decoded_code.type13.opcode) {
+	case OP_CODE_DISPOSE:
+		ret = op_exec_dispose(cpu);
+		break;
+	case OP_CODE_PREPARE:
+		ret = op_exec_prepare(cpu);
+		break;
+	default:
+		printf("OpExec13 Error:Unknown OP\n");
+		break;
+	}
+	return ret;
 }
 
 

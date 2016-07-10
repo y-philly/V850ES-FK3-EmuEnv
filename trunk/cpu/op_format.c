@@ -26,7 +26,7 @@ static OpCodeFormatId op_code2format_lv2[FORMALT_LV_NUM] = {
 		OP_CODE_FORMAT_UNKNOWN, /* 3 */
 		OP_CODE_FORMAT_11, 		/* 4 */
 		OP_CODE_FORMAT_12, 		/* 5 */
-		OP_CODE_FORMAT_UNKNOWN, /* 6 */
+		OP_CODE_FORMAT_11, 		/* 6 */
 		OP_CODE_FORMAT_UNKNOWN, /* 7 */
 		OP_CODE_FORMAT_UNKNOWN, /* 8 */
 		OP_CODE_FORMAT_UNKNOWN, /* 9 */

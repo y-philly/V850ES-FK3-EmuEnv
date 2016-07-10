@@ -241,3 +241,118 @@ int op_exec_switch(CpuManagerType *cpu)
 	return 0;
 }
 
+/*
+ * Format13
+ */
+int op_exec_prepare(CpuManagerType *cpu)
+{
+	uint16 subop = cpu->decoded_code.type13.gen & 0x0007;
+	uint16 ff = cpu->decoded_code.type13.gen >> 3U;
+	uint16 start_reg = 20U;
+	uint16 i;
+	uint32 addr;
+	uint32 *addrp;
+	uint32 *sp = (uint32*)&(cpu->cpu.r[3]);	//sp:r3
+	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: PREPARE sp=0x%x ", cpu->cpu.pc, *sp));
+	for (i = start_reg; i < 32; i++) {
+		if (cpu->decoded_code.type13.list[i] == 0) {
+			continue;
+		}
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->cpu.r[i]));
+
+		addr = (*sp) - 4U;
+		cpu_memget_addrp(cpu, addr, &addrp);
+		if (addrp == NULL) {
+			printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+			return -1;
+		}
+		*addrp = cpu->cpu.r[i];
+		*sp = addr;
+	}
+	*sp = (*sp) - imm;
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "imm5(%u) ", imm));
+
+	if (subop == 1U) {
+		cpu->cpu.pc += 4;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":sp=0x%x\n", *sp));
+		return 0;
+	}
+
+	addr = cpu->cpu.pc + 4U;
+	cpu_memget_addrp(cpu, addr, &addrp);
+	if (addrp == NULL) {
+		printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+		return -1;
+	}
+
+	switch (ff) {
+	case 0b00:
+		cpu->cpu.r[30] = *sp;
+		cpu->cpu.pc += 4;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		break;
+	case 0b01:
+		cpu->cpu.r[30] = (sint32)(*((sint16*)addrp));
+		cpu->cpu.pc += 6;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		break;
+	case 0b10:
+		cpu->cpu.r[30] = ((uint32)(*((uint16*)addrp))) << 16U;
+		cpu->cpu.pc += 6;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		break;
+	case 0b11:
+		cpu->cpu.r[30] = (*((uint32*)addrp));
+		cpu->cpu.pc += 8;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		break;
+	default:
+		printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+		return -1;
+	}
+	return 0;
+}
+
+int op_exec_dispose(CpuManagerType *cpu)
+{
+	uint16 reg1 = cpu->decoded_code.type13.gen;
+	uint16 start_reg = 20U;
+	uint16 i;
+	uint32 addr;
+	uint32 *addrp;
+	uint32 *sp = (uint32*)&(cpu->cpu.r[3]);	//sp:r3
+	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DISPOSE imm=0x%x sp=0x%x ", cpu->cpu.pc, imm, *sp));
+
+	*sp = (*sp) + imm;
+	for (i = 31; i >= start_reg; i--) {
+		if (cpu->decoded_code.type13.list[i] == 0) {
+			continue;
+		}
+
+		addr = (*sp);
+		cpu_memget_addrp(cpu, addr, &addrp);
+		if (addrp == NULL) {
+			printf("ERROR:DISPOSE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+			return -1;
+		}
+		cpu->cpu.r[i] = *addrp;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->cpu.r[i]));
+		*sp = addr + 4;
+	}
+
+	if (reg1 != 0U) {
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->cpu.r[reg1], cpu->cpu.r[3]));
+		cpu->cpu.pc = cpu->cpu.r[reg1];
+	}
+	else {
+		cpu->cpu.pc += 4;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->cpu.pc, cpu->cpu.r[3]));
+	}
+
+	return 0;
+}

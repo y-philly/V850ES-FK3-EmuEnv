@@ -108,7 +108,7 @@ typedef struct {
 	uint16 sub;		/* 15-14 */
 	uint16 bit;		/* 13-11 */
 	uint16 reg1;	/* 4-0 */
-	uint32 disp;	/* 31-16 */
+	sint16 disp;	/* 31-16 */
 } OpCodeFormatType8;
 /*
  * 拡張命令形式1
@@ -163,7 +163,7 @@ typedef struct {
 typedef struct {
 	uint16 opcode;	/* 10-6 */
 	uint32 imm;		/* 5-1 */
-	uint16 list;	/* 0, 31-21 */
+	uint8 list[32U];	/* 0, 31-21 */
 	uint16 gen;		/* 20-16 */
 	uint16 rfu;		/* 15-11 */
 } OpCodeFormatType13;

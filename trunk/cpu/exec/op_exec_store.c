@@ -53,7 +53,7 @@ int op_exec_ssth(CpuManagerType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	//TODO ƒ~ƒXƒAƒ‰ƒCƒƒ“ƒg
+	//TODO ï¿½~ï¿½Xï¿½Aï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½g
 
 	disp = cpu->decoded_code.type4_1.disp;
 	disp = (disp << 1) | cpu->decoded_code.type4_1.gen;
@@ -177,7 +177,7 @@ int op_exec_stb(CpuManagerType *cpu)
 	if (addrp == NULL) {
 		return -1;
 	}
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ST.B r%d(0x%x), disp16(%d) r%d(0x%x):0x%x\n", cpu->cpu.pc, reg2, cpu->cpu.r[reg2], disp, reg1, cpu->cpu.r[reg1], (sint8)cpu->cpu.r[reg2]));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ST.B r%d(0x%x), disp16(%d) r%d(0x%x):0x%x\n", cpu->cpu.pc, reg2, cpu->cpu.r[reg2], disp, reg1, cpu->cpu.r[reg1], (uint8)cpu->cpu.r[reg2]));
 	//ST.B
 	*((sint8*)addrp) = (sint8)cpu->cpu.r[reg2];
 	intc_hook_update_reg8(cpu, addr, *((sint8*)addrp));

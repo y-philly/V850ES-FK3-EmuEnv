@@ -1,11 +1,10 @@
 #
-# TOPPERS/SSP Kernel
-#     Toyohashi Open Platform for Embedded Real-Time Systems/
-#     Advanced Standard Profile Kernel
+#  TOPPERS/SSP Kernel
+#      Toyohashi Open Platform for Embedded Real-Time Systems/
+#      Just Standard Profile Kernel
 #
-#  Copyright (C) 2000-2002 by Embedded and Real-Time Systems Laboratory
+#  Copyright (C) 2000,2001 by Embedded and Real-Time Systems Laboratory
 #                              Toyohashi Univ. of Technology, JAPAN
-#
 #  Copyright (C) 2005 by Freelines CO.,Ltd
 #
 #  Copyright (C) 2010 by Meika Sugimoto
@@ -42,50 +41,65 @@
 #
 
 #
-#	Makefile のターゲットシステム依存部（V850ESエミュレータ用）
+#  Makefile のプロセッサ依存 (V850ES用)
 #
 
 #
-#  ボード名，プロセッサ名，開発環境名の定義
+#  GNU開発環境のターゲットアーキテクチャの定義
 #
-BOARD = v850es_fk3_emu_env
-PRC = v850
-TOOL = gcc
+GCC_TARGET = v850-elf
 
 #
 #  コンパイルフラグ
 #
-COPTS := $(COPTS) -Werror
-LDFLAGS := $(LDFLAGS) -msoft-float
-INCLUDES := $(INCLUDES) -I$(SRCDIR)/target/v850es_fk3_emu_env_gcc
-
+INCLUDES := $(INCLUDES) -I$(SRCDIR)/arch/$(PRC)_$(TOOL)
+COPTS := $(COPTS) -mv850e -mdisable-callt
+CDEFS := $(CDEFS) -DLABEL_ASM
 
 #
 #  カーネルに関する定義
 #
-KERNEL_DIR	:= $(KERNEL_DIR):$(SRCDIR)/target/v850es_fk3_emu_env_gcc
-KERNEL_ASMOBJS	:= $(KERNEL_ASMOBJS) target_support.o v850jg2.o
-KERNEL_COBJS	:= $(KERNEL_COBJS) target_config.o target_timer.o
+KERNEL_DIR		:= $(KERNEL_DIR) $(SRCDIR)/arch/$(PRC)_$(TOOL)
+KERNEL_ASMOBJS	:= $(KERNEL_ASMOBJS) prc_support.o prc_sil.o
+KERNEL_COBJS	:= $(KERNEL_COBJS) prc_config.o
 
 #
-#  リンクオプション
+#  コンフィギュレータ関連の設定
 #
-
-#  リンカスクリプトの定義
-LDSCRIPT = $(SRCDIR)/arch/v850_gcc/v850jg2.ld
-
-#
-#  プロセッサ依存部のインクルード
-#
-include $(SRCDIR)/arch/v850_gcc/Makefile.prc
-
+CFG2_OUT := kernel_cfg_asm.S $(CFG2_OUT)
+CFG_ASMOBJS := kernel_cfg_asm.o $(CFG_ASMOBJS)
+CFG_TABS := --cfg1-def-table $(SRCDIR)/arch/v850_gcc/prc_def.csv $(CFG_TABS)
 
 #
-#  ログトレース用の定義
+#  リンクに関する設定
 #
 
-ifeq ($(ENABLE_TRACE),true)
-	COPTS := $(COPTS) -DTOPPERS_ENABLE_TRACE
-	KERNEL_DIR := $(KERNEL_DIR) $(SRCDIR)/arch/logtrace
-	KERNEL_COBJS := $(KERNEL_COBJS) trace_config.o trace_dump.o
-endif
+LDFLAGS := -nostartfiles -lgcc -lc $(LDFLAGS)
+CFG1_OUT_LDFLAGS := -nostdlib
+
+#
+#  スタートアップモジュールに関する定義
+#
+START_OBJS = start.o
+
+$(START_OBJS): %.o: %.S
+	$(CC) -c $(CFLAGS) $(KERNEL_CFLAGS) $<
+
+$(START_OBJS:.o=.d): %.d: %.S
+	@$(PERL) $(SRCDIR)/utils/makedep -C $(CC) \
+		-O "$(CFLAGS) $(KERNEL_CFLAGS)" $< >> Makefile.depend
+
+#
+#  kernel_cfg_asm.Sののコンパイルルールと依存関係作成ルールの定義
+#
+#  kernel_cfg_asm.Sは，アプリケーションプログラム用，システムサー
+#  ビス用，カーネル用のすべてのオプションを付けてコンパイルする．
+#
+
+CFG2_OUT_SRCS := kernel_cfg_asm.S $(CFG2_OUT_SRCS)
+
+#
+#  コンフィギュレータ用の依存関係の定義
+#
+
+cfg1_out.c: $(SRCDIR)/arch/v850_gcc/prc_def.csv

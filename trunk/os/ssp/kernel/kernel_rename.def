@@ -1,0 +1,130 @@
+# startup.c
+kerflg
+exit_kernel
+
+# task.c
+runtsk_curpri
+runtsk_ipri
+ready_primap
+actque_bitmap
+reqflg
+disdsp
+get_ipri_self
+get_ipri
+bitmap_search_table
+bitmap_search
+primap_empty
+primap_test
+primap_search
+primap_set
+primap_clear
+search_schedtsk
+test_dormant
+initialize_task
+make_active
+run_task
+dispatcher
+
+# interrupt.c
+initialize_interrupt
+
+# exception.c
+initialize_exception
+
+
+# alarm.c
+initialize_alarm
+call_almhdr
+
+# cyclic.c
+initialize_cyclic
+call_cychdr
+
+# dataqueue.c
+initialize_dataqueue
+send_data
+receive_data
+
+# eventflag.c
+initialize_eventflag
+
+# time_event.c
+current_time
+min_time
+initialize_time_event
+time_event_enqueue
+time_event_dequeue
+signal_time
+
+
+# kernel_cfg.c
+tmax_tskid
+tinib_tskatr
+init_rdypmap
+tinib_exinf
+tinib_task
+tinib_epriority
+
+tmax_flgid
+flginib_atr
+flginib_iflgptn
+flgcb_flgptn
+
+tmax_dtqid
+dtqinib_atr
+dtqinib_size
+dtqinib_data
+dtqcb_count
+dtqcb_head
+dtqcb_tail
+
+tnum_inhno
+inhinib_inhno
+inhinib_inhatr
+inhinib_entry
+
+tnum_intno
+intinib_intno
+intinib_intatr
+intinib_intpri
+
+tnum_excno
+excinib_excno
+excinib_excatr
+excinib_entry
+
+tmax_cycid
+cycevtid_offset
+cycinib_cycact
+cycinib_exinf
+cycinib_cychdr
+cycinib_cyctim
+cycinib_cycphs
+cyccb_evttim
+cyccb_cycact
+
+tmax_almid
+almevtid_offset
+alminib_almhdr
+alminib_exinf
+almcb_almact
+
+tnum_tmevt_queue
+tmevt_queue
+tmevt_time
+tmevt_callback
+tmevt_arg
+
+stksz
+stk
+istkpt
+
+initialize_object
+call_inirtn
+call_terrtn
+
+# target_config.c
+target_initialize
+target_exit
+
+INCLUDE "target"

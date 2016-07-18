@@ -1,0 +1,27 @@
+# prc_config.c
+lock_flag
+saved_iipm
+intnest
+
+set_exc_int_priority
+enable_exc
+disable_exc
+prc_initialize
+prc_terminate
+x_config_int
+default_exc_handler
+default_int_handler
+
+# prc_support.S
+exc_entry
+int_entry
+ret_exc
+ret_int
+svc_handler
+start_dispatch
+call_exit_kernel
+
+# kernel_cfg.c
+exc_tbl
+bitpat_cfgint
+vector_table

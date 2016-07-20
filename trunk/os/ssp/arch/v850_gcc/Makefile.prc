@@ -53,7 +53,7 @@ GCC_TARGET = v850-elf
 #  コンパイルフラグ
 #
 INCLUDES := $(INCLUDES) -I$(SRCDIR)/arch/$(PRC)_$(TOOL)
-COPTS := $(COPTS) -mv850es -mdisable-callt
+COPTS := $(COPTS) -mv850es -mrh850-abi
 CDEFS := $(CDEFS) -DLABEL_ASM
 
 #

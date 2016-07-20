@@ -2,10 +2,12 @@
  *  TOPPERS/JSP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
  *      Just Standard Profile Kernel
- * 
+ *
  *  Copyright (C) 2010,2013 by Meika Sugimoto
  *
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *  Copyright (C) 2016 by Eiwa System Management, Inc.
+ *
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -26,21 +28,21 @@
  *        報告すること．
  *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
  *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，その適用可能性も
  *  含めて，いかなる保証も行わない．また，本ソフトウェアの利用により直
  *  接的または間接的に生じたいかなる損害に関しても，その責任を負わない．
- * 
+ *
  */
 
 /*
- *  ターゲット依存モジュール（CQ_V850用）
+ *  ターゲット依存モジュール（V850エミュレータ用）
  */
 
 #include "kernel_impl.h"
 #include <sil.h>
-#include "cq_v850.h"
+#include "v850es_fk3_emu_env.h"
 
 /* バナー出力用のシリアルポート初期化 */
 static void target_fput_initialize(void);
@@ -53,7 +55,7 @@ target_initialize(void)
 {
 	uint16_t wr_mem_h;
 	uint32_t wr_mem_w;
-	
+
 	/*
 	 *	プロセッサ依存の初期化
 	 */
@@ -63,13 +65,13 @@ target_initialize(void)
 	 * バナー出力用のシリアルコントローラの初期化
 	 */
 	target_fput_initialize();
-	
+
 	/*
 	 *	LED接続ポートを点灯
 	 */
 	clr_bit(LED1_BITPOS , LED1_ADDRESS);
 	clr_bit(LED1_BITPOS , PCMT);
-	
+
 	/*
 	 * UART0のI/Oポートの設定
 	 *
@@ -88,7 +90,7 @@ void
 target_exit(void)
 {
 	volatile uint_t i = 1;
-	
+
 	/*
 	 *	プロセッサ依存の終了処理
 	 */
@@ -96,7 +98,7 @@ target_exit(void)
 
 	/*
 	 *	ここには来ない
-	 *	
+	 *
 	 *	変数iにvolatile修飾するのは、最適化により
 	 *	ループが削除されるのを防ぐため。
 	 */
@@ -108,11 +110,11 @@ static void target_fput_initialize(void)
 {
 	/* 動作禁止 */
 	clr_bit(7 , UA0CTL0);
-	
+
 	/* モード，ボーレート設定 */
 	sil_wrb_mem((void *)UA0CTL1 , TARGET_FPUTC_UAnCTL1_SETTING);
 	sil_wrb_mem((void *)UA0CTL2 , TARGET_FPUTC_UAnCTL2_SETTING);
-	
+
 	/* 送信のみ許可，LSBファースト，ストップビット1bit，8bit長，パリティなし */
 	sil_wrb_mem((void *)UA0CTL0 , 0xD2);
 }

@@ -1,16 +1,16 @@
 /*
  *  TOPPERS/ASP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
- *      Advanced Standard Profile Kernel  
- * 
+ *      Advanced Standard Profile Kernel
+ *
  *  Copyright (C) 2000-2002 by Embedded and Real-Time Systems Laboratory
  *                              Toyohashi Univ. of Technology, JAPAN
- * 
+ *
  *  Copyright (C) 2005 by Freelines CO.,Ltd
  *
  *  Copyright (C) 2010-2011,2013 by Meika Sugimoto
- * 
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -31,12 +31,12 @@
  *        報告すること．
  *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
  *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，その適用可能性も
  *  含めて，いかなる保証も行わない．また，本ソフトウェアの利用により直
  *  接的または間接的に生じたいかなる損害に関しても，その責任を負わない．
- * 
+ *
  */
 
 /*
@@ -51,20 +51,20 @@
 #define CAST(type, val)		(val)		/* 型キャストを行うマクロ */
 #define TOPPERS_LABEL_ASM
 #include "kernel_impl.h"
-#include "offset.h"
+/* #include "offset.h" */
 
 /* 外部参照宣言 */
 	.globl	_set_intpri
 	.globl	_call_texrtn
 	.globl	_ipmflg
-	
+
 /*
  *	ディスパッチの開始
  *
  *	割込み禁止状態，lock_flag = trueでここへはやってくるが，
  *	割込みマスクレベルは0であるため，ここでCPUロック状態に
  *	設定して最初のディスパッチに移る．
- *	
+ *
  */
 	.globl	_start_dispatch
 _start_dispatch:
@@ -83,7 +83,7 @@ _start_dispatch:
  	.globl	_exit_and_dispatch
 _dispatch:
 	/*
-	 * コンテキストの退避 
+	 * コンテキストの退避
 	 */
 	addi	-60, sp, sp
 	st.w	ep , 0[sp]
@@ -102,17 +102,17 @@ _dispatch:
 	sst.w	r28, 12[ep]
 	sst.w	r29,  8[ep]
 	sst.w	r31,  4[ep]
-	
+
 	/* スタックと次の起動番地を保存 */
 	Lea		_p_runtsk, ep
 	sld.w	0[ep], ep
 	sst.w	sp, TCB_sp[ep]
 	Lea		dispatch_r, r10
 	sst.w	r10, TCB_pc[ep]
-	
+
 	/*
 	 *  タスクディスパッチャ
-	 *  
+	 *
 	 *  ここはCPUロック状態，ディスパッチ前の処理単位が
 	 *  コンテキスト退避済みある状態で来る必要がある.
 	 */
@@ -156,20 +156,20 @@ pre_idle:
 	st.b	r10, 0[r11]
 	/* reqflgのアドレスをロード */
 	Lea		_reqflg , r20
-idle_loop:	
+idle_loop:
 	/* 割り込み待ち */
 	ei
 	nop
 	di
-	
+
 	/* reqflgのチェック */
 	ld.w	0[r20], r10
 	cmp		r10 , r0
 	be		idle_loop
-	
+
 	/* reqflgのクリア */
 	st.w	r0 , 0[r20]
-	
+
 	/* intnestをクリアする */
 	Lea		_intnest, r10
 	st.b	r0, 0[r10]
@@ -180,7 +180,7 @@ idle_loop:
 	ei
 	/* ディスパッチャへ */
 	br	dispatcher
-	
+
 	/* ディスパッチャの復帰ルーチン */
 dispatch_r:
 	Lea		_p_runtsk, r10
@@ -230,14 +230,14 @@ _start_r:
 	jarl	_set_intpri , lp
 	Lea		_lock_flag , r6
 	st.w	r0 , 0[r6]
-	
+
 	Lea		_p_runtsk, ep
 	ld.w	0[ep], ep
 	ld.w	TCB_p_tinib[ep], ep
 	ld.w	TINIB_exinf[ep], r6
 	ld.w	TINIB_task[ep], r10
 	Lea		_ext_tsk, lp
-	
+
 	/* タスク本体へ */
 	ei		/* 割込み禁止状態を解除 */
 	jmp		r10
@@ -303,7 +303,7 @@ interrupt:
 	 *  (r10-r12は退避済み)
 	 */
 	st.w	ep,   12[sp]
-	mov		sp ,  ep 
+	mov		sp ,  ep
 	sst.w	r1 ,  72[ep]
 	sst.w	r6 ,  68[ep]
 	sst.w	r7 ,  64[ep]
@@ -322,16 +322,16 @@ interrupt:
 	sst.w	r6 ,   4[ep]
 	stsr	eipsw,  r6
 	sst.w	r6 ,   0[ep]
-	
+
 	Lea		_lock_flag , r7
 	ld.w	0[r7] , r7
-	
+
 	/* 割込み発生前の割込みレベルを保存，発生中の割込みレベル(r11)に書き換え */
 	Lea		_current_intpri , r13
 	ld.bu	0[r13] , r14
 	sst.w	r14 , 76[ep]
 	st.b	r11 , 0[r13]
-	
+
 	/* 多重割り込みチェックとネストカウンタをインクリメント */
 	Lea		_intnest, r13
 	ld.bu	0[r13], r6
@@ -386,7 +386,7 @@ end_int_handler:
 	be		return_to_task
 return_from_int:
 	/*
-	 * レジスタ復帰 
+	 * レジスタ復帰
 	 */
 	mov		sp , ep	/* EPへ切り替え */
 	Lea		_current_intpri , r10
@@ -419,33 +419,33 @@ return_from_int:
 	sld.w	 8[ep] , r31
 	addi	80 , ep, sp
 	sld.w	12[ep] , r30
-	
+
 	ei
 	reti	/* 割込み元へ */
 
 return_to_task:
 	/* スタックの復帰 */
 	ld.w	0[sp], sp
-	
+
 	/* 遅延ディスパッチ及びタスク例外処理の処理要求があるかチェック */
 	Lea		_reqflg, r10
 	ld.w	0[r10], r11
 	cmp		r0, r11
 	be		return_from_int
 	st.w	r0, 0[r10]			/* reqflgのクリア */
-	
+
 	/* ディスパッチ可能状態かチェック */
 	Lea		_dspflg , r10
 	ld.w	0[r10], r10
 	cmp		r0, r10
 	bz		check_texrtn_cond
-	
+
 	/* 割込み全解除状態フラグのチェック */
 	Lea		_ipmflg , r10
 	ld.w	0[r10], r10
 	cmp		r0, r10
 	bz		check_texrtn_cond
-	
+
 	/* タスク切り替えの必要があるかチェック */
 	Lea		_p_schedtsk, r10
 	ld.w	0[r10], r10
@@ -454,7 +454,7 @@ return_to_task:
 	cmp		r10,r11
 	bne		ret_int
 	br		check_texrtn_cond_1
-	
+
 check_texrtn_cond:
 	/* 実行中タスクをロード */
 	Lea		_p_runtsk, r11
@@ -498,7 +498,7 @@ check_texrtn_cond_1:
  *    |------------------|
  *  0 |       r29        |
  *    |------------------|<- 割込み発生時のSP - 80 - 44
- */      
+ */
 	.globl	ret_int
 ret_int:
 	addi	-44, sp, sp
@@ -514,14 +514,14 @@ ret_int:
 	sst.w	r27 ,  8[ep]
 	sst.w	r28 ,  4[ep]
 	sst.w	r29 , 0[ep]
-	
+
 	/* TCBに復帰先の情報を設定 */
 	Lea		_p_runtsk, r10
 	ld.w	0[r10], r10
 	st.w	sp , TCB_sp[r10]
 	Lea		ret_int_r, r11
 	st.w	r11 , TCB_pc[r10]
-	
+
 	/* CPUロック状態に設定 */
 	mov		INTPRI_LOCK , r6
 	jarl	_set_intpri , lp
@@ -530,7 +530,7 @@ ret_int:
 	mov		1 , r7
 	Lea		_lock_flag , r6			/* ロックフラグをtrueに */
 	st.w	r7 , 0[r6]
-	
+
 	/* ディスパッチャへ */
 	ldsr	r0, eipsw	/* 割込みは許可状態でよい */
 	Lea		dispatcher, r10
@@ -553,7 +553,7 @@ ret_int_r:
 	sld.w	 4[ep], r28
 	sld.w	 0[ep], r29
 	addi	44 , ep, sp
-	
+
 	/* おおもとの復帰処理へ飛ばす */
 	br		check_texrtn_cond
 
@@ -574,7 +574,7 @@ exception:
 	 *  (r10-r12は退避済み)
 	 */
 	st.w	ep,   16[sp]
-	mov		sp ,  ep 
+	mov		sp ,  ep
 	sst.w	r1 ,  72[ep]
 	sst.w	r6 ,  68[ep]
 	sst.w	r7 ,  64[ep]
@@ -597,7 +597,7 @@ exception:
 	Lea		_current_intpri , r13
 	ld.bu	0[r13] , r14
 	sst.w	r14 , 76[ep]
-	
+
 	/* 多重割込み/例外チェックとネストカウンタをインクリメント */
 	Lea		_intnest, r13
 	ld.bu	0[r13], r6
@@ -605,14 +605,14 @@ exception:
 	st.b	r6, 0[r13]
 	cmp		1 , r6
 	bne		set_excinf
-	
+
 exc_save_tsksp:
 	/* 初回割込みであればスタックをカーネルスタックへ切り替え */
 	mov		sp , r13
 	mov		STACKTOP , sp
 	add		-4 , sp
 	st.w	r13 , 0[sp]
-	
+
 set_excinf:
 	/* CPU例外情報をスタックに格納 */
 	addi	-20 , sp , sp
@@ -629,7 +629,7 @@ set_excinf:
 	Lea		_lock_flag , r14
 	ld.w	0[r14] , r13
 	st.w	r13 , 16[r6]		/* CPU例外発生時のロックフラグ */
-	
+
 	/* CPU例外発生時にCPUロック状態ならアンロックする */
 	cmp 	r0 , r13
 	be		call_exc_handler
@@ -676,7 +676,7 @@ end_exc_handler:
 	add		4 , sp
 	jarl	_log_exc_leave , lp
 #endif	/* LOG_EXC_LEAVE */
-	
+
 	/*
 	 *  CPUロック状態をCPU例外発生前の状態に戻す
 	 */
@@ -687,7 +687,7 @@ end_exc_handler:
 	bz		end_exc_handler_1
 	mov		INTPRI_LOCK , r6
 	jarl	_set_intpri , lp
-	
+
 end_exc_handler_1:
 	/* CPU例外発生時の状態を格納した領域を破棄 */
 	addi	20 , sp , sp
@@ -696,7 +696,7 @@ end_exc_handler_1:
 	ld.bu	0[r11], r10
 	add		-1 , r10
 	st.b	r10, 0[r11]
-	cmp		r0 , r10	
+	cmp		r0 , r10
 	/* 以降は共通処理 */
 	be		return_to_task
 	br		return_from_int

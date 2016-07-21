@@ -259,6 +259,7 @@ static uint32 get_canid(uint32 channel, uint32 msg_id)
 	 */
 	canid = ((*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x1FFC) >> 2U;
 
+	//printf("get_canid=0x%x\n", canid);
 	return canid;
 }
 
@@ -530,13 +531,14 @@ static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_can
 			candidate_msgid[candidate_num] = msg_id;
 			candidate_num++;
 		}
-		if (CAN_MSGBUF_CAN_OVER_WRITE(data8)) {
+		else if (CAN_MSGBUF_CAN_OVER_WRITE(data8)) {
 			//printf("msg_id=%u data8=0x%x\n", msg_id, data8);
 			candidate_msgid[candidate_num] = msg_id;
 			candidate_num++;
 		}
 	}
 
+	//printf("canid=0x%x candidate_num=%u\n", canid, candidate_num);
 	if (candidate_num == 0U) {
 		return FALSE;
 	}
@@ -545,11 +547,15 @@ static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_can
 	 * 最高優先度の受信バッファを探す
 	 */
 	for (candidate_id = 0U; candidate_id < candidate_num; candidate_id++) {
-		if (get_canid(channel, candidate_msgid[candidate_id]) != canid) {
-			continue;
+		if (ex_canid == 0xFFFFFFFF) {
+			if (get_canid(channel, candidate_msgid[candidate_id]) != canid) {
+				continue;
+			}
 		}
-		if (get_ex_canid(channel, candidate_msgid[candidate_id]) != ex_canid) {
-			continue;
+		else {
+			if (get_ex_canid(channel, candidate_msgid[candidate_id]) != ex_canid) {
+				continue;
+			}
 		}
 		*msg_idp = candidate_msgid[candidate_id];
 		return TRUE;
@@ -614,6 +620,7 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 	//受信メッセージバッファ選択
 	has_msgid = get_highest_prio_rcv_msg(channel, canid, ex_canid, dlc, &msg_id);
 	if (has_msgid == FALSE) {
+		//printf("device_supply_clock_can_rcv:has_msgid==FALSE:NOP\n");
 		return;
 	}
 

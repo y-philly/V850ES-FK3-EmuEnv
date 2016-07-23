@@ -1,0 +1,5 @@
+E_PACKAGE ssp_cq_frk_fm3_gcc
+VERSION %date
+
+INCLUDE ../../MANIFEST
+INCLUDE ../../cfg/MANIFEST

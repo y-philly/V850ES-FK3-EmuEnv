@@ -1,6 +1,10 @@
 TARGET	:= cpu_emulator
 ROOTDIR	:= ..
 
+ifdef USE_CANLIB
+KVASERDIR := /c/Program\ Files\ \(x86\)/Kvaser/Canlib
+endif
+
 IFLAGS	:= -I$(ROOTDIR)/main
 IFLAGS	+= -I$(ROOTDIR)/cpu
 IFLAGS	+= -I$(ROOTDIR)/elf_loader
@@ -8,6 +12,7 @@ IFLAGS	+= -I$(ROOTDIR)/cpu/exec
 IFLAGS	+= -I$(ROOTDIR)/debugger/device/can
 IFLAGS	+= -I$(ROOTDIR)/inc
 IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS	+= -I$(KVASERDIR)/INC
 IFLAGS	+= -I$(ROOTDIR)
 
 WFLAGS	:= -g -Wall
@@ -20,7 +25,6 @@ VPATH	+= $(ROOTDIR)/cpu
 VPATH	+= $(ROOTDIR)/cpu/exec
 VPATH	+= $(ROOTDIR)/intc
 VPATH	+= $(ROOTDIR)/debugger
-VPATH	+= $(ROOTDIR)/debugger/device/can/stdio
 VPATH	+= $(ROOTDIR)/device
 VPATH	+= $(ROOTDIR)/device/timer
 VPATH	+= $(ROOTDIR)/device/timer_m
@@ -30,10 +34,22 @@ VPATH	+= $(ROOTDIR)/device/adc
 VPATH	+= $(ROOTDIR)/device/wdg
 VPATH	+= $(ROOTDIR)/lib
 
+ifdef USE_CANLIB
+VPATH	+= $(ROOTDIR)/debugger/device/can/kvaser
+else
+VPATH	+= $(ROOTDIR)/debugger/device/can/stdio
+endif
+
 CFLAGS	:= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
 
-LFLAGS	:= -lpthread
+LFLAGS	:= -mwindows -Wl,--allow-multiple-definition 
+LFLAGS	+= -Wl,--enable-stdcall-fixup 
+
+LIBS	:= -lpthread
+ifdef USE_CANLIB
+LIBS	+= $(KVASERDIR)/Bin/canlib32.dll
+endif
 
 OBJS	:= main.o
 OBJS	+= cpu.o
@@ -65,13 +81,14 @@ OBJS	+= symbol.o
 OBJS	+= symbol_ops.o
 OBJS	+= hash.o
 
+
 .SUFFIXES:	.c .o
 .SUFFIXES:	.s .o
 
 all:	$(TARGET)
 
 $(TARGET):	$(OBJS)
-	$(GCC) -O3 $(OBJS) -o $(TARGET) $(LFLAGS)
+	$(GCC) -O3 $(LFLAGS) $(OBJS) -o $(TARGET)  $(LIBS)
 
 .c.o:	$<
 	$(GCC) -O3 -c $(CFLAGS) $<

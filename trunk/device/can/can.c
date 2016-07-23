@@ -11,10 +11,10 @@
 /*
  * TODO
  *
- * ‹Ÿ‹‹ƒNƒƒbƒNü”g”‚ğ20MHz‚ÅC512Kbps’ÊM“Å“x‚Æ‚µ‚½ê‡C
- * ‚PƒoƒCƒg‚Ìƒf[ƒ^“]‘—‚É—v‚·‚éƒNƒƒbƒN”‚ğ‹‚ß‚½
+ * ä¾›çµ¦ã‚¯ãƒ­ãƒƒã‚¯å‘¨æ³¢æ•°ã‚’20MHzã§ï¼Œ512Kbpsé€šä¿¡æ¯’åº¦ã¨ã—ãŸå ´åˆï¼Œ
+ * ï¼‘ãƒã‚¤ãƒˆã®ãƒ‡ãƒ¼ã‚¿è»¢é€ã«è¦ã™ã‚‹ã‚¯ãƒ­ãƒƒã‚¯æ•°ã‚’æ±‚ã‚ãŸ
  *
- * ÅI“I‚É‚Íİ’èƒŒƒWƒXƒ^‚Ì’l‚©‚ç“±o‚·‚×‚«
+ * æœ€çµ‚çš„ã«ã¯è¨­å®šãƒ¬ã‚¸ã‚¹ã‚¿ã®å€¤ã‹ã‚‰å°å‡ºã™ã¹ã
  */
 #define CAN_DATA_SEND_CLOCKS_PER_BYTE_512KBPS	(306U)
 
@@ -23,7 +23,7 @@
 #define CAN_DATA_RCV_CLOCKS_INTR				(100U)
 
 /*
- * CANƒ‚ƒWƒ…[ƒ‹Š„‚è‚İ‹–‰ÂƒŒƒWƒXƒ^i CnIEj
+ * CANãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å‰²ã‚Šè¾¼ã¿è¨±å¯ãƒ¬ã‚¸ã‚¹ã‚¿ï¼ˆ CnIEï¼‰
  */
 #define CAN_ADDR_C1IE		0x03FEC656
 
@@ -49,7 +49,7 @@
 #define CAN_WRITE_C1IE_CIE0_CLR		0U
 
 /*
- * CANƒ‚ƒWƒ…[ƒ‹Š„‚è‚İƒXƒe[ƒ^ƒXEƒŒƒWƒXƒ^i CnINTSj
+ * CANãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«å‰²ã‚Šè¾¼ã¿ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ï¼ˆ CnINTSï¼‰
  */
 #define CAN_ADDR_C1INTS		0x03FEC658
 
@@ -68,7 +68,7 @@
 #define CAN_WRITE_C1INTS_CINTS0_CLR	0U
 
 /*
- * CANƒ‚ƒWƒ…[ƒ‹§ŒäƒŒƒWƒXƒ^i CnCTRLj
+ * CANãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ï¼ˆ CnCTRLï¼‰
  */
 #define CAN_ADDR_C1CTRL		0x03FEC650
 
@@ -100,7 +100,7 @@
 #define CAN_WRITE_C1CTRL_OPMODE0_CLR	0U
 
 /*
- * CANƒƒbƒZ[ƒW§ŒäƒŒƒWƒXƒ^‚
+ * CANãƒ¡ãƒƒã‚»ãƒ¼ã‚¸åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ï½
  */
 #define CAN_ADDR_C1MCTRLm(m)		(CAN1_BASEADDR + ( ((m) * 0x20 ) + 0xE ) )
 
@@ -123,7 +123,7 @@
 #define CAN_WRITE_C1MCTRLm_DN_CLR	2U
 
 /*
- * CANƒƒbƒZ[ƒWEƒRƒ“ƒtƒBƒMƒ…ƒŒ[ƒVƒ‡ƒ“EƒŒƒWƒXƒ^m
+ * CANãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ»ã‚³ãƒ³ãƒ•ã‚£ã‚®ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿m
  */
 #define CAN_ADDR_C1MCONFm(m)		(CAN1_BASEADDR + ( ((m) * 0x20 ) + 0x9 ) )
 
@@ -142,18 +142,18 @@
 
 
 /*
- * CANƒƒbƒZ[ƒWIDƒŒƒWƒXƒ^m
+ * CANãƒ¡ãƒƒã‚»ãƒ¼ã‚¸IDãƒ¬ã‚¸ã‚¹ã‚¿m
  */
 #define CAN_ADDR_C1MIDLm(m)		(CAN1_BASEADDR + ( ((m) * 0x20 ) + 0xA ) )
 #define CAN_ADDR_C1MIDHm(m)		(CAN1_BASEADDR + ( ((m) * 0x20 ) + 0xC ) )
 
 /*
- * CANƒƒbƒZ[ƒWEƒf[ƒ^’·ƒŒƒWƒXƒ^‚
+ * CANãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ»ãƒ‡ãƒ¼ã‚¿é•·ãƒ¬ã‚¸ã‚¹ã‚¿ï½
  */
 #define CAN_ADDR_C1MDLCm(m)		(CAN1_BASEADDR + ( ((m) * 0x20 ) + 0x8 ) )
 
 /*
- * CANƒƒbƒZ[ƒWEƒf[ƒ^EƒoƒCƒgEƒŒƒWƒXƒ^
+ * CANãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ»ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒã‚¤ãƒˆãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿
  */
 #define CAN_ADDR_C1MDATAxm(x, m)		(CAN1_BASEADDR + ( ((m) * 0x20 ) + (x) ) )
 
@@ -179,7 +179,7 @@ typedef enum {
 
 typedef struct {
 	/*
-	 * ƒŒƒWƒXƒ^î•ñ
+	 * ãƒ¬ã‚¸ã‚¹ã‚¿æƒ…å ±
 	 */
 	uint16 						*ie;
 	uint16 						*ints;
@@ -313,11 +313,11 @@ static uint64 get_priopoint_snd_msg(uint32 channel, uint32 msg_id)
 	 * 1bit
 	 */
 	if (((*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x8000) == 0x0U) {
-		//•W€ƒtƒH[ƒ}ƒbƒg
+		//æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 		id_type = 0U;
 	}
 	else {
-		//Šg’£ƒtƒH[ƒ}ƒbƒg
+		//æ‹¡å¼µãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 		id_type = 1U;
 	}
 	point <<= 1U;
@@ -355,7 +355,7 @@ static bool get_highest_prio_snd_msg(uint32 channel, uint32 *msg_idp)
 	uint32 high_msgid = 0U;
 
 	/*
-	 * TRQƒrƒbƒg‚ªƒZƒbƒg i 1j ‚³‚ê‚Ä‚¢‚é‘—Mƒoƒbƒtƒ@‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
+	 * TRQãƒ“ãƒƒãƒˆãŒã‚»ãƒƒãƒˆ ï¼ˆ 1ï¼‰ ã•ã‚Œã¦ã„ã‚‹é€ä¿¡ãƒãƒƒãƒ•ã‚¡ãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	 */
 	for (msg_id = 0U; msg_id < CAN_MSGBUF_NUM; msg_id++) {
 		data8 = *CanDevice.module.channel[channel].msg[msg_id].conf;
@@ -382,7 +382,7 @@ static bool get_highest_prio_snd_msg(uint32 channel, uint32 *msg_idp)
 	}
 
 	/*
-	 * Å‚—Dæ“x‚Ì‘—Mƒoƒbƒtƒ@‚ğ’T‚·
+	 * æœ€é«˜å„ªå…ˆåº¦ã®é€ä¿¡ãƒãƒƒãƒ•ã‚¡ã‚’æ¢ã™
 	 */
 	for (candidate_id = 0U; candidate_id < candidate_num; candidate_id++) {
 		point = get_priopoint_snd_msg(channel, candidate_msgid[candidate_id]);
@@ -413,7 +413,7 @@ static void device_supply_clock_can_snd(DeviceType *device)
 {
 	uint32 msg_id;
 
-	//‘—Mˆ—
+	//é€ä¿¡å‡¦ç†
 	if (CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_state == CAN_DEVICE_CHANNEL_STATE_DOING) {
 		msg_id = CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_msgid;
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].snd_cnt++;
@@ -426,16 +426,16 @@ static void device_supply_clock_can_snd(DeviceType *device)
 		return;
 	}
 
-	//‘—MƒƒbƒZ[ƒWƒoƒbƒtƒ@‘I‘ğ
+	//é€ä¿¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒãƒƒãƒ•ã‚¡é¸æŠ
 	if (get_highest_prio_snd_msg(CAN_CHANNEL_ID_1, &msg_id) == FALSE) {
 		return;
 	}
 
-	//CANƒf[ƒ^‘—MŠJn
+	//CANãƒ‡ãƒ¼ã‚¿é€ä¿¡é–‹å§‹
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].snd_cnt = 0U;
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_msgid = msg_id;
 
-	//TODO ‘—M‘¬“xİ’è
+	//TODO é€ä¿¡é€Ÿåº¦è¨­å®š
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_wait_time = CAN_DATA_SEND_CLOCKS_PER_BYTE_512KBPS * (*CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].dlc);
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_state = CAN_DEVICE_CHANNEL_STATE_DOING;
 	return;
@@ -494,13 +494,13 @@ static void recv_can_data_intr(DeviceType *device, uint32 channel,  uint32 msg_i
 	//set CINTS1
 	*(CanDevice.module.channel[channel].ints) |= (1U << CAN_READ_C1INTS_CINTS1);
 
-	//óMŠ„‚İ‚ğã‚°‚é
+	//å—ä¿¡å‰²è¾¼ã¿ã‚’ä¸Šã’ã‚‹
 	device_raise_int(device, INTNO_INTC1REC);
 
 	return;
 }
 /*
- * ƒ}ƒXƒN‚Í–¢ƒTƒ|[ƒg
+ * ãƒã‚¹ã‚¯ã¯æœªã‚µãƒãƒ¼ãƒˆ
  */
 static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_canid, uint8 dlc, uint32 *msg_idp)
 {
@@ -512,7 +512,7 @@ static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_can
 	uint32 candidate_msgid[CAN_MSGBUF_NUM];
 
 	/*
-	 * RDYƒrƒbƒg‚ªƒZƒbƒg i 1j ‚³‚ê‚Ä‚¢‚éóMƒoƒbƒtƒ@‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚·‚é
+	 * RDYãƒ“ãƒƒãƒˆãŒã‚»ãƒƒãƒˆ ï¼ˆ 1ï¼‰ ã•ã‚Œã¦ã„ã‚‹å—ä¿¡ãƒãƒƒãƒ•ã‚¡ãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 	 */
 	for (msg_id = 0U; msg_id < CAN_MSGBUF_NUM; msg_id++) {
 		data8 = *CanDevice.module.channel[channel].msg[msg_id].conf;
@@ -544,7 +544,7 @@ static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_can
 	}
 
 	/*
-	 * Å‚—Dæ“x‚ÌóMƒoƒbƒtƒ@‚ğ’T‚·
+	 * æœ€é«˜å„ªå…ˆåº¦ã®å—ä¿¡ãƒãƒƒãƒ•ã‚¡ã‚’æ¢ã™
 	 */
 	for (candidate_id = 0U; candidate_id < candidate_num; candidate_id++) {
 		if (ex_canid == 0xFFFFFFFF) {
@@ -563,7 +563,7 @@ static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_can
 	return FALSE;
 }
 /*
- * •¡”‚ÌƒƒbƒZ[ƒW“¯óM‚Í–¢ƒTƒ|[ƒg
+ * è¤‡æ•°ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸åŒæ™‚å—ä¿¡ã¯æœªã‚µãƒãƒ¼ãƒˆ
  */
 static void device_supply_clock_can_rcv(DeviceType *device)
 {
@@ -577,7 +577,7 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 	uint8 dlc;
 	uint8 i;
 
-	//CANƒf[ƒ^óMˆ—
+	//CANãƒ‡ãƒ¼ã‚¿å—ä¿¡å‡¦ç†
 	if (CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state == CAN_DEVICE_CHANNEL_STATE_DOING) {
 		msg_id = CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_msgid;
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].rcv_cnt++;
@@ -605,7 +605,7 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 		return;
 	}
 
-	//CANƒf[ƒ^óMŠm”F
+	//CANãƒ‡ãƒ¼ã‚¿å—ä¿¡ç¢ºèª
 	has_recv = CanDevice.ops->recv(&channel, &canid, &ex_canid, data, &dlc);
 	if (has_recv == FALSE) {
 		return;
@@ -617,18 +617,18 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 		CanDevice.module.channel[channel].rcv_data[i] = data[i];
 	}
 
-	//óMƒƒbƒZ[ƒWƒoƒbƒtƒ@‘I‘ğ
+	//å—ä¿¡ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒãƒƒãƒ•ã‚¡é¸æŠ
 	has_msgid = get_highest_prio_rcv_msg(channel, canid, ex_canid, dlc, &msg_id);
 	if (has_msgid == FALSE) {
 		//printf("device_supply_clock_can_rcv:has_msgid==FALSE:NOP\n");
 		return;
 	}
 
-	//CANƒf[ƒ^óMŠJn
+	//CANãƒ‡ãƒ¼ã‚¿å—ä¿¡é–‹å§‹
 	CanDevice.module.channel[channel].msg[msg_id].rcv_cnt = 0U;
 	CanDevice.module.channel[channel].rcv_msgid = msg_id;
 
-	//óM‘¬“xİ’è
+	//å—ä¿¡é€Ÿåº¦è¨­å®š
 	CanDevice.module.channel[channel].rcv_wait_time = (CAN_DATA_RCV_CLOCKS_PER_BYTE_512KBPS * dlc);
 	CanDevice.module.channel[channel].rcv_state = CAN_DEVICE_CHANNEL_STATE_DOING;
 
@@ -639,12 +639,12 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 void device_supply_clock_can(DeviceType *device)
 {
 	/*
-	 * ‘—Mˆ—
+	 * é€ä¿¡å‡¦ç†
 	 */
 	device_supply_clock_can_snd(device);
 
 	/*
-	 * óMˆ—
+	 * å—ä¿¡å‡¦ç†
 	 */
 	device_supply_clock_can_rcv(device);
 

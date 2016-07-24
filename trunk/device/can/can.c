@@ -2,6 +2,13 @@
 #include "cpu.h"
 #include "reg.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 #define CAN_CHANNEL_NUM		5U
 #define CAN_MSGBUF_NUM		32U
 
@@ -216,6 +223,7 @@ void device_init_can(DeviceType *device)
 {
 	uint32 msg_id;
 	uint32* addr;
+	bool result;
 
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_state = CAN_DEVICE_CHANNEL_STATE_NONE;
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state = CAN_DEVICE_CHANNEL_STATE_NONE;
@@ -248,6 +256,15 @@ void device_init_can(DeviceType *device)
 
 		cpu_memget_addrp(device->cpu, CAN_ADDR_C1MIDHm(msg_id), &addr);
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].idh = (uint16*)addr;
+	}
+
+	/*
+	 * CAN初期化
+	 */
+	result = dbg_can_ops.init(0);
+	if (result == FALSE) {
+		printf("device_init_can:err\n");
+		exit(1);
 	}
 	return;
 }

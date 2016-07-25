@@ -9,8 +9,8 @@
  *  Copyright (C) 2010-2015 by Naoki Saito
  *             Nagoya Municipal Industrial Research Institute, JAPAN
  *  Copyright (C) 2010 by Meika Sugimoto
- * 
- *  上記著作権者は，以下の (1)〜(4) の条件を満たす場合に限り，本ソフトウェ
+ *
+ *  上記著作権者は，以下の (1)~(4) の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改変・
  *  再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作権
@@ -30,13 +30,13 @@
  *      からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
  *      本ソフトウェアのユーザまたはエンドユーザからのいかなる理由に基づ
  *      く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者およ
  *  びTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的に対す
  *  る適合性も含めて，いかなる保証も行わない．また，本ソフトウェアの利用
  *  により直接的または間接的に生じたいかなる損害に関しても，その責任を負
  *  わない．
- * 
+ *
  */
 
 #include "kernel_impl.h"
@@ -66,6 +66,7 @@ Inline uint_t primap_search(void);
 Inline void primap_set(uint_t pri);
 Inline void primap_clear(uint_t pri);
 Inline uint_t bitmap_search(uint_t bitmap);
+void idle_loop(void);
 
 
 #ifdef TOPPERS_tskini
@@ -116,7 +117,7 @@ uint_t
 get_ipri_self(ID tskid)
 {
 	uint_t ipri;
-	
+
 	if(tskid != TSK_SELF)
 	{
 		ipri = (uint_t)((tskid) - TMIN_TSKID);
@@ -182,7 +183,7 @@ bitmap_search(uint_t bitmap)
 		n += 8U;
 	}
 #endif
-	
+
 	if ((bitmap & 0x0fU) == 0U) {
 		bitmap >>= 4U;
 		n += 4U;
@@ -277,14 +278,14 @@ initialize_task(void)
 {
 	/* 起動時優先度ビットマップの初期化 */
 	ready_primap = init_rdypmap;
-	
+
 	/* タスク優先度の初期化 */
 	runtsk_curpri = TSKPRI_NULL;
 	runtsk_ipri = TSKPRI_NULL;
-	
+
 	/* 起動要求キューイングの初期化 */
 	actque_bitmap = 0U;
-	
+
 	/* 割込み禁止フラグの初期化 */
 	disdsp = false;
 }
@@ -301,10 +302,10 @@ bool_t
 make_active(uint_t ipri)
 {
 	bool_t dsp;
-	
+
 	primap_set(ipri);
-	
-	/* 
+
+	/*
 	 *  実行状態タスクの現在優先度と引数で指定された
 	 *  起動対象タスクの初期優先度を比較し，実行状態タスクを
 	 *  変更するか判定する．
@@ -317,7 +318,7 @@ make_active(uint_t ipri)
 	else {
 		dsp = false;
 	}
-	
+
 	return dsp;
 }
 
@@ -337,23 +338,23 @@ run_task(uint_t ipri)
 	uint_t saved_ipri;		/* 呼び出し元タスクの初期優先度 */
 	uint_t saved_curpri;	/* 呼び出し元タスクの現在優先度 */
 	bool_t cont;
-	
+
 	/* 最高優先順位タスクを実行する前に，現在実行中のタスクの現在優先度と初期優先度を保存する */
 	next_pri = ipri;
 	saved_ipri = runtsk_ipri;
 	saved_curpri = runtsk_curpri;
-	
+
 	do {
 		/* 実行するタスクの現在優先度を実行時優先度に設定する */
 		runtsk_curpri = tinib_epriority[next_pri];
 		runtsk_ipri = next_pri;
-		
+
 		/* CPUロック解除 */
 		t_unlock_cpu();
-		
+
 		/* タスク実行開始 */
 		(*((TASK)(tinib_task[next_pri])))(tinib_exinf[next_pri]);
-		
+
 		if (t_sense_lock()) {
 			/*
 			 *  CPUロック状態でext_tskが呼ばれた場合は，CPUロックを解除し
@@ -368,9 +369,9 @@ run_task(uint_t ipri)
 			 */
 			t_lock_cpu();
 		}
-		
+
 		/* 割込み優先度マスクは全解除状態のはずなので，何もしない */
-		
+
 		/*
 		 *  ディスパッチ禁止状態でext_tskが呼ばれた場合は，ディスパッ
 		 *  チ許可状態にしてからタスクを終了する．
@@ -383,18 +384,18 @@ run_task(uint_t ipri)
 		 *		}
 		 */
 		disdsp = false;
-		
+
 		/* ビットマップクリア． */
 		primap_clear(next_pri);
-		
+
 		cont = false;
-		
+
 		/* タスク起動要求キューイングのチェック */
 		if (actque_test(next_pri)) {
 			actque_clear(next_pri);
 			(void) make_active(next_pri);
 		}
-		
+
 		/* いずれかのタスクが実行可能状態になっているか */
 		if(!primap_empty())
 		{
@@ -406,7 +407,7 @@ run_task(uint_t ipri)
 			}
 		}
 	} while(cont);
-	
+
 	runtsk_curpri = saved_curpri;
 	runtsk_ipri = saved_ipri;
 }

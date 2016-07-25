@@ -10,6 +10,7 @@ void device_init(DeviceType *device)
 	device_init_can(device);
 	device_init_adc(device);
 	device_init_wdg(device);
+
 	return;
 }
 
@@ -37,7 +38,7 @@ static int device_get_iomem(DeviceType *device, uint32 addr, uint32 **addrp)
 	uint32 off;
 
 	/*
-	 * ƒfƒoƒCƒXƒƒ‚ƒŠ—Ìˆæƒ`ƒFƒbƒN
+	 * ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìˆï¿½`ï¿½Fï¿½bï¿½N
 	 */
 	uint32 devaddr = addr & 0x03FFFFFF;
 

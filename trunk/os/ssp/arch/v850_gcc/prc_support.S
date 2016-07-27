@@ -82,6 +82,7 @@ _start_dispatch:
  	.globl	_dispatch
  	.globl	_exit_and_dispatch
 _dispatch:
+#if 0	/* TODO: ビルドを通すため一時的に無効化 */
 	/*
 	 * コンテキストの退避
 	 */
@@ -136,6 +137,7 @@ dispatcher:
 	ld.w	0[r21] , r6	/* 引数にp_runtskを指定 */
 	jarl	_log_dsp_leave , lp
 #endif	/* LOG_DSP_LEAVE */
+#endif
 	jmp		r20
 
 	/*
@@ -183,10 +185,11 @@ idle_loop:
 
 	/* ディスパッチャの復帰ルーチン */
 dispatch_r:
+#if 0	/* ビルドを通すため一時的に無効化 */
 	Lea		_p_runtsk, r10
 	ld.w	0[r10], r10
 	ld.w	TCB_enatex[r10], r11
-	mov		(1 << TCB_enatex_bit) , r12
+	Lea		(1 << TCB_enatex_bit) , r12
 	tst		r11 , r12
 	bz		ret_to_task
 	ld.w	TCB_texptn[r10], r11
@@ -195,6 +198,7 @@ dispatch_r:
 	Lea		_ipmflg , r10
 	ld.w	0[r10] , r10
 	cmp		r0 , r10
+#endif
 	be		ret_to_task
 
 	/* タスク例外の呼び出し */
@@ -224,6 +228,7 @@ ret_to_task:
  */
  	.globl _start_r
 _start_r:
+#if 0	/* TODO: ビルドを通すため一時的に無効化 */
 	/* 割込みマスクレベルをCPUアンロック状態の値に設定 */
 	di
 	mov		INTPRI_ENAALL , r6
@@ -240,6 +245,7 @@ _start_r:
 
 	/* タスク本体へ */
 	ei		/* 割込み禁止状態を解除 */
+#endif
 	jmp		r10
 
 /*
@@ -328,13 +334,13 @@ interrupt:
 
 	/* 割込み発生前の割込みレベルを保存，発生中の割込みレベル(r11)に書き換え */
 	Lea		_current_intpri , r13
-	ld.bu	0[r13] , r14
+	ld.b	0[r13] , r14
 	sst.w	r14 , 76[ep]
 	st.b	r11 , 0[r13]
 
 	/* 多重割り込みチェックとネストカウンタをインクリメント */
 	Lea		_intnest, r13
-	ld.bu	0[r13], r6
+	ld.b	0[r13], r6
 	add		1, r6
 	st.b	r6, 0[r13]
 	cmp		1 , r6
@@ -342,7 +348,7 @@ interrupt:
 save_tsksp:
 	/* 初回割込みであればスタックをカーネルスタックへ切り替え */
 	mov		sp , r13
-	mov		STACKTOP , sp
+	Lea		STACKTOP , sp
 	add		-4 , sp
 	st.w	r13 , 0[sp]
 call_int_handler:
@@ -379,7 +385,7 @@ end_int_handler:
 	st.w	r0 , 0[r10]
 	/* intnestをデクリメント */
 	Lea		_intnest, r11
-	ld.bu	0[r11], r10
+	ld.b	0[r11], r10
 	add		-1 , r10
 	st.b	r10, 0[r11]
 	cmp		r0 , r10
@@ -462,6 +468,7 @@ check_texrtn_cond:
 
 check_texrtn_cond_1:
 	/* タスク例外が発生しているかのチェックとタスク例外処理ルーチンの実行 */
+#if 0	/* ビルドを通すため一時的に無効化 */
 	ld.w	TCB_enatex[r11] , r13
 	mov		(1 << TCB_enatex_bit) , r12
 	tst		r12 , r13
@@ -470,6 +477,7 @@ check_texrtn_cond_1:
 	cmp		r0, r11
 	bz		return_from_int
 	jarl	_call_texrtn , lp
+#endif
 	br		return_from_int
 
 /*
@@ -501,6 +509,7 @@ check_texrtn_cond_1:
  */
 	.globl	ret_int
 ret_int:
+#if 0	/* TODO: ビルドを通すため一時的に無効化 */
 	addi	-44, sp, sp
 	mov		sp , ep
 	sst.w	r2 ,  40[ep]
@@ -535,6 +544,7 @@ ret_int:
 	ldsr	r0, eipsw	/* 割込みは許可状態でよい */
 	Lea		dispatcher, r10
 	ldsr	r10, eipc
+#endif
 	reti
 
 	.globl ret_int_r
@@ -595,12 +605,12 @@ exception:
 	sst.w	r6 ,   0[ep]
 	/* 割込み発生前の割込みレベルを保存 */
 	Lea		_current_intpri , r13
-	ld.bu	0[r13] , r14
+	ld.b	0[r13] , r14
 	sst.w	r14 , 76[ep]
 
 	/* 多重割込み/例外チェックとネストカウンタをインクリメント */
 	Lea		_intnest, r13
-	ld.bu	0[r13], r6
+	ld.b	0[r13], r6
 	add		1, r6
 	st.b	r6, 0[r13]
 	cmp		1 , r6
@@ -609,7 +619,7 @@ exception:
 exc_save_tsksp:
 	/* 初回割込みであればスタックをカーネルスタックへ切り替え */
 	mov		sp , r13
-	mov		STACKTOP , sp
+	Lea		STACKTOP , sp
 	add		-4 , sp
 	st.w	r13 , 0[sp]
 
@@ -622,7 +632,7 @@ set_excinf:
 	stsr	1 , r13				/* CPU例外発生時のEIPSW */
 	st.w	r13 , 8[r6]
 	stsr	4 , r13
-	mov		0x0000ffff , r14	/* CPU例外発生時のEICC(ECRの下位16bit) */
+	Lea		0x0000ffff , r14	/* CPU例外発生時のEICC(ECRの下位16bit) */
 	and		r14 , r13
 	st.w	r13 , 12[r6]
 	st.w	r11 , 4[r6]			/* CPU例外発生時のsp */
@@ -642,7 +652,7 @@ set_excinf:
 	st.w	r10 , 4[sp]
 	st.w	r6 , 0[sp]
 	Lea		_current_intpri , r6
-	ld.bu	0[r6] , r6
+	ld.b	0[r6] , r6
 	jarl	_set_intpri , lp
 	ld.w	4[sp] , r10
 	ld.w	0[sp] , r6
@@ -693,7 +703,7 @@ end_exc_handler_1:
 	addi	20 , sp , sp
 	/* intnestをデクリメント */
 	Lea		_intnest, r11
-	ld.bu	0[r11], r10
+	ld.b	0[r11], r10
 	add		-1 , r10
 	st.b	r10, 0[r11]
 	cmp		r0 , r10
@@ -707,7 +717,7 @@ end_exc_handler_1:
 	.globl _call_exit_kernel
 _call_exit_kernel:
 	/* 非タスクコンテキストに切り替え */
-	mov		STACKTOP , sp
+	Lea		STACKTOP , sp
 	jarl	_exit_kernel , lp
 	/* 戻ってくることはないが，万が一戻ってきた場合のため無限ループ */
 	di

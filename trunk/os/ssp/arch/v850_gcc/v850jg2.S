@@ -1,11 +1,11 @@
 /*
  *  TOPPERS/ASP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
- *      Advanced Standard Profile Kernel  
- * 
+ *      Advanced Standard Profile Kernel
+ *
  *  Copyright (C) 2010 by Meika Sugimoto
- * 
- *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation 
+ *
+ *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -26,12 +26,12 @@
  *        報告すること．
  *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
  *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，その適用可能性も
  *  含めて，いかなる保証も行わない．また，本ソフトウェアの利用により直
  *  接的または間接的に生じたいかなる損害に関しても，その責任を負わない．
- * 
+ *
  */
 
 /*
@@ -56,10 +56,10 @@
 	.globl	hardware_init_hook
 hardware_init_hook:
 	/* WDT2の停止 */
-	mov		WDTM2 , r10
+	Lea		WDTM2 , r10
 	st.b	r0 , 0[r10]
 	/* リングオシレータの停止 */
-	mov		RCM , r10
+	Lea		RCM , r10
 	mov		1 , r11
 	st.b	r11 , 0[r10]
 
@@ -72,12 +72,12 @@ wait_pll_lock:
 	 * 使用するメインクロックに応じて設定する
 	 */
 	movea	0x01 ,	r0 , r12
-	mov		VSWC , r13
+	Lea		VSWC , r13
 	st.b	r12 , 0[r13]
 	/* クロック設定、PLLクロックをメインクロックに */
 	movea	0x02 , r0 , r12
-	mov		PLLCTL , r13
-	ld.bu	0[r13] , r14
+	Lea		PLLCTL , r13
+	ld.b	0[r13] , r14
 	or		r12 , r14
 	st.b	r14 , 0[r13]
 	nop

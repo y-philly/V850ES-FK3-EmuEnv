@@ -164,6 +164,11 @@
  */
 #define CAN_ADDR_C1MDATAxm(x, m)		(CAN1_BASEADDR + ( ((m) * 0x20 ) + (x) ) )
 
+typedef enum {
+	CANID_TYPE_NORMAL,
+	CANID_TYPE_EXTEND
+} CanIdType;
+
 typedef struct {
 	uint32 rcv_cnt;
 	uint32 snd_cnt;
@@ -173,6 +178,8 @@ typedef struct {
 	uint16* idl;
 	uint16* idh;
 	uint8 *buffer;
+	uint32						canid;
+	CanIdType					canid_type;
 } CanDeviceMsgBufferType;
 
 /*
@@ -263,7 +270,7 @@ void device_init_can(DeviceType *device)
 	 */
 	result = dbg_can_ops.init(0);
 	if (result == FALSE) {
-		printf("device_init_can:err\n");
+		//printf("device_init_can:err\n");
 		exit(1);
 	}
 	return;
@@ -296,6 +303,7 @@ static uint32 get_ex_canid(uint32 channel, uint32 msg_id)
 	 */
 	ex_canid = ((*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x0003) << 16U;
 	ex_canid |= ((*CanDevice.module.channel[channel].msg[msg_id].idl));
+	//printf("get_excanid=0x%x\n", ex_canid);
 	return ex_canid;
 }
 
@@ -332,10 +340,12 @@ static uint64 get_priopoint_snd_msg(uint32 channel, uint32 msg_id)
 	if (((*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x8000) == 0x0U) {
 		//標準フォーマット
 		id_type = 0U;
+		CanDevice.module.channel[channel].msg[msg_id].canid_type = CANID_TYPE_NORMAL;
 	}
 	else {
 		//拡張フォーマット
 		id_type = 1U;
+		CanDevice.module.channel[channel].msg[msg_id].canid_type = CANID_TYPE_EXTEND;
 	}
 	point <<= 1U;
 	point |= id_type;
@@ -345,6 +355,19 @@ static uint64 get_priopoint_snd_msg(uint32 channel, uint32 msg_id)
 	 */
 	idl = ((*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x0003) << 16U;
 	idl |= ((*CanDevice.module.channel[channel].msg[msg_id].idl));
+
+
+	if (CanDevice.module.channel[channel].msg[msg_id].canid_type == CANID_TYPE_NORMAL) {
+		/* ID18-28 */
+		CanDevice.module.channel[channel].msg[msg_id].canid = ( (*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x1FFC ) >> 2U;
+	}
+	else {
+		uint32 tmph = ( (*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x1FFF ) ; /* ID16-28 */
+		uint32 tmpl = ( (*CanDevice.module.channel[channel].msg[msg_id].idl) & 0xFFFF ) ; /* ID0-15 */
+		uint32 tmp = (tmph << 16) | tmpl;
+		CanDevice.module.channel[channel].msg[msg_id].canid = tmp;
+	}
+	printf("channel=%d msg_id=%d canid=0x%x\n", channel, msg_id,  CanDevice.module.channel[channel].msg[msg_id].canid);
 
 	point <<= 18U;
 	point |= idl;
@@ -417,8 +440,9 @@ static bool get_highest_prio_snd_msg(uint32 channel, uint32 *msg_idp)
 static void send_can_data(DeviceType *device, uint32 channel,  uint32 msg_id)
 {
 	uint8 dlc = *CanDevice.module.channel[channel].msg[msg_id].dlc;
+	uint32 canid = CanDevice.module.channel[channel].msg[msg_id].canid;
 
-	(void)CanDevice.ops->send(channel, msg_id, CanDevice.module.channel[channel].msg[msg_id].buffer, dlc);
+	(void)CanDevice.ops->send(channel, canid, CanDevice.module.channel[channel].msg[msg_id].buffer, dlc);
 
 	//TRQ clr
 	*(CanDevice.module.channel[channel].msg[msg_id].ctrl) &= ~(1U << CAN_READ_C1MCTRLm_TRQ);

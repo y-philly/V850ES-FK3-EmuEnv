@@ -73,13 +73,36 @@ static bool dbg_kavaser_can_init(uint32 ch)
 static bool dbg_kavaser_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint8 *data, uint8 *dlc)
 {
 	unsigned int flag = 0;
+	unsigned int out_canid;
 	unsigned int out_dlc;
 	unsigned long time;
-	dbg_kvaser.status = canReadWait(dbg_kvaser.handle, (long*)canid, (void*)data, &out_dlc, (unsigned int*)&flag, &time, 0);
+	static unsigned int count= 0;
+	count++;
+	if ((count % 10000) != 0) {
+		return FALSE;
+	}
+	dbg_kvaser.status = canReadWait(dbg_kvaser.handle, (long*)&out_canid, (void*)data, &out_dlc, (unsigned int*)&flag, &time, 0);
 	if (dbg_kvaser.status != canOK) {
 		//printf("dbg_kavaser_can_recv:canReadWait err=%d\n", dbg_kvaser.status);
 		return FALSE;
 	}
+#if 0 /* for debug */
+	*ch = 1;
+	*canid = out_canid;
+	*ex_canid = 0xFFFFFFFF;//TODO
+	*dlc = out_dlc;
+	printf("##RCV_CAN::ch=%u\n", *ch);
+	printf("##RCV_CNA:canid=0x%x\n", *canid);
+	printf("##RCV_CAN:ex_canid=0x%x\n", *ex_canid);
+	printf("##RCV_CNA:dlc=%u\n", *dlc);
+	printf("##");
+	for (int i = 0; i < *dlc; i++) {
+		printf("0x%02x ", data[i]);
+	}
+	printf("\n");
+
+	fflush(stdout);
+#endif
 	return TRUE;
 }
 
@@ -90,8 +113,11 @@ static bool dbg_kavaser_can_send(uint32 ch, uint32 msg_id, uint8 *data, uint8 dl
 	dbg_kvaser.status = canWriteWait(dbg_kvaser.handle, msg_id, data, dlc, flag, -1);
     if (dbg_kvaser.status != canOK) {
 		printf("dbg_kavaser_can_send:canWriteWait err=%d\n", dbg_kvaser.status);
+		fflush(stdout);
 		return FALSE;
     }
+	//printf("dbg_kavaser_can_send:canWriteWait msg_id=0x%x err=%d\n", msg_id, dbg_kvaser.status);
+	//fflush(stdout);
 	return TRUE;
 }
 

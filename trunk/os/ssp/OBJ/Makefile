@@ -84,7 +84,7 @@ KERNEL_LIB =
 #
 #  カーネルを関数単位でコンパイルするかどうかの定義
 #
-KERNEL_FUNCOBJS =
+KERNEL_FUNCOBJS = 1
 
 #
 #  トレースログを取得するかどうかの定義

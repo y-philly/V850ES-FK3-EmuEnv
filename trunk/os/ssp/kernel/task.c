@@ -66,7 +66,6 @@ Inline uint_t primap_search(void);
 Inline void primap_set(uint_t pri);
 Inline void primap_clear(uint_t pri);
 Inline uint_t bitmap_search(uint_t bitmap);
-void idle_loop(void);
 
 
 #ifdef TOPPERS_tskini

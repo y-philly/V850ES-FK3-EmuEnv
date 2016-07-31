@@ -159,6 +159,8 @@ pre_idle:
 	/* reqflgのアドレスをロード */
 	Lea		_reqflg , r20
 idle_loop:
+	.globl _idle_loop
+_idle_loop:
 	/* 割り込み待ち */
 	ei
 	nop

@@ -2,13 +2,13 @@
  *  TOPPERS/JSP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
  *      Just Standard Profile Kernel
- * 
+ *
  *  Copyright (C) 2000-2002 by Embedded and Real-Time Systems Laboratory
  *                              Toyohashi Univ. of Technology, JAPAN
- * 
+ *
  *  Copyright (C) 2005 by Freelines CO.,Ltd
- * 
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -29,17 +29,17 @@
  *        報告すること．
  *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
  *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，その適用可能性も
  *  含めて，いかなる保証も行わない．また，本ソフトウェアの利用により直
  *  接的または間接的に生じたいかなる損害に関しても，その責任を負わない．
- * 
+ *
  *  @(#) $Id: v850elf.ld,v 1.2 2007/01/05 02:10:17 honda Exp $
  */
 
-OUTPUT_FORMAT("elf32-v850","elf32-v850","elf32-v850")
-OUTPUT_ARCH(v850)
+OUTPUT_FORMAT("elf32-v850-rh850","elf32-v850-rh850","elf32-v850-rh850")
+OUTPUT_ARCH(v850-rh850)
 
 /* V850/SG2 uPD70F3281Y(32KB-RAM)用のメモリ */
 
@@ -62,7 +62,7 @@ SECTIONS
 		*(.vectors)
 	} > INTROM
 
-	.text :	
+	.text :
 	{
 		__text = . ;
 		*(.text)
@@ -74,12 +74,12 @@ SECTIONS
 	PROVIDE(__ctbp = .);
 	*(.call_table_data)
 	} > INTROM
-	
+
 	.call_table_text :
 	{
 	*(.call_table_text)
 	} > INTROM
-	
+
 	. = ALIGN(4);
 	.rodata : { *(.rodata) } > INTROM
 
@@ -88,7 +88,7 @@ SECTIONS
 	. = ALIGN(4);
 	__idata_start = . ;
 
-	.data	:  AT(__idata_start) 
+	.data	:  AT(__idata_start)
 	{
 		. = ALIGN(4);
 		__data_start = . ;
@@ -98,7 +98,7 @@ SECTIONS
 	} > INTRAM
 
 	__idata_end = __idata_start + SIZEOF(.data);
-	
+
 	.bss	   :
 	{
 	  . = ALIGN(4);
@@ -108,13 +108,13 @@ SECTIONS
 	  . = ALIGN(4);
 	  __bss_end = .;
 	} > INTRAM
-	
+
 	.sdata ALIGN (4) :
 	{
 		PROVIDE (__gp = . + 0x8000);
 		*(.sdata)
 	} > INTRAM
-	
+
 	.tdata ALIGN (4) :
 	{
 		PROVIDE (__ep = .);
@@ -124,12 +124,12 @@ SECTIONS
 		*(.tbss)
 		*(.tcommon)
 	} > INTRAM
-	
-	.comment 0 : { *(.comment) }	
+
+	.comment 0 : { *(.comment) }
 	.debug			0 : { *(.debug) }
 	.line			0 : { *(.line) }
 	.debug_srcinfo	0 : { *(.debug_srcinfo) }
 	.debug_sfnames	0 : { *(.debug_sfnames) }
 	.debug_aranges	0 : { *(.debug_aranges) }
-	.debug_pubnames 0 : { *(.debug_pubnames) }	
+	.debug_pubnames 0 : { *(.debug_pubnames) }
 }

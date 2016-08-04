@@ -43,7 +43,8 @@ endif
 CFLAGS	:= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
 
-LFLAGS	:= -mwindows -Wl,--allow-multiple-definition 
+#LFLAGS	:= -mwindows -Wl,--allow-multiple-definition 
+LFLAGS	:= -Wl,--allow-multiple-definition 
 LFLAGS	+= -Wl,--enable-stdcall-fixup 
 
 LIBS	:= -lpthread

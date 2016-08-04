@@ -10,7 +10,7 @@
  *
  *  Copyright (C) 2010-2011,2013 by Meika Sugimoto
  *
- *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation
+ *  上記著作権者は，以下の (1)潤ｵ(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -74,179 +74,7 @@ _start_dispatch:
 	/* 割込み禁止状態を解除 */
 	ei
 	/* ディスパッチャ本体へ */
-	br		dispatcher
-
-/*
- *  タスクディスパッチャ
- */
- 	.globl	_dispatch
- 	.globl	_exit_and_dispatch
-_dispatch:
-#if 0	/* TODO: ビルドを通すため一時的に無効化 */
-	/*
-	 * コンテキストの退避
-	 */
-	addi	-60, sp, sp
-	st.w	ep , 0[sp]
-	mov		sp, ep
-	sst.w	r2,  56[ep]
-	sst.w	r10, 52[ep]
-	sst.w	r11, 48[ep]
-	sst.w	r20, 44[ep]
-	sst.w	r21, 40[ep]
-	sst.w	r22, 36[ep]
-	sst.w	r23, 32[ep]
-	sst.w	r24, 28[ep]
-	sst.w	r25, 24[ep]
-	sst.w	r26, 20[ep]
-	sst.w	r27, 16[ep]
-	sst.w	r28, 12[ep]
-	sst.w	r29,  8[ep]
-	sst.w	r31,  4[ep]
-
-	/* スタックと次の起動番地を保存 */
-	Lea		_p_runtsk, ep
-	sld.w	0[ep], ep
-	sst.w	sp, TCB_sp[ep]
-	Lea		dispatch_r, r10
-	sst.w	r10, TCB_pc[ep]
-
-	/*
-	 *  タスクディスパッチャ
-	 *
-	 *  ここはCPUロック状態，ディスパッチ前の処理単位が
-	 *  コンテキスト退避済みある状態で来る必要がある.
-	 */
-_exit_and_dispatch:
-dispatcher:
-	Lea		_p_runtsk, r21
-#ifdef LOG_DSP_ENTER
-	ld.w		0[r21] , r6		/* 引数にp_runtskを指定 */
-	jarl	_log_dsp_enter , lp
-#endif	/* LOG_DSP_ENTER */
-	Lea		_p_schedtsk, r20
-	ld.w	0[r20], r22
-	st.w	r22, 0[r21]
-	cmp		r22 , r0
-	be		pre_idle
-	/* スタックと次の起動番地を復帰 */
-	mov		r22, ep
-	sld.w	TCB_pc[ep], r20
-	sld.w	TCB_sp[ep], sp
-#ifdef LOG_DSP_LEAVE
-	ld.w	0[r21] , r6	/* 引数にp_runtskを指定 */
-	jarl	_log_dsp_leave , lp
-#endif	/* LOG_DSP_LEAVE */
-#endif
-	jmp		r20
-
-	/*
-	 * アイドルループ
-	 */
-pre_idle:
-	/* 割り込みスタックに切り替え */
-	Lea		STACKTOP, sp
-	/* CPUロック状態の解除 */
-	Lea		_lock_flag , r10
-	st.w	r0 , 0[r10]
-	di
-	mov		INTPRI_ENAALL , r6
-	jarl	_set_intpri , lp
-	/* intnestを1にする */
-	mov		1, r10
-	Lea		_intnest, r11
-	st.b	r10, 0[r11]
-	/* reqflgのアドレスをロード */
-	Lea		_reqflg , r20
-idle_loop:
-	/* 割り込み待ち */
-	ei
-	nop
-	di
-
-	/* reqflgのチェック */
-	ld.w	0[r20], r10
-	cmp		r10 , r0
-	be		idle_loop
-
-	/* reqflgのクリア */
-	st.w	r0 , 0[r20]
-
-	/* intnestをクリアする */
-	Lea		_intnest, r10
-	st.b	r0, 0[r10]
-	/* CPUロック状態へ移行 */
-	di
-	mov		INTPRI_LOCK , r6
-	jarl	_set_intpri , lp
-	ei
-	/* ディスパッチャへ */
-	br	dispatcher
-
-	/* ディスパッチャの復帰ルーチン */
-dispatch_r:
-#if 0	/* ビルドを通すため一時的に無効化 */
-	Lea		_p_runtsk, r10
-	ld.w	0[r10], r10
-	ld.w	TCB_enatex[r10], r11
-	Lea		(1 << TCB_enatex_bit) , r12
-	tst		r11 , r12
-	bz		ret_to_task
-	ld.w	TCB_texptn[r10], r11
-	cmp		r0, r11
-	be		ret_to_task
-	Lea		_ipmflg , r10
-	ld.w	0[r10] , r10
-	cmp		r0 , r10
-#endif
-	be		ret_to_task
-
-	/* タスク例外の呼び出し */
-	jarl	_call_texrtn, lp
-ret_to_task:
-	mov		sp, ep
-	sld.w	56[ep], r2
-	sld.w	52[ep], r10
-	sld.w	48[ep], r11
-	sld.w	44[ep], r20
-	sld.w	40[ep], r21
-	sld.w	36[ep], r22
-	sld.w	32[ep], r23
-	sld.w	28[ep], r24
-	sld.w	24[ep], r25
-	sld.w	20[ep], r26
-	sld.w	16[ep], r27
-	sld.w	12[ep], r28
-	sld.w	 8[ep], r29
-	sld.w	 4[ep], r31
-	addi	60, ep, sp
-	ld.w	0[sp], ep
-	jmp		lp
-
-/*
- *  タスク起動時処理
- */
- 	.globl _start_r
-_start_r:
-#if 0	/* TODO: ビルドを通すため一時的に無効化 */
-	/* 割込みマスクレベルをCPUアンロック状態の値に設定 */
-	di
-	mov		INTPRI_ENAALL , r6
-	jarl	_set_intpri , lp
-	Lea		_lock_flag , r6
-	st.w	r0 , 0[r6]
-
-	Lea		_p_runtsk, ep
-	ld.w	0[ep], ep
-	ld.w	TCB_p_tinib[ep], ep
-	ld.w	TINIB_exinf[ep], r6
-	ld.w	TINIB_task[ep], r10
-	Lea		_ext_tsk, lp
-
-	/* タスク本体へ */
-	ei		/* 割込み禁止状態を解除 */
-#endif
-	jmp		r10
+	br		__kernel_dispatcher
 
 /*
  *  割込みハンドラ
@@ -429,6 +257,7 @@ return_from_int:
 	ei
 	reti	/* 割込み元へ */
 
+#if 0	/* ビルドを通すため一時的に無効化 */
 return_to_task:
 	/* スタックの復帰 */
 	ld.w	0[sp], sp
@@ -468,7 +297,6 @@ check_texrtn_cond:
 
 check_texrtn_cond_1:
 	/* タスク例外が発生しているかのチェックとタスク例外処理ルーチンの実行 */
-#if 0	/* ビルドを通すため一時的に無効化 */
 	ld.w	TCB_enatex[r11] , r13
 	mov		(1 << TCB_enatex_bit) , r12
 	tst		r12 , r13
@@ -477,8 +305,8 @@ check_texrtn_cond_1:
 	cmp		r0, r11
 	bz		return_from_int
 	jarl	_call_texrtn , lp
-#endif
 	br		return_from_int
+#endif
 
 /*
  *  さらに非スクラッチレジスタを退避する

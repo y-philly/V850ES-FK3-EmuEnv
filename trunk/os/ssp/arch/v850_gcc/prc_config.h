@@ -1,16 +1,16 @@
 /*
  *  TOPPERS/ASP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
- *      Advanced Standard Profile Kernel  
- * 
+ *      Advanced Standard Profile Kernel
+ *
  *  Copyright (C) 2000-2002 by Embedded and Real-Time Systems Laboratory
  *                              Toyohashi Univ. of Technology, JAPAN
- * 
+ *
  *  Copyright (C) 2005 by Freelines CO.,Ltd
  *
  *  Copyright (C) 2010-2011 by Meika Sugimoto
- * 
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -31,12 +31,12 @@
  *        報告すること．
  *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
  *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，その適用可能性も
  *  含めて，いかなる保証も行わない．また，本ソフトウェアの利用により直
  *  接的または間接的に生じたいかなる損害に関しても，その責任を負わない．
- * 
+ *
  */
 
 /*
@@ -136,7 +136,7 @@ extern void set_intpri(uint8_t intpri);
 Inline void save_imr(void)
 {
 	uint_least8_t i;
-	
+
 	/* ISPRから読み出し */
 	for(i = 0 ; i < IMR_SIZE ; i++)
 	{
@@ -152,7 +152,7 @@ Inline void save_imr(void)
 Inline void restore_imr(void)
 {
 	uint_least8_t i;
-	
+
 	/* ISPRに書き込み */
 	for(i = 0 ; i < IMR_SIZE ; i++)
 	{
@@ -196,11 +196,11 @@ x_lock_cpu(void)
 {
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int();
-	
+
 	save_imr();	/* 現在のIMRを退避 */
 	set_intpri(INTPRI_LOCK);
 	lock_flag = true;
-	
+
 	/* 割込み解除 */
 	enable_int();
 }
@@ -216,11 +216,11 @@ x_unlock_cpu(void)
 {
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int();
-	
+
 	restore_imr();	/* IMRを復帰 */
 	set_intpri(current_intpri);
 	lock_flag = false;
-	
+
 	/* 割込み解除 */
 	enable_int();
 }
@@ -296,6 +296,17 @@ extern void dispatch(void);
  *  ならない．
  */
 extern void start_dispatch(void);
+
+/*
+ *  アイドルループの実装
+ *  単にCPUロック状態とCPUロック解除状態を呼び出す実装とする．
+ */
+Inline void
+idle_loop(void)
+{
+	t_lock_cpu();
+	t_unlock_cpu();
+}
 
 /*
  *  現在のコンテキストを捨ててディスパッチ（prc_support.S）
@@ -395,7 +406,7 @@ extern void initialize_exception(void);
 #define INT_ENTRY(inhno, inthdr)     _INT_ENTRY(inhno, inthdr)
 
 #define _INTHDR_ENTRY(inhno, inthdr) extern void _kernel_##inthdr##_##inhno(void);
-#define INTHDR_ENTRY(inhno, inhno_num, inthdr)  _INTHDR_ENTRY(inhno, inthdr) 
+#define INTHDR_ENTRY(inhno, inhno_num, inthdr)  _INTHDR_ENTRY(inhno, inthdr)
 
 /*
  *  割込み要求禁止フラグのセット
@@ -407,18 +418,18 @@ Inline bool_t
 x_disable_int(INTNO intno)
 {
 	uint32_t intreg_addr = INTREG_ADDRESS(intno);
-	
+
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return false;
 	}
-	
+
 	/* 6bit目をセット */
-	sil_wrb_mem((void *)intreg_addr , 
+	sil_wrb_mem((void *)intreg_addr ,
 		sil_reb_mem((void *)intreg_addr) | (0x01U << 6));
 	/* 割込み禁止状態ビットをセット */
 	disint_table[(intno / 16u)] |= (1u << (intno % 16u));
-	
+
 	return(true);
 }
 
@@ -436,18 +447,18 @@ Inline bool_t
 x_enable_int(INTNO intno)
 {
 	uint32_t intreg_addr = INTREG_ADDRESS(intno);
-	
+
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return false;
 	}
-	
+
 	/* 6bit目をクリア */
-	sil_wrb_mem((void *)intreg_addr , 
+	sil_wrb_mem((void *)intreg_addr ,
 		sil_reb_mem((void *)intreg_addr) & ~(0x01U << 6));
 	/* 割込み禁止状態ビットをクリア */
 	disint_table[(intno / 16u)] &= ~(1u << (intno % 16u));
-	
+
 	return(true);
 }
 
@@ -462,14 +473,14 @@ Inline void
 x_clear_int(INTNO intno)
 {
 	uint32_t intreg_addr = INTREG_ADDRESS(intno);
-	
+
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return ;
 	}
-	
+
 	/* 7bit目をクリア */
-	sil_wrb_mem((void *)intreg_addr , 
+	sil_wrb_mem((void *)intreg_addr ,
 		sil_reb_mem((void *)intreg_addr) & ~(0x01U << 7));
 }
 
@@ -483,18 +494,18 @@ Inline bool_t
 x_probe_int(INTNO intno)
 {
 	uint32_t intreg_addr = INTREG_ADDRESS(intno);
-	
+
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return false;
 	}
-	
+
 	/* 6bit目のビット値で判定する．*/
 	if((sil_reb_mem((void *)intreg_addr) & (0x01U << 6u)) != 0x00)
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -506,7 +517,7 @@ x_probe_int(INTNO intno)
  *  割込み要求ラインの属性の設定
  *
  *  V850では，カーネルで扱える割込み優先度は8段階であるため，intpri
- *  として与えることができる値は-7〜0が標準である．
+ *  として与えることができる値は-7~0が標準である．
  */
 extern void x_config_int(INTNO intno, ATR intatr, PRI intpri);
 
@@ -523,7 +534,7 @@ i_begin_int(INTNO intno)
 /*
  *  割込みハンドラの出口で必要なIRC操作
  *
- * 
+ *
  */
 Inline void
 i_end_int(INTNO intno)

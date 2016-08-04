@@ -65,7 +65,7 @@ INCLUDES := $(INCLUDES) -I$(SRCDIR)/target/v850es_fk3_emu_env_gcc
 #
 KERNEL_DIR	:= $(KERNEL_DIR):$(SRCDIR)/target/v850es_fk3_emu_env_gcc
 KERNEL_ASMOBJS	:= $(KERNEL_ASMOBJS) target_support.o v850jg2.o
-KERNEL_COBJS	:= $(KERNEL_COBJS) target_config.o target_timer.o
+KERNEL_COBJS	:= $(KERNEL_COBJS) target_config.o target_timer.o target_serial.o
 
 #
 #  リンクオプション

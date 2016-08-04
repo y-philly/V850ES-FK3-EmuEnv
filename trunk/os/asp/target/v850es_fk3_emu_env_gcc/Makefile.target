@@ -54,14 +54,14 @@ TOOL = gcc
 #  コンパイルフラグ
 #
 COPTS := $(COPTS)
-LDFLAGS := $(LDFLAGS) -msoft-float
+LDFLAGS := $(LDFLAGS) -msoft-float -Wl,-Map=v850es_fk2.map
 INCLUDES := $(INCLUDES) -I$(SRCDIR)/target/v850es_fk3_emu_env_gcc
 
 #
 #  カーネルに関する定義
 #
 KERNEL_DIR	:= $(KERNEL_DIR):$(SRCDIR)/target/v850es_fk3_emu_env_gcc
-KERNEL_ASMOBJS	:= $(KERNEL_ASMOBJS) target_support.o v850jg2.o
+KERNEL_ASMOBJS	:= $(KERNEL_ASMOBJS) target_support.o v850es_fk2.o
 KERNEL_COBJS	:= $(KERNEL_COBJS) target_config.o target_timer.o target_serial.o
 
 #
@@ -69,7 +69,7 @@ KERNEL_COBJS	:= $(KERNEL_COBJS) target_config.o target_timer.o target_serial.o
 #
 
 #  リンカスクリプトの定義
-LDSCRIPT = $(SRCDIR)/arch/v850_gcc/v850jg2.ld
+LDSCRIPT = $(SRCDIR)/arch/v850_gcc/v850es_fk2.ld
 
 #
 #  プロセッサ依存部のインクルード

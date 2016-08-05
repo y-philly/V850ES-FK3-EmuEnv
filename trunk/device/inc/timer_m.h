@@ -1,15 +1,15 @@
-#ifndef _TIMER_M_H_
+Ôªø#ifndef _TIMER_M_H_
 #define _TIMER_M_H_
 
 #include "device/inc/device.h"
 
 /*
- * TMM0ÉRÉìÉyÉAÅEÉåÉWÉXÉ^ 0Åi TM0CMP0Åj
+ * TMM0„Ç≥„É≥„Éö„Ç¢„Éª„É¨„Ç∏„Çπ„Çø 0Ôºà TM0CMP0Ôºâ
  */
 #define MPU_TMM_ADDR_TM0CMP0				(0xFFFFF694U)
 
 /*
- * TMM0êßå‰ÉåÉWÉXÉ^ 0Åi TM0CTL0Åj
+ * TMM0Âà∂Âæ°„É¨„Ç∏„Çπ„Çø 0Ôºà TM0CTL0Ôºâ
  */
 #define MPU_TMM_ADDR_TM0CTL0				(0xFFFFF690U)
 

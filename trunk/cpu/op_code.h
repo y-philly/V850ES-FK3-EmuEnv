@@ -1,4 +1,4 @@
-#ifndef _OP_CODE_H_
+﻿#ifndef _OP_CODE_H_
 #define _OP_CODE_H_
 
 

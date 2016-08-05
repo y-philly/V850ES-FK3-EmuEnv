@@ -34,7 +34,7 @@ static int elf_get_code(void *loader, uint32 pc, uint16 code[OP_DECODE_MAX])
 	uint16 *addrp;
 	ElfLoaderType *p = (ElfLoaderType*)loader;
 	/*
-	 * ‚Æ‚è‚ ‚¦‚¸CƒvƒƒOƒ‰ƒ€‚ÍROM‚¾‚¯‚É‘¶İ‚·‚é‚à‚Ì‚Æ‚·‚éD
+	 * ã¨ã‚Šã‚ãˆãšï¼Œãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¯ROMã ã‘ã«å­˜åœ¨ã™ã‚‹ã‚‚ã®ã¨ã™ã‚‹ï¼
 	 */
 	if (pc < p->rom.addr) {
 		return -1;
@@ -43,7 +43,7 @@ static int elf_get_code(void *loader, uint32 pc, uint16 code[OP_DECODE_MAX])
 		return -1;
 	}
 	if ((pc % 2) != 0) {
-		//ƒAƒ‰ƒCƒƒ“ƒgˆá”½
+		//ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆé•å
 		return -1;
 	}
 	off = pc - p->rom.addr;

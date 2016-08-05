@@ -1,4 +1,4 @@
-#ifndef _DBG_CAN_H_
+﻿#ifndef _DBG_CAN_H_
 #define _DBG_CAN_H_
 
 #include "device/inc/device.h"

@@ -1,10 +1,10 @@
-#ifndef _TIMER_H_
+ï»¿#ifndef _TIMER_H_
 #define _TIMER_H_
 
 #include "device/inc/device.h"
 
 /*************************************************
- * 16ƒrƒbƒgƒ^ƒCƒ}^ƒCƒxƒ“ƒgƒJƒEƒ“ƒ^AA(TAA)
+ * 16ãƒ“ãƒƒãƒˆã‚¿ã‚¤ãƒžï¼ã‚¤ãƒ™ãƒ³ãƒˆã‚«ã‚¦ãƒ³ã‚¿AA(TAA)
  *************************************************/
 
 #define TAAnChannelNum			UINT_C(8)
@@ -18,43 +18,43 @@
 #define TAAnCH7					UINT_C(7)
 
 /*
- * TAAn§ŒäƒŒƒWƒXƒ^0
+ * TAAnåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿0
  */
 #define TAAnCTL0_BASE			UINT_C(0xFFFFF590)
 #define TAAnCTL0(CH)			(TAAnCTL0_BASE + ((CH) * 16U))
 /*
- * TAAn§ŒäƒŒƒWƒXƒ^1
+ * TAAnåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿1
  */
 #define TAAnCTL1_BASE			UINT_C(0xFFFFF591)
 #define TAAnCTL1(CH)			(TAAnCTL1_BASE + ((CH) * 16U))
 
 
 /*
- * TAAn ƒLƒƒƒvƒ`ƒƒ^ƒRƒ“ƒyƒAEƒŒƒWƒXƒ^ 0i TAAnCCR0j
+ * TAAn ã‚­ãƒ£ãƒ—ãƒãƒ£ï¼ã‚³ãƒ³ãƒšã‚¢ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼ˆ TAAnCCR0ï¼‰
  */
 #define TAAnCCR0_BASE			UINT_C(0xFFFFF596)
 #define TAAnCCR0(CH)			(TAAnCCR0_BASE + ((CH) * 16U))
 
 /*
- * TAAn ƒLƒƒƒvƒ`ƒƒ^ƒRƒ“ƒyƒAEƒŒƒWƒXƒ^ 1i TAAnCCR1j
+ * TAAn ã‚­ãƒ£ãƒ—ãƒãƒ£ï¼ã‚³ãƒ³ãƒšã‚¢ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ 1ï¼ˆ TAAnCCR1ï¼‰
  */
 #define TAAnCCR1_BASE			UINT_C(0xFFFFF598)
 #define TAAnCCR1(CH)			(TAAnCCR1_BASE + ((CH) * 16U))
 
 /*
- * TAAnƒJƒEƒ“ƒ^EƒŠ[ƒhEƒoƒbƒtƒ@EƒŒƒWƒXƒ^
+ * TAAnã‚«ã‚¦ãƒ³ã‚¿ãƒ»ãƒªãƒ¼ãƒ‰ãƒ»ãƒãƒƒãƒ•ã‚¡ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿
  */
 #define TAAnCNT_BASE			UINT_C(0xFFFFF59A)
 #define TAAnCNT(CH)				(TAAnCNT_BASE + ((CH) * 16U))
 
 /*
- * TAAn ƒIƒvƒVƒ‡ƒ“EƒŒƒWƒXƒ^ 0i TAAnOPT0j
+ * TAAn ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼ˆ TAAnOPT0ï¼‰
  */
 #define TAAnOPT0_BASE			UINT_C(0xFFFFF595)
 #define TAAnOPT0(CH)			(TAAnOPT0_BASE + ((CH) * 16U))
 
 /*
- * TAAn ƒIƒvƒVƒ‡ƒ“EƒŒƒWƒXƒ^ 1i TAAnOPT1j
+ * TAAn ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ 1ï¼ˆ TAAnOPT1ï¼‰
  */
 #define TAA1OPT1				UINT_C(0xFFFFF5AD)
 #define TAA3OPT1				UINT_C(0xFFFFF5CD)

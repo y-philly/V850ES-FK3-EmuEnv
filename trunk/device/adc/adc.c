@@ -95,7 +95,7 @@ void device_supply_clock_adc(DeviceType *device)
 		(void)device_io_read8(device, MPU_ADC_ADDR_AdAnM0(cntl), &data);
 		if ((data & (1U << MPU_ADC_ADDR_AdAnM0_ADAnCE)) == 0U) {
 			/*
-			 * AD•ÏŠ·“®ì’âŽ~
+			 * ADå¤‰æ›å‹•ä½œåœæ­¢
 			 */
 			AdcDevice[cntl].mode = ADC_MODE_STOP;
 			continue;
@@ -103,7 +103,7 @@ void device_supply_clock_adc(DeviceType *device)
 		if ((data & (1U << MPU_ADC_ADDR_AdAnM0_ADAnPS)) == 0U) {
 			//printf("AD%d OFF\n",cntl);
 			/*
-			 * AD“dŒ¹OFF
+			 * ADé›»æºOFF
 			 */
 			AdcDevice[cntl].mode = ADC_MODE_STOP;
 			continue;

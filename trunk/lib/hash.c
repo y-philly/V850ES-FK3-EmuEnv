@@ -89,7 +89,7 @@ void hash_add(HashIdType id, HashValueType *value)
 	entry->list = NULL;
 
 	/*
-	 * ハッシュリスト登録
+	 * 繝上ャ繧ｷ繝･繝ｪ繧ｹ繝育匳骭ｲ
 	 */
 	if (head->last == NULL) {
 		head->next = head->last = entry;
@@ -100,7 +100,7 @@ void hash_add(HashIdType id, HashValueType *value)
 	}
 
 	/*
-	 * 全エントリ管理用リスト登録
+	 * 蜈ｨ繧ｨ繝ｳ繝医Μ邂｡逅�逕ｨ繝ｪ繧ｹ繝育匳骭ｲ
 	 */
 	if (HashListCtrl[id].last == NULL) {
 		HashListCtrl[id].next = HashListCtrl[id].last = entry;

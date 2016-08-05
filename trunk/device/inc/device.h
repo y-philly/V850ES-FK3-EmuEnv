@@ -1,4 +1,4 @@
-#ifndef _DEVICE_H_
+ï»¿#ifndef _DEVICE_H_
 #define _DEVICE_H_
 
 #include "std_types.h"
@@ -42,7 +42,7 @@ typedef struct {
 
 
 /*
- * ƒfƒoƒCƒX‰Šú‰»ŠÖ”
+ * ãƒ‡ãƒã‚¤ã‚¹åˆæœŸåŒ–é–¢æ•°
  */
 extern void device_init(DeviceType *device);
 extern void device_init_timer(DeviceType *device);
@@ -53,7 +53,7 @@ extern void device_init_adc(DeviceType *device);
 extern void device_init_wdg(DeviceType *device);
 
 /*
- * ƒfƒoƒCƒXƒNƒƒbƒN‹¤—L
+ * ãƒ‡ãƒã‚¤ã‚¹ã‚¯ãƒ­ãƒƒã‚¯å…±æœ‰
  */
 extern void device_supply_clock(DeviceType *device);
 extern void device_supply_clock_timer(DeviceType *device);
@@ -64,17 +64,17 @@ extern void device_supply_clock_adc(DeviceType *device);
 extern void device_supply_clock_wdg(DeviceType *device);
 
 /*
- * ƒfƒoƒCƒXƒNƒƒbƒNQÆ
+ * ãƒ‡ãƒã‚¤ã‚¹ã‚¯ãƒ­ãƒƒã‚¯å‚ç…§
  */
 extern void device_print_clock(DeviceType *device);
 
 /*
- * Š„‚İŠÖ”
+ * å‰²è¾¼ã¿é–¢æ•°
  */
 extern void device_raise_int(DeviceType *device, uint16 intno);
 
 /*
- * ƒƒ‚ƒŠƒAƒNƒZƒXŠÖ”
+ * ãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹é–¢æ•°
  */
 extern int device_io_write8(DeviceType *device, uint32 addr, uint8 data);
 extern int device_io_write16(DeviceType *device, uint32 addr, uint16 data);

@@ -55,25 +55,25 @@ void device_do_serial(DeviceType *device, SerialDeviceType *serial)
 		return;
 	}
 	/*
-	 * ŽóMƒf[ƒ^ƒ`ƒFƒbƒNF‘¶Ý‚µ‚Ä‚¢‚éê‡‚ÍCŠ„‚èž‚Ý‚ðã‚°‚éD
+	 * å—ä¿¡ãƒ‡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯ï¼šå­˜åœ¨ã—ã¦ã„ã‚‹å ´åˆã¯ï¼Œå‰²ã‚Šè¾¼ã¿ã‚’ä¸Šã’ã‚‹ï¼Ž
 	 */
 	if (serial_isset_str_ssf() == FALSE) {
 		ret = serial->ops->recv(serial->id, &data);
 		if (ret) {
 			serial_set_str_ssf();
-			//ŽóMƒf[ƒ^‚ðƒZƒbƒg‚·‚éD
+			//å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ï¼Ž
 			(void)device_io_write8(device, UDnRX(serial->id), data);
-			//ŽóMŠ„ž‚Ý‚ðã‚°‚é
+			//å—ä¿¡å‰²è¾¼ã¿ã‚’ä¸Šã’ã‚‹
 			device_raise_int(device, INTNO_INTUD0R);
 		}
 	}
 
 	/*
-	 * ‘—Mƒf[ƒ^ƒ`ƒFƒbƒNF‘¶Ý‚µ‚Ä‚¢‚éê‡‚ÍCƒf[ƒ^“]‘—‚·‚éD
+	 * é€ä¿¡ãƒ‡ãƒ¼ã‚¿ãƒã‚§ãƒƒã‚¯ï¼šå­˜åœ¨ã—ã¦ã„ã‚‹å ´åˆã¯ï¼Œãƒ‡ãƒ¼ã‚¿è»¢é€ã™ã‚‹ï¼Ž
 	 */
 	if (serial->is_send_data) {
 		ret = serial->ops->send(serial->id, serial->send_data);
-		//‘—MŠ„ž‚Ý‚ðã‚°‚é
+		//é€ä¿¡å‰²è¾¼ã¿ã‚’ä¸Šã’ã‚‹
 		serial_set_str(FALSE);
 		device_raise_int(device, INTNO_INTUD0T);
 		serial->is_send_data = FALSE;

@@ -1,4 +1,4 @@
-#ifndef _STD_TYPES_H_
+﻿#ifndef _STD_TYPES_H_
 #define _STD_TYPES_H_
 
 typedef char sint8;

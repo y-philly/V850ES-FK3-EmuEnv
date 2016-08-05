@@ -39,7 +39,7 @@
 #
 
 #
-#  Makefile のプロセッサ依存 (V850ES用)
+#  Makefile のプロセッサ依存 (V850ES/FK3用)
 #
 
 #

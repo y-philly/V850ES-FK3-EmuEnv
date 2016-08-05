@@ -1,11 +1,11 @@
 /*
  *  TOPPERS/ASP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
- *      Advanced Standard Profile Kernel  
- * 
+ *      Advanced Standard Profile Kernel
+ *
  *  Copyright (C) 2010 by Meika Sugimoto
- * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -27,25 +27,35 @@
  *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
  *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
  *      免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
  *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
- * 
+ *
  */
 
-#ifndef TOPPERS_TARGET_SIL_H
-#define TOPPERS_TARGET_SIL_H
+#ifndef TOPPERS_V850ES_FK3_EMU_ENV_H
+#define TOPPERS_V850ES_FK3_EMU_ENV_H
 
-/*
- *  微少時間待ちのための定義
- *  
- */
-#define SIL_DLY_TIM1     4600
-#define SIL_DLY_TIM2     3000
+#include "v850_gcc/v850es_fk3.h"
 
-#include "v850_gcc/prc_sil.h"
+/* クロック速度 */
+#define PCLOCK			(20000000)
 
-#endif	/* TOPPERS_TARGET_SIL_H */
+/* I/O関連定義 */
+#define LED1_ADDRESS	PCT
+#define LED1_BITPOS		6
+
+/* シリアル関連定義 */
+#define BAUD_38400_UA0CTL1	(0x01)
+#define BAUD_38400_UA0CTL2	(0x82)
+
+#define BAUD_19200_UA0CTL1	(0x02)
+#define BAUD_19200_UA0CTL2	(0x82)
+
+#define BAUD_9600_UA0CTL1	(0x03)
+#define BAUD_9600_UA0CTL2	(0x82)
+
+#endif	/* TOPPERS_CQ_V850_FK3_EMU_ENV_H */

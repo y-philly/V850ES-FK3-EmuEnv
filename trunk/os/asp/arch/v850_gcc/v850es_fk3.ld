@@ -45,8 +45,8 @@ OUTPUT_ARCH(v850-rh850)
 
 MEMORY
 {
-	INTROM(raxi) : org = 0x00000000, len = 256k
-	INTRAM(wax)  : org = 0x3FFF9000, len = 24k
+	INTROM(raxi) : org = 0x00000000, len = 512k
+	INTRAM(wax)  : org = 0x3FFF7000, len = 32k
 };
 
 PROVIDE(__stack = 0);

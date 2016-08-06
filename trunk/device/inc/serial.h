@@ -1,11 +1,11 @@
-#ifndef _SERIAL_H_
+ï»¿#ifndef _SERIAL_H_
 #define _SERIAL_H_
 
 #include "device/inc/device.h"
 
 
 /*
- * ƒAƒVƒ“ƒNƒƒiƒXEƒVƒŠƒAƒ‹EƒCƒ“ƒ^ƒtƒF[ƒXi UARTDj
+ * ã‚¢ã‚·ãƒ³ã‚¯ãƒ­ãƒŠã‚¹ãƒ»ã‚·ãƒªã‚¢ãƒ«ãƒ»ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ãƒ¼ã‚¹ï¼ˆ UARTDï¼‰
  */
 #define UDnChannelNum			UINT_C(8)
 #define UDnCH0					UINT_C(0)
@@ -18,48 +18,48 @@
 #define UDnCH7					UINT_C(7)
 
 /*
- * UARTDn§ŒäƒŒƒWƒXƒ^ 0i UDnCTL0j
+ * UARTDnåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼ˆ UDnCTL0ï¼‰
  */
 #define UDnCTL0_BASE			UINT_C(0xFFFFFA00)
 #define UDnCTL0(CH)				(UDnCTL0_BASE + ((CH) * 16U))
 
 /*
- * UARTDn§ŒäƒŒƒWƒXƒ^ 1i UDnCTL1j
+ * UARTDnåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 1ï¼ˆ UDnCTL1ï¼‰
  */
 #define UDnCTL1_BASE			UINT_C(0xFFFFFA01)
 #define UDnCTL1(CH)				(UDnCTL1_BASE + ((CH) * 16U))
 /*
- * UARTDn§ŒäƒŒƒWƒXƒ^ 2i UDnCTL2j
+ * UARTDnåˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 2ï¼ˆ UDnCTL2ï¼‰
  */
 #define UDnCTL2_BASE			UINT_C(0xFFFFFA02)
 #define UDnCTL2(CH)				(UDnCTL2_BASE + ((CH) * 16U))
 
 /*
- * UARTDn ƒIƒvƒVƒ‡ƒ“§ŒäƒŒƒWƒXƒ^ 0i UDnOPT0j
+ * UARTDn ã‚ªãƒ—ã‚·ãƒ§ãƒ³åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼ˆ UDnOPT0ï¼‰
  */
 #define UDnOPT0_BASE			UINT_C(0xFFFFFA03)
 #define UDnOPT0(CH)				(UDnOPT0_BASE + ((CH) * 16U))
 
 /*
- * UARTDn ƒIƒvƒVƒ‡ƒ“§ŒäƒŒƒWƒXƒ^ 1i UDnOPT1j
+ * UARTDn ã‚ªãƒ—ã‚·ãƒ§ãƒ³åˆ¶å¾¡ãƒ¬ã‚¸ã‚¹ã‚¿ 1ï¼ˆ UDnOPT1ï¼‰
  */
 #define UDnOPT1_BASE			UINT_C(0xFFFFFA05)
 #define UDnOPT1(CH)				(UDnOPT1_BASE + ((CH) * 16U))
 
 /*
- * UARTDnó‘ÔƒŒƒWƒXƒ^i UDnSTRj
+ * UARTDnçŠ¶æ…‹ãƒ¬ã‚¸ã‚¹ã‚¿ï¼ˆ UDnSTRï¼‰
  */
 #define UDnSTR_BASE				UINT_C(0xFFFFFA04)
 #define UDnSTR(CH)				(UDnSTR_BASE + ((CH) * 16U))
 
 /*
- * UARTDn‘—Mƒf[ƒ^EƒŒƒWƒXƒ^i UDnTXj
+ * UARTDné€ä¿¡ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ï¼ˆ UDnTXï¼‰
  */
 #define UDnTX_BASE				UINT_C(0xFFFFFA07)
 #define UDnTX(CH)				(UDnTX_BASE + ((CH) * 16U))
 
 /*
- * UARTDnŽóMƒf[ƒ^EƒŒƒWƒXƒ^i UDnRXj
+ * UARTDnå—ä¿¡ãƒ‡ãƒ¼ã‚¿ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ï¼ˆ UDnRXï¼‰
  */
 #define UDnRX_BASE				UINT_C(0xFFFFFA06)
 #define UDnRX(CH)				(UDnRX_BASE + ((CH) * 16U))
@@ -69,11 +69,11 @@ typedef struct {
 	bool (*send) (uint8 ch, uint8 data);
 } DeviceSerialOpType;
 /*
- *  UARTD0ŽóMŠ®—¹Š„ž‚Ý”Ô†
+ *  UARTD0å—ä¿¡å®Œäº†å‰²è¾¼ã¿ç•ªå·
  */
 #define INTNO_INTUD0R	UINT_C(36)
 /*
- *  UARTD0‘—MŠ®—¹Š„ž‚Ý”Ô†
+ *  UARTD0é€ä¿¡å®Œäº†å‰²è¾¼ã¿ç•ªå·
  */
 #define INTNO_INTUD0T	UINT_C(37)
 extern void device_serial_register_ops(void *serial, uint8 ch, DeviceSerialOpType *ops);

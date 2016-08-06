@@ -1,4 +1,4 @@
-#ifndef _REG_H_
+ï»¿#ifndef _REG_H_
 #define _REG_H_
 
 
@@ -15,7 +15,7 @@ extern uint32* can_get_reg16_addr(CpuManagerType *cpu, uint32 regaddr);
 extern void can_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data);
 
 /*
- * “à•”ŠÖ”
+ * å†…éƒ¨é–¢æ•°
  */
 extern void cpu_memget_addrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp);
 extern void cpu_memget_raddrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp);

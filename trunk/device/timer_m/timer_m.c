@@ -36,12 +36,12 @@ static int device_timer_do_update(DeviceType *device)
 	uint8 data8;
 
 	/*
-	 * ƒRƒ“ƒyƒA’l‚ÌŽæ“¾
+	 * ã‚³ãƒ³ãƒšã‚¢å€¤ã®å–å¾—
 	 */
 	(void)device_io_read16(device, MPU_TMM_ADDR_TM0CMP0, &timer->compare);
 
 	/*
-	 * “®ì”»’è
+	 * å‹•ä½œåˆ¤å®š
 	 */
 	(void)device_io_read8(device, MPU_TMM_ADDR_TM0CTL0, &data8);
 	if (timer->mode == TIMER_MODE_STOP) {

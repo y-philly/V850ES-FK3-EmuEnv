@@ -21,19 +21,19 @@ void device_supply_clock_wdg(DeviceType *device)
 {
 	uint16 reg16;
 	/*
-	 * ƒJƒEƒ“ƒgƒCƒ“ƒNƒŠƒƒ“ƒg
+	 * ã‚«ã‚¦ãƒ³ãƒˆã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
 	 */
 	WdgDevice.cnt++;
 
 	/*
-	 * ƒ^ƒCƒ€ƒAƒEƒgŠm”F
+	 * ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆç¢ºèª
 	 */
 	if (WdgDevice.cnt >= DVICE_WDG_TIMEOUT) {
 		intc_raise_nmi(NULL, INTC_NMINO_NMI);
 	}
 
 	/*
-	 * ƒpƒ‹ƒX—L–³Šm”F
+	 * ãƒ‘ãƒ«ã‚¹æœ‰ç„¡ç¢ºèª
 	 */
 	(void)device_io_read16(device, 0xFFFFF404, &reg16);
 	reg16 = reg16 & DVICE_WDG_PORT_BIT;

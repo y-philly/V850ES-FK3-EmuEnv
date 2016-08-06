@@ -1,4 +1,4 @@
-#ifndef _WDG_H_
+﻿#ifndef _WDG_H_
 #define _WDG_H_
 
 #include "device/inc/device.h"

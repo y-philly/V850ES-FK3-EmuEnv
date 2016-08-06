@@ -1,4 +1,4 @@
-#ifndef _INTC_H_
+﻿#ifndef _INTC_H_
 #define _INTC_H_
 
 #include "cpu.h"
@@ -17,17 +17,17 @@ extern int intc_raise_nmi(CpuManagerType *cpu, uint32 nmino);
 
 
 /*
- * �����ݐ�
- * �p�f�B���O���P���邽�߁C���ۂɂ�116�ł��邱�Ƃɒ��Ӂ��D
- * �������ݔԍ�53�܂ł́C�A�����Ă��邪�C
- * ��54�Ԗڂ̓p�f�B���O����Ă��邽�߁C�P����Ă���D
+ * 割込み数
+ * パディングが１個あるため，実際には116個であることに注意※．
+ * ※割込み番号53までは，連続しているが，
+ * ※54番目はパディングされているため，１個ずれている．
  */
 #define INTC_NUM			117
 #define INTC_INTNO_MAX		116
 #define INTC_PINTNO_NOUSE	54
 
 /*
- * 5.3.4 �����ݐ��䃌�W�X�^(xxICn)
+ * 5.3.4 割込み制御レジスタ(xxICn)
  */
 #define INTC_REG_ICN_BASE	0xFFFFF110
 #define INTC_ICN_ISSET_IF(data)		( (((data) & (1 << 7)) == (1 << 7)) )
@@ -78,23 +78,23 @@ static inline uint32 intc_regaddr_icn(uint32 intno)
 }
 
 /*
- * 5.1 �f�B�t�H�[���g�E�v���C�I���e�B
+ * 5.1 ディフォールト・プライオリティ
  */
 #define INTC_DEFAULT_PRIORITY(intno)		intc_intno2off((intno))
 
 /*
- * 5.1 ��O�R�[�h
+ * 5.1 例外コード
  */
 #define INTC_MASK_ECR_CODE_BASE				0x0080
 #define INTC_MASK_ECR_CODE(intno)			( INTC_MASK_ECR_CODE_BASE + (intc_intno2off((intno)) *16) )
 
 /*
- * 5.1 �n���h���E�A�h���X
+ * 5.1 ハンドラ・アドレス
  */
 #define INTC_MASK_INTR_ADDR(intno)			INTC_MASK_ECR_CODE((intno))
 
 /*
- * 5.3�D5 �����݃}�X�N�E���W�X�^(IMR0-IMR7)
+ * 5.3．5 割込みマスク・レジスタ(IMR0-IMR7)
  */
 #define INTC_REG_IMR0	0xFFFFF100
 #define INTC_REG_IMR0L	0xFFFFF100
@@ -127,11 +127,11 @@ static inline uint32 intc_regaddr_icn(uint32 intno)
 #define INTC_REG_IMR7	0xFFFFF10E
 
 /*
- * 5.3�D6 �C�����C���E�v���C�I���e�B�E���W�X�^(ISPR)
+ * 5.3．6 インライン・プライオリティ・レジスタ(ISPR)
  */
 #define INTC_REG_ISPR	0xFFFFF1FA
 /*
- * �����݃R���g���[���Ǘ����
+ * 割込みコントローラ管理情報
  */
 #define INTC_NUM_INTLVL		8
 #define INTC_MAX_INTLVL		0
@@ -145,7 +145,7 @@ typedef struct {
 typedef struct {
 	NmiIntcStatusType 		nmi;
 	/*
-	 * ���ݎ��s���̊��荞�ݔԍ�
+	 * 現在実行中の割り込み番号
 	 */
 	int current_intno;
 
@@ -153,8 +153,8 @@ typedef struct {
 	int saved_intno_stack[INTC_NUM_INTLVL];
 
 	/*
-	 * �����ݑҋ@���̊��荞�݂�����ꍇ�͂��̗D��x���ݒ肳��Ă���
-	 * INTC_NUM_INTLVL�̏ꍇ�͑ҋ@�Ȃ��Ɣ��f����D
+	 * 割込み待機中の割り込みがある場合はその優先度が設定されている
+	 * INTC_NUM_INTLVLの場合は待機なしと判断する．
 	 */
 	uint8	is_waiting_lvl[INTC_NUM];
 	uint32	waiting_lvl_num[INTC_NUM];

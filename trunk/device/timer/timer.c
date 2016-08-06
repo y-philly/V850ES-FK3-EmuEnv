@@ -71,7 +71,7 @@ static void device_timer_do_mode(DeviceType *device, int ch)
 	}
 
 	/*
-	 * ƒRƒ“ƒyƒA’l‚Ìæ“¾
+	 * ã‚³ãƒ³ãƒšã‚¢å€¤ã®å–å¾—
 	 */
 	(void)device_io_read16(device, TAAnCCR0(ch), &timer->compare0);
 	(void)device_io_read16(device, TAAnCCR1(ch), &timer->compare1);
@@ -85,7 +85,7 @@ static void device_timer_do_mode(DeviceType *device, int ch)
 #endif
 
 	/*
-	 * ƒJƒEƒ“ƒ^’l‚Ìæ“¾
+	 * ã‚«ã‚¦ãƒ³ã‚¿å€¤ã®å–å¾—
 	 */
 	(void)device_io_read16(device, TAAnCNT(ch), &data16);
 	timer->cnt = data16;
@@ -94,7 +94,7 @@ static void device_timer_do_mode(DeviceType *device, int ch)
 		fflush(stdout);
 	}
 	/*
-	 * TODO ƒNƒƒbƒNİ’è‚ÍÈ—ª‚·‚é
+	 * TODO ã‚¯ãƒ­ãƒƒã‚¯è¨­å®šã¯çœç•¥ã™ã‚‹
 	 */
 	return;
 }
@@ -158,13 +158,13 @@ void device_supply_clock_timer(DeviceType *device)
 		if ((device->clock % TimerDevice[ch].fd) != 0) {
 			continue;
 		}
-		//ƒ‚[ƒhİ’è
+		//ãƒ¢ãƒ¼ãƒ‰è¨­å®š
 		device_timer_do_mode(device, ch);
 
-		//ƒJƒEƒ“ƒ^XV
+		//ã‚«ã‚¦ãƒ³ã‚¿æ›´æ–°
 		device_timer_do_update(device, ch);
 
-		//Š„‚İ¶¬
+		//å‰²è¾¼ã¿ç”Ÿæˆ
 		device_timer_do_interrupt(device, ch);
 	}
 	return;

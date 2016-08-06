@@ -16,17 +16,17 @@ void intc_init(CpuManagerType *cpu)
 	uint8 *ispr;
 
 	/*
-	 * intc_control‚Ì‰Šú‰»
+	 * intc_controlã®åˆæœŸåŒ–
 	 */
 	/*
-	 * NMI‰Šú‰»
+	 * NMIåˆæœŸåŒ–
 	 */
 	intc_control.nmi.intwdt2_hasreq = FALSE;
 	intc_control.nmi.nmi_reqnum = 0;
 
 
 	/*
-	 * ƒ}ƒXƒJƒuƒ‹Š„‚è‚İ‰Šú‰»
+	 * ãƒã‚¹ã‚«ãƒ–ãƒ«å‰²ã‚Šè¾¼ã¿åˆæœŸåŒ–
 	 */
 	for (i = 0; i < INTC_NUM; i++) {
 		intc_control.is_waiting_lvl[i] = INTC_NUM_INTLVL;
@@ -40,7 +40,7 @@ void intc_init(CpuManagerType *cpu)
 		intc_control.saved_intno_stack[i] = 0;
 	}
 	/*
-	 * xxIcn‚Ì‰Šú‰»
+	 * xxIcnã®åˆæœŸåŒ–
 	 */
 	for (i = 0; i < INTC_NUM; i++) {
 		regaddr = intc_regaddr_icn(i);
@@ -51,7 +51,7 @@ void intc_init(CpuManagerType *cpu)
 	}
 
 	/*
-	 * IMR0-IMR7‚Ì‰Šú‰»
+	 * IMR0-IMR7ã®åˆæœŸåŒ–
 	 */
 	cpu_memget_addrp(cpu, INTC_REG_IMR0, &pregaddr);
 	imr0_6 = (uint16*)pregaddr;
@@ -86,7 +86,7 @@ void intc_init(CpuManagerType *cpu)
 	*imr7 = 0x1F;
 
 	/*
-	 * ISPR‚Ì‰Šú‰»
+	 * ISPRã®åˆæœŸåŒ–
 	 */
 	cpu_memget_addrp(cpu, INTC_REG_ISPR, &pregaddr);
 	ispr = (uint8*)pregaddr;
@@ -137,13 +137,13 @@ static int get_maxpri_itno(CpuManagerType *cpu)
 
 	if (intc_control.current_intno >= 0) {
 		/*
-		 * Œ»İÀs’†‚Ì‚à‚Ì‚æ‚è‚à‚‚¢—Dæ“x‚ğ‚à‚Â‚à‚Ì‚ğæ“¾‚·‚é
+		 * ç¾åœ¨å®Ÿè¡Œä¸­ã®ã‚‚ã®ã‚ˆã‚Šã‚‚é«˜ã„å„ªå…ˆåº¦ã‚’ã‚‚ã¤ã‚‚ã®ã‚’å–å¾—ã™ã‚‹
 		 */
 		minlvl = (((uint32)intc_control.is_waiting_lvl[intc_control.current_intno]) << 16) | ((INTC_DEFAULT_PRIORITY(intc_control.current_intno) << 0));
 	}
 	else {
 		/*
-		 * ‚à‚Á‚Æ‚à‚‚¢—Dæ“x‚ğ‚à‚Â‚à‚Ì‚ğæ“¾‚·‚é
+		 * ã‚‚ã£ã¨ã‚‚é«˜ã„å„ªå…ˆåº¦ã‚’ã‚‚ã¤ã‚‚ã®ã‚’å–å¾—ã™ã‚‹
 		 */
 		minlvl = 0xFFFFFFFF;
 	}
@@ -153,23 +153,23 @@ static int get_maxpri_itno(CpuManagerType *cpu)
 		}
 		if (intc_control.current_intno == i) {
 			/*
-			 * ‚·‚Å‚ÉÀs’†‚Ì‚à‚Ì‚Íƒ`ƒFƒbƒN‘ÎÛŠOD
+			 * ã™ã§ã«å®Ÿè¡Œä¸­ã®ã‚‚ã®ã¯ãƒã‚§ãƒƒã‚¯å¯¾è±¡å¤–ï¼
 			 */
 			continue;
 		}
 		/*
-		 * ƒ}ƒXƒN‚³‚ê‚Ä‚¢‚é‚à‚Ì‚Í‘ÎÛŠO‚Æ‚·‚é
+		 * ãƒã‚¹ã‚¯ã•ã‚Œã¦ã„ã‚‹ã‚‚ã®ã¯å¯¾è±¡å¤–ã¨ã™ã‚‹
 		 */
 		if (is_masked(cpu, i) == TRUE) {
 			continue;
 		}
 		/*
-		 * ƒfƒBƒtƒH[ƒ‹ƒg‚Ì—Dæ“x‚Æ“¯”äŠr‚·‚é‚½‚ßC32ƒrƒbƒg‚Å•]‰¿‚·‚éD
-		 * ¦ƒfƒBƒtƒH[ƒ‹ƒg‚Ì—Dæ“x‚ÍŠ„‚è‚İ—Dæ“x‚æ‚è‚à’á‚¢•]‰¿‚Æ‚È‚é‚½‚ßC‰ºˆÊƒrƒbƒg‚Éİ’è‚·‚é
-		 * ¦’l‚ª¬‚³‚¢•û‚ª—Dæ“x‚ª‚‚¢‚±‚Æ‚É’ˆÓ
-		 *     —Dæ“x@@ƒfƒtƒHƒ‹ƒg—Dæ“x
-		 * Å¬F    0    |       0
-		 * Å‘åF    7    |     115
+		 * ãƒ‡ã‚£ãƒ•ã‚©ãƒ¼ãƒ«ãƒˆã®å„ªå…ˆåº¦ã¨åŒæ™‚æ¯”è¼ƒã™ã‚‹ãŸã‚ï¼Œ32ãƒ“ãƒƒãƒˆã§è©•ä¾¡ã™ã‚‹ï¼
+		 * â€»ãƒ‡ã‚£ãƒ•ã‚©ãƒ¼ãƒ«ãƒˆã®å„ªå…ˆåº¦ã¯å‰²ã‚Šè¾¼ã¿å„ªå…ˆåº¦ã‚ˆã‚Šã‚‚ä½ã„è©•ä¾¡ã¨ãªã‚‹ãŸã‚ï¼Œä¸‹ä½ãƒ“ãƒƒãƒˆã«è¨­å®šã™ã‚‹
+		 * â€»å€¤ãŒå°ã•ã„æ–¹ãŒå„ªå…ˆåº¦ãŒé«˜ã„ã“ã¨ã«æ³¨æ„
+		 *     å„ªå…ˆåº¦ã€€ã€€ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå„ªå…ˆåº¦
+		 * æœ€å°ï¼š    0    |       0
+		 * æœ€å¤§ï¼š    7    |     115
 		 *
 		 */
 		tmp_lvl = (((uint32)intc_control.is_waiting_lvl[i]) << 16) | ((INTC_DEFAULT_PRIORITY(i) << 0));
@@ -212,7 +212,7 @@ static void intc_raise(CpuManagerType *cpu, uint32 intno)
 	}
 
 	/*
-	 * ƒ}ƒXƒJƒuƒ‹Š„‚è‚İ—v‹”­¶
+	 * ãƒã‚¹ã‚«ãƒ–ãƒ«å‰²ã‚Šè¾¼ã¿è¦æ±‚ç™ºç”Ÿ
 	 */
 	if (intc_control.current_intno != -1) {
 		intc_control.saved_intno_stack[intc_control.saved_intno_off] = intc_control.current_intno;
@@ -260,7 +260,7 @@ int intc_raise_intr(CpuManagerType *cpu, uint32 intno)
 	lvl = INTC_ICN_PR(*xxIcn);
 
 	/*
-	 * ŠÇ—ãC‚·‚×‚Ä‚ÌŠ„‚è‚İ—v‹‚Íwaiting‚É“ü‚ê‚Ä‚¨‚­D
+	 * ç®¡ç†ä¸Šï¼Œã™ã¹ã¦ã®å‰²ã‚Šè¾¼ã¿è¦æ±‚ã¯waitingã«å…¥ã‚Œã¦ãŠãï¼
 	 */
 	set_wait_intno(intno, lvl);
 
@@ -293,8 +293,8 @@ void intc_clr_currlvl_ispr(CpuManagerType *cpu)
 	*ispr = (*ispr) & ~(1 << lvl);
 
 	/*
-	 * ƒn[ƒhƒEƒFƒAƒ}ƒjƒ…ƒAƒ‹ã‚ÍC‚h‚ƒ‚‚ÌƒŠƒZƒbƒgŒ_‹@‚ª–¾‹L‚³‚ê‚Ä‚¢‚È‚¢‚ªC
-	 * Š„‚İI—¹Œ_‹@‚ÅƒŠƒZƒbƒg‚·‚é‚±‚Æ‚É‚µ‚½D
+	 * ãƒãƒ¼ãƒ‰ã‚¦ã‚§ã‚¢ãƒãƒ‹ãƒ¥ã‚¢ãƒ«ä¸Šã¯ï¼Œï¼©ï½ƒï½ã®ãƒªã‚»ãƒƒãƒˆå¥‘æ©ŸãŒæ˜è¨˜ã•ã‚Œã¦ã„ãªã„ãŒï¼Œ
+	 * å‰²è¾¼ã¿çµ‚äº†å¥‘æ©Ÿã§ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã“ã¨ã«ã—ãŸï¼
 	 */
 	wdata = *xxIcn;
 	INTC_ICN_CLR_IF(wdata);
@@ -302,7 +302,7 @@ void intc_clr_currlvl_ispr(CpuManagerType *cpu)
 
 
 	/*
-	 * Š„‚İI—¹ƒ^ƒCƒ~ƒ“ƒO‚Å‚µ‚©ŒÄ‚Ño‚³‚ê‚È‚¢‚½‚ßCŒ»İ‚ÌŠ„‚è‚İî•ñ‚ÍƒNƒŠƒA‚·‚éD
+	 * å‰²è¾¼ã¿çµ‚äº†ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§ã—ã‹å‘¼ã³å‡ºã•ã‚Œãªã„ãŸã‚ï¼Œç¾åœ¨ã®å‰²ã‚Šè¾¼ã¿æƒ…å ±ã¯ã‚¯ãƒªã‚¢ã™ã‚‹ï¼
 	 */
 	clr_wait_intno(intc_control.current_intno);
 
@@ -363,18 +363,18 @@ static void raise_nmi(CpuManagerType *cpu)
 
 /*
  *
- * Œ»İÀs’†‚¨‚æ‚Ñƒyƒ“ƒfƒBƒ“ƒO’†‚ÌŠ„‚İ‚ğ‘S‚Äƒ`ƒFƒbƒN‚µ‚ÄC
- * Å‚—Dæ“x‚Ì‚à‚Ì‚ğÀs‚·‚éD
+ * ç¾åœ¨å®Ÿè¡Œä¸­ãŠã‚ˆã³ãƒšãƒ³ãƒ‡ã‚£ãƒ³ã‚°ä¸­ã®å‰²è¾¼ã¿ã‚’å…¨ã¦ãƒã‚§ãƒƒã‚¯ã—ã¦ï¼Œ
+ * æœ€é«˜å„ªå…ˆåº¦ã®ã‚‚ã®ã‚’å®Ÿè¡Œã™ã‚‹ï¼
  */
 int intc_raise_pending_intr(CpuManagerType *cpu)
 {
 	/*
-	 * INTWDT2Š„‚İƒ`ƒFƒbƒN
+	 * INTWDT2å‰²è¾¼ã¿ãƒã‚§ãƒƒã‚¯
 	 */
 	if (intc_control.nmi.intwdt2_hasreq == TRUE) {
 		if (can_raise_inwtdt2(cpu) == FALSE) {
 			/*
-			 * V‚½‚È—v‹ó•t‚Í‹Ö~‚·‚é‚½‚ßˆ—I—¹D
+			 * æ–°ãŸãªè¦æ±‚å—ä»˜ã¯ç¦æ­¢ã™ã‚‹ãŸã‚å‡¦ç†çµ‚äº†ï¼
 			 */
 			return 0;
 		}
@@ -382,18 +382,18 @@ int intc_raise_pending_intr(CpuManagerType *cpu)
 		return 0;
 	}
 	/*
-	 * NMIŠ„‚İƒ`ƒFƒbƒN
+	 * NMIå‰²è¾¼ã¿ãƒã‚§ãƒƒã‚¯
 	 */
 	if (intc_control.nmi.nmi_reqnum > 0) {
 		raise_nmi(cpu);
 		/*
-		 * NMIŠ„‚İ‚ ‚è‚Ìê‡‚ÍCƒ}ƒXƒJƒuƒ‹Š„‚è‚İó•t‚Í‹Ö~‚·‚é‚½‚ßˆ—I—¹D
+		 * NMIå‰²è¾¼ã¿ã‚ã‚Šã®å ´åˆã¯ï¼Œãƒã‚¹ã‚«ãƒ–ãƒ«å‰²ã‚Šè¾¼ã¿å—ä»˜ã¯ç¦æ­¢ã™ã‚‹ãŸã‚å‡¦ç†çµ‚äº†ï¼
 		 */
 		return 0;
 	}
 
 	/*
-	 * ƒ}ƒXƒJƒuƒ‹Š„‚è‚İƒ`ƒFƒbƒN
+	 * ãƒã‚¹ã‚«ãƒ–ãƒ«å‰²ã‚Šè¾¼ã¿ãƒã‚§ãƒƒã‚¯
 	 */
 	int maxlvl_intno;
 

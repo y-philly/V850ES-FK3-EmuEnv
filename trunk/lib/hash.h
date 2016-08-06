@@ -1,4 +1,4 @@
-#ifndef _HASH_H_
+﻿#ifndef _HASH_H_
 #define _HASH_H_
 
 #include "std_types.h"

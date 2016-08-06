@@ -1,17 +1,17 @@
-#ifndef _ADC_H_
+ï»¿#ifndef _ADC_H_
 #define _ADC_H_
 
 #include "device/inc/device.h"
 
 /*
- * A/DƒRƒ“ƒo[ƒ^
+ * A/Dã‚³ãƒ³ãƒãƒ¼ã‚¿
  */
 #define MPU_ADC_ADA_NUM		(2U)
 #define MPU_ADC_ADA0		(0U)
 #define MPU_ADC_ADA1		(1U)
 
 /*
- * A/DƒRƒ“ƒo[ƒ^Eƒ‚[ƒhEƒŒƒWƒXƒ^ 0i ADAnM0j
+ * A/Dã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ»ãƒ¢ãƒ¼ãƒ‰ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼ˆ ADAnM0ï¼‰
  */
 #define MPU_ADC_ADDR_AdAnM0_BASE			(0xFFFFF200U)
 #define MPU_ADC_ADDR_AdAnM0(cntl)			(MPU_ADC_ADDR_AdAnM0_BASE + ((cntl) * 0x40))
@@ -26,24 +26,24 @@
 #define MPU_ADC_ADDR_AdAnM0_ADAnEF			(0U)
 
 /*
- * A/DƒRƒ“ƒo[ƒ^Eƒ‚[ƒhEƒŒƒWƒXƒ^ 1i ADAnM1j
+ * A/Dã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ»ãƒ¢ãƒ¼ãƒ‰ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ 1ï¼ˆ ADAnM1ï¼‰
  */
 #define MPU_ADC_ADDR_AdAnM1_BASE			(0xFFFFF201U)
 #define MPU_ADC_ADDR_AdAnM1(cntl)			(MPU_ADC_ADDR_AdAnM1_BASE + ((cntl) * 0x40))
 
 /*
- * A/DƒRƒ“ƒo[ƒ^Eƒ‚[ƒhEƒŒƒWƒXƒ^ 2i ADAnM2j
+ * A/Dã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ»ãƒ¢ãƒ¼ãƒ‰ãƒ»ãƒ¬ã‚¸ã‚¹ã‚¿ 2ï¼ˆ ADAnM2ï¼‰
  */
 #define MPU_ADC_ADDR_AdAnM2_BASE			(0xFFFFF203U)
 #define MPU_ADC_ADDR_AdAnM2(cntl)			(MPU_ADC_ADDR_AdAnM2_BASE + ((cntl) * 0x40))
 
 /*
- * A/DƒRƒ“ƒo[ƒ^Eƒ`ƒƒƒlƒ‹w’èƒŒƒWƒXƒ^ 0i ADAnSj
+ * A/Dã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ»ãƒãƒ£ãƒãƒ«æŒ‡å®šãƒ¬ã‚¸ã‚¹ã‚¿ 0ï¼ˆ ADAnSï¼‰
  */
 #define MPU_ADC_ADDR_ADAnS_BASE				(0xFFFFF202U)
 #define MPU_ADC_ADDR_ADAnS(cntl)			(MPU_ADC_ADDR_AdAnS_BASE + ((cntl) * 0x40))
 /*
- * A/D•ÏŠ·Œ‹‰ÊƒŒƒWƒXƒ^ m
+ * A/Då¤‰æ›çµæœãƒ¬ã‚¸ã‚¹ã‚¿ m
  */
 #define MPU_ADC_ADDR_ADAnCRm_BASE				(0xFFFFF210U)
 #define MPU_ADC_ADDR_ADAnCRm(cntl,pchannel)		((MPU_ADC_ADDR_ADAnCRm_BASE + ((cntl) * 0x40)) + ((pchannel) * 2U))

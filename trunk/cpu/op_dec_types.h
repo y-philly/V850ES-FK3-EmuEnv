@@ -1,4 +1,4 @@
-#ifndef _OP_DEC_TYPES_H_
+﻿#ifndef _OP_DEC_TYPES_H_
 #define _OP_DEC_TYPES_H_
 
 #include "op_format.h"

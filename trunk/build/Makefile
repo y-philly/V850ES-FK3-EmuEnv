@@ -5,6 +5,11 @@ ifdef USE_CANLIB
 KVASERDIR := /c/Program\ Files\ \(x86\)/Kvaser/Canlib
 endif
 
+ifdef USE_CANLIB_X86
+USE_CANLIB := TRUE
+KVASERDIR := /c/Program\ Files/Kvaser/Canlib
+endif
+
 IFLAGS	:= -I$(ROOTDIR)/main
 IFLAGS	+= -I$(ROOTDIR)/cpu
 IFLAGS	+= -I$(ROOTDIR)/elf_loader

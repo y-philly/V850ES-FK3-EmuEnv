@@ -98,7 +98,7 @@
 #define SOP_CODE_SHR_9		(0b000100)	/* format9:6 26-21 */
 #define OP_CODE_SHR_2		(0b010100)	/* format2:6 */
 #define OP_CODE_SLDB		(0b0110)	/* format4:4 */
-/* SLDBU */
+#define OP_CODE_SLDBU		(0b0000)
 #define OP_CODE_SLDH		(0b1000)	/* format4:4 */
 /* SLHU */
 #define OP_CODE_SLDW		(0b1010)	/* format4:4 */

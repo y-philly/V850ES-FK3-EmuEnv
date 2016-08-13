@@ -224,6 +224,15 @@ static int OpExec4(CpuManagerType *cpu)
 	case OP_CODE_SLDB:
 		ret = op_exec_sldb(cpu);
 		break;
+	case OP_CODE_SLDBU:
+		if ((cpu->decoded_code.type4_2.opcode & 0x1) == 0x00) {
+			ret = op_exec_sldbu(cpu);
+		}
+		else {
+			//TODO SLD.HU
+			printf("OpExec4 Error:Unknown OP:0x%x\n", cpu->decoded_code.type4_1.opcode);
+		}
+		break;
 	case OP_CODE_SLDH:
 		ret = op_exec_sldh(cpu);
 		break;

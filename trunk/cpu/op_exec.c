@@ -476,6 +476,9 @@ static int OpExec12(CpuManagerType *cpu)
 	int ret = -1;
 
 	switch (cpu->decoded_code.type12.sub1) {
+	case SOP_CODE_CMOV_12:
+		ret = op_exec_cmov_12(cpu);
+		break;
 	case SOP_CODE_MUL_12:
 		ret = op_exec_mulu_12(cpu);
 		break;

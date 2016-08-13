@@ -53,7 +53,6 @@
 
 
 #define SOP_CODE_CMOV_11		(0b011001)	/* format11 */
-#define SOP_CODE_CMOV_12		(0b011000)	/* format12 */
 
 #define SOP_CODE_DIVHX1_11		(0b010100)
 #define SOP_CODE_DIVHX2_11		(0b010101)
@@ -62,6 +61,8 @@
 
 
 #define SOP_CODE_MUL_12		(0b0100)	/* format12:6 26-23 */
+#define SOP_CODE_CMOV_12	(0b0110)	/* format12:6 26-23 */
+
 #define SSOP_CODE_MUL_12	(0b0)		/* format12:6 17 */
 #define OP_CODE_MULH_1		(0b000111)	/* format1:6 10-5 */
 #define OP_CODE_MULH_2		(0b010111)	/* format2:6 10-5 */

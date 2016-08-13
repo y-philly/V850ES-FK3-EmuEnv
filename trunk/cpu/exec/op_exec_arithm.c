@@ -732,3 +732,44 @@ int op_exec_mulu_12(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
+
+int op_exec_cmov_12(CpuManagerType *cpu)
+{
+	sint32 imm_data = op_sign_extend(4, cpu->decoded_code.type12.imml);
+	uint32 reg2 = cpu->decoded_code.type12.reg2;
+	uint32 reg3 = cpu->decoded_code.type12.reg3;
+	uint32 reg2_data = cpu->cpu.r[reg2];
+	uint32 reg3_data = cpu->cpu.r[reg3];
+	uint16 cond = ( ((cpu->decoded_code.type12.immh &  0x07) << 1U) | (cpu->decoded_code.type12.sub2) );
+
+
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	/*
+	 * if conditions are satisfied
+	 * then GR [reg3] ← sign-extended (imm5)
+	 * else GR [reg3] ← GR [reg2]
+	 */
+	if (setf_chk_cond(cpu, cond) == TRUE) {
+		cpu->cpu.r[reg3] = imm_data;
+	}
+	else {
+		cpu->cpu.r[reg3] = cpu->cpu.r[reg2];
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
+			"0x%x: CMOV cond(0x%x) imm5(%d) r%d(%d) r%d(%d):r%d(0x%x)\n",
+			cpu->cpu.pc,
+			cond,
+			imm_data,
+			reg2, reg2_data,
+			reg3, reg3_data,
+			reg3, cpu->cpu.r[reg3]));
+
+	cpu->cpu.pc += 4;
+	return 0;
+}

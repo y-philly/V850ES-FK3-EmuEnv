@@ -600,6 +600,10 @@ int op_exec_divu(CpuManagerType *cpu)
 	uint32 reg2_data = cpu->cpu.r[reg2];
 	uint32 reg3_data = cpu->cpu.r[reg3];
 
+
+	//printf("0x%x:op_exec_divu:reg2_data(%u)=0x%x reg3_data(%u)=0x%x\n", cpu->cpu.pc, reg2, reg2_data, reg3, reg3_data);
+	//fflush(stdout);
+
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
@@ -619,11 +623,11 @@ int op_exec_divu(CpuManagerType *cpu)
 	else {
 		CPU_CLR_OV(&cpu->cpu);
 		cpu->cpu.r[reg2] = reg2_data / reg1_data;
+		/*
+		 * GR [reg3] ← GR [reg2] % GR [reg1]
+		 */
+		cpu->cpu.r[reg3] = reg2_data % reg1_data;
 	}
-	/*
-	 * GR [reg3] ← GR [reg2] % GR [reg1]
-	 */
-	cpu->cpu.r[reg3] = reg2_data % reg1_data;
 
 	/*
 	 * Z 演算結果が0のとき1，そうでないとき0

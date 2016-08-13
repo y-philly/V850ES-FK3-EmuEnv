@@ -46,7 +46,7 @@ static DebugInfoType dbg_info;
 static void del_break(DebugInfoType *dbg, uint32 break_addr);
 static int set_break(DebugInfoType *dbg, uint32 break_addr);
 static int set_intr(DebugInfoType *dbg, uint32 intno);
-static int getline(char *line, int size);
+static int debugger_getline(char *line, int size);
 static int getvalue16(char *str, int len, uint32 *value);
 static int getvalue10(char *str, int len, uint32 *value);
 static int parse_break(char *line, int len, DbgCmdType *cmd);
@@ -186,7 +186,7 @@ static int set_intr(DebugInfoType *dbg, uint32 intno)
  * １行取得する．
  * 改行コードは含まない．
  */
-static int getline(char *line, int size)
+static int debugger_getline(char *line, int size)
 {
 	int n = 0;
 	char c;
@@ -314,7 +314,7 @@ void debugger_getcmd(DbgCmdType *cmd)
 	uint32 intno;
 
 	cmd->id = DBG_CMD_ID_UNKNOWN;
-	n = getline(line, 1024);
+	n = debugger_getline(line, 1024);
 	//printf("debugger_get_cmd:\n");
 	//fflush(stdout);
 	if (n == 0) {
@@ -764,7 +764,7 @@ static int dbg_adc_parse(char *str, int len, DbgCmdType *cmd)
 	//2文字移行をシリアル入力文字列とみなす．
 	p = &str[1];
 	p[p_len] = '\0';
-	
+
 	//printf("srial_str=%s\n srial=%s\n", str,p);
 
 	/*

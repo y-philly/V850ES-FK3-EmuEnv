@@ -117,11 +117,11 @@ static int OpExec1(CpuManagerType *cpu)
 			ret = op_exec_zxh(cpu);
 		}
 		break;
-	case OP_CODE_SATSUB:
+	case OP_CODE_SATSUB_1:
 /* 	case OP_CODE_SXB: */
 		if (cpu->decoded_code.type1.reg2 > 0) {
 			//OP_CODE_SATSUB
-			//TODO
+			ret = op_exec_satsub_1(cpu);
 		}
 		else {
 			ret = op_exec_sxb(cpu);

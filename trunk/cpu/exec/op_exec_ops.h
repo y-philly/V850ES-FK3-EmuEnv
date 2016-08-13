@@ -59,6 +59,7 @@ extern int op_exec_cmov_12(CpuManagerType *cpu);
  */
 extern int op_exec_satsubi(CpuManagerType *cpu);
 extern int op_exec_satadd_1(CpuManagerType *cpu);
+extern int op_exec_satsub_1(CpuManagerType *cpu);
 extern int op_exec_satadd_2(CpuManagerType *cpu);
 
 /*

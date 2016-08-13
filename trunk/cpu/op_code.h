@@ -83,7 +83,7 @@
 /* SASF */
 #define OP_CODE_SATADD_1	(0b000110)	/* format1:6 */
 #define OP_CODE_SATADD_2	(0b010001)	/* format2:6 */
-#define OP_CODE_SATSUB		(0b000101)	/* format1:6 */
+#define OP_CODE_SATSUB_1	(0b000101)	/* format1:6 */
 #define OP_CODE_SATSUBI		(0b110011)	/* format6:6 */
 #define OP_CODE_SATSUBR		(0b000100)	/* format1:6 */
 /* SET1 */

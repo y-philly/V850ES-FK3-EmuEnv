@@ -600,6 +600,16 @@ int op_exec_divu(CpuManagerType *cpu)
 	uint32 reg2_data = cpu->cpu.r[reg2];
 	uint32 reg3_data = cpu->cpu.r[reg3];
 
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
 	/*
 	 * GR [reg2] ← GR [reg2] ÷ GR [reg1]
 	 */
@@ -630,6 +640,50 @@ int op_exec_divu(CpuManagerType *cpu)
 			reg2, reg2_data,
 			reg3, reg3_data,
 			reg2, cpu->cpu.r[reg2],
+			reg3, cpu->cpu.r[reg3]));
+
+	cpu->cpu.pc += 4;
+	return 0;
+}
+int op_exec_cmov_11(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type11.reg1;
+	uint32 reg2 = cpu->decoded_code.type11.reg2;
+	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1_data = cpu->cpu.r[reg1];
+	uint32 reg2_data = cpu->cpu.r[reg2];
+	uint32 reg3_data = cpu->cpu.r[reg3];
+	uint16 cond = ( (cpu->decoded_code.type11.rfu << 1U) | (cpu->decoded_code.type11.sub2) );
+
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	/*
+	 * if conditions are satisfied
+	 * then GR [reg3] ← GR [reg1]
+	 * else GR [reg3] ← GR [reg2]
+	 */
+	if (setf_chk_cond(cpu, cond) == TRUE) {
+		cpu->cpu.r[reg3] = cpu->cpu.r[reg1];
+	}
+	else {
+		cpu->cpu.r[reg3] = cpu->cpu.r[reg2];
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
+			"0x%x: CMOV cond(0x%x) r%d(%d) r%d(%d) r%d(%d):r%d(0x%x)\n",
+			cpu->cpu.pc,
+			cond,
+			reg1, reg1_data,
+			reg2, reg2_data,
+			reg3, reg3_data,
 			reg3, cpu->cpu.r[reg3]));
 
 	cpu->cpu.pc += 4;

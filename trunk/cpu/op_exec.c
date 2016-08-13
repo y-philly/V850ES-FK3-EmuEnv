@@ -480,7 +480,12 @@ static int OpExec12(CpuManagerType *cpu)
 		ret = op_exec_cmov_12(cpu);
 		break;
 	case SOP_CODE_MUL_12:
-		ret = op_exec_mulu_12(cpu);
+		if (cpu->decoded_code.type12.sub2 == 1U) {
+			ret = op_exec_mul_12(cpu);
+		}
+		else {
+			ret = op_exec_mulu_12(cpu);
+		}
 		break;
 	default:
 		printf("OpExec12 Error:Unknown sub1=0x%x sub2=0x%x imm_low=0x%x imm_high=0x%x\n",

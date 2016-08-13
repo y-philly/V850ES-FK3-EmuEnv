@@ -732,6 +732,47 @@ int op_exec_mulu_12(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
+int op_exec_mul_12(CpuManagerType *cpu)
+{
+	sint64 imm9;
+	uint32 imm9_32bit;
+	uint32 imm9_low;
+	uint32 imm9_high;
+	sint32 reg2 = cpu->decoded_code.type12.reg2;
+	sint32 reg3 = cpu->decoded_code.type12.reg3;
+	sint64 reg2_data;
+	sint64 result;
+	sint32 result_low;
+	sint32 result_high;
+
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	imm9_low = cpu->decoded_code.type12.imml;
+	imm9_high = (cpu->decoded_code.type12.immh & 0xF);
+	imm9_32bit = (imm9_high << 5U) | imm9_low;
+	imm9 = (sint64)op_sign_extend(8, imm9_32bit);
+
+	reg2_data = cpu->cpu.r[reg2];
+
+	result = reg2_data * imm9;
+
+	result_low = (sint32)result;
+	result_high = (sint32)(result >> 32U);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: MUL imm9(0x%x),r%d(%d) r%d(%d):0x%x, 0x%x\n", cpu->cpu.pc, (sint32)imm9,
+			reg2, cpu->cpu.r[reg2],
+			reg3, cpu->cpu.r[reg3], result_high, result_low));
+
+	cpu->cpu.r[reg2] = result_low;
+	cpu->cpu.r[reg3] = result_high;
+
+	cpu->cpu.pc += 4;
+	return 0;
+}
 
 int op_exec_cmov_12(CpuManagerType *cpu)
 {

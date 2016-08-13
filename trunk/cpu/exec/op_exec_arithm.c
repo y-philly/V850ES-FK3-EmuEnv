@@ -632,6 +632,7 @@ int op_exec_divu(CpuManagerType *cpu)
 			reg2, cpu->cpu.r[reg2],
 			reg3, cpu->cpu.r[reg3]));
 
+	cpu->cpu.pc += 4;
 	return 0;
 }
 

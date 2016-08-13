@@ -322,6 +322,9 @@ static int OpExec7(CpuManagerType *cpu)
 	case OP_CODE_LDB:
 		ret = op_exec_ldb(cpu);
 		break;
+	case OP_CODE_LDHU:
+		ret = op_exec_ldhu(cpu);
+		break;
 	case OP_CODE_LDH:
 /*	case OP_CODE_LDW: */
 		ret = op_exec_ldhw(cpu);

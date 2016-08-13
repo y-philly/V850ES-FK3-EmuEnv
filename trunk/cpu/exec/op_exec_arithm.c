@@ -588,6 +588,52 @@ int op_exec_setf(CpuManagerType *cpu)
 
 	return 0;
 }
+/*
+ * Format 11
+ */
+int op_exec_divu(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type11.reg1;
+	uint32 reg2 = cpu->decoded_code.type11.reg2;
+	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1_data = cpu->cpu.r[reg1];
+	uint32 reg2_data = cpu->cpu.r[reg2];
+	uint32 reg3_data = cpu->cpu.r[reg3];
+
+	/*
+	 * GR [reg2] ← GR [reg2] ÷ GR [reg1]
+	 */
+	if (reg1_data == 0U) {
+		CPU_SET_OV(&cpu->cpu);
+	}
+	else {
+		CPU_CLR_OV(&cpu->cpu);
+		cpu->cpu.r[reg2] = reg2_data / reg1_data;
+	}
+	/*
+	 * GR [reg3] ← GR [reg2] % GR [reg1]
+	 */
+	cpu->cpu.r[reg3] = reg2_data % reg1_data;
+
+	/*
+	 * Z 演算結果が0のとき1，そうでないとき0
+	 */
+	op_chk_and_set_zero(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
+	/*
+	 * S 演算結果が負のとき1，そうでないとき0
+	 */
+	op_chk_and_set_sign(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIVU r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
+			cpu->cpu.pc,
+			reg1, reg1_data,
+			reg2, reg2_data,
+			reg3, reg3_data,
+			reg2, cpu->cpu.r[reg2],
+			reg3, cpu->cpu.r[reg3]));
+
+	return 0;
+}
 
 /*
  * Format 12

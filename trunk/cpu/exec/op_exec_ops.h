@@ -49,6 +49,8 @@ extern int op_exec_sub(CpuManagerType *cpu);
 extern int op_exec_subr(CpuManagerType *cpu);
 extern int op_exec_setf(CpuManagerType *cpu);
 
+extern int op_exec_divu(CpuManagerType *cpu);
+
 /*
  * 飽和演算命令
  */

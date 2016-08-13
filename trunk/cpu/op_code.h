@@ -50,6 +50,13 @@
 #define OP_CODE_MUL_11		(0b111111)	/* format11:6 10-5 */
 #define SOP_CODE_MUL_11		(0b010001)	/* format11:6 26-21 */
 #define OP_CODE_MUL_12		(0b111111)	/* format12:6 10-5 */
+
+#define OP_CODE_DIVHX1_11		(0b010100)
+#define OP_CODE_DIVHX2_11		(0b010101)
+#define OP_CODE_DIVX1_11		(0b010110)
+#define OP_CODE_DIVX2_11		(0b010111)
+
+
 #define SOP_CODE_MUL_12		(0b0100)	/* format12:6 26-23 */
 #define SSOP_CODE_MUL_12	(0b0)		/* format12:6 17 */
 #define OP_CODE_MULH_1		(0b000111)	/* format1:6 10-5 */

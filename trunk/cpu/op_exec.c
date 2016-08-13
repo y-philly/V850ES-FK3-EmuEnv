@@ -449,9 +449,18 @@ static int OpExec11(CpuManagerType *cpu)
 	int ret = -1;
 
 	switch (cpu->decoded_code.type11.sub1) {
-	case SOP_CODE_MUL_11:
-		//TODO
+	case OP_CODE_DIVX1_11:
+	case OP_CODE_DIVX2_11:
+		if (cpu->decoded_code.type11.sub2 == 1U) {
+			ret = op_exec_divu(cpu);
+		}
+		else {
+			printf("OpExec11 Error:Unknown sub1=0x%x sub2=0x%x\n", cpu->decoded_code.type11.sub1, cpu->decoded_code.type11.sub2);
+		}
 		break;
+	case SOP_CODE_MUL_11:
+	case OP_CODE_DIVHX1_11:
+	case OP_CODE_DIVHX2_11:
 	default:
 		printf("OpExec11 Error:Unknown sub1=0x%x sub2=0x%x\n", cpu->decoded_code.type11.sub1, cpu->decoded_code.type11.sub2);
 		break;

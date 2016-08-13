@@ -351,8 +351,10 @@ static int OpExec8(CpuManagerType *cpu)
 	case 0b00:
 		ret = op_exec_set1_8(cpu);
 		break;
-	case 0b01:
 	case 0b10:
+		ret = op_exec_clr1_8(cpu);
+		break;
+	case 0b01:
 	default:
 		printf("OpExec8 Error:Unknown OP:0x%x sub=0x%x\n", cpu->decoded_code.type8.opcode, cpu->decoded_code.type8.sub);
 		break;

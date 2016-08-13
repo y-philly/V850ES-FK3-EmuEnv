@@ -92,6 +92,7 @@ extern int op_exec_bcond(CpuManagerType *cpu);
  */
 extern int op_exec_tst1_8(CpuManagerType *cpu);
 extern int op_exec_set1_8(CpuManagerType *cpu);
+extern int op_exec_clr1_8(CpuManagerType *cpu);
 /*
  * 特殊命令
  */

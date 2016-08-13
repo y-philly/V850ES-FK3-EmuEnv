@@ -47,6 +47,7 @@ int op_exec_set1_8(CpuManagerType *cpu)
 	uint32 addr;
 	uint32 *addrp;
 	uint8 *bitp;
+	uint8 org_bit;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
@@ -60,10 +61,11 @@ int op_exec_set1_8(CpuManagerType *cpu)
 	}
 
 	bitp = (uint8*)addrp;
+	org_bit = *bitp;
 
 	*bitp |= (1 << bit3);
 
-	if (((*bitp) & (1 << bit3)) == (1 << bit3)) {
+	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
 	}
 	else {
@@ -71,6 +73,46 @@ int op_exec_set1_8(CpuManagerType *cpu)
 	}
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SET1 bit#3(%d), disp16(%d), addr=0x%x r%d(0x%x):psw=0x%x, bit=0x%x\n", cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, *bitp));
+
+	cpu->cpu.pc += 4;
+
+	return 0;
+}
+
+int op_exec_clr1_8(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type8.reg1;
+	sint32 disp16 = cpu->decoded_code.type8.disp;
+	sint32 bit3 = cpu->decoded_code.type8.bit;
+	uint32 addr;
+	uint32 *addrp;
+	uint8 *bitp;
+	uint8 org_bit;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	addr = cpu->cpu.r[reg1] + disp16;
+
+	cpu_memget_raddrp(cpu, addr, &addrp);
+	if (addrp == NULL) {
+		return -1;
+	}
+
+	bitp = (uint8*)addrp;
+	org_bit = *bitp;
+
+	*bitp &= ~(1 << bit3);
+
+	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
+		CPU_CLR_Z(&cpu->cpu);
+	}
+	else {
+		CPU_SET_Z(&cpu->cpu);
+	}
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: CLR1 bit#3(%d), disp16(%d), addr=0x%x r%d(0x%x):psw=0x%x, bit=0x%x\n", cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, *bitp));
 
 	cpu->cpu.pc += 4;
 

@@ -38,7 +38,7 @@
 #define TOPPERS_V850JG2_H
 
 #define DEFAULT_STK_TOP		((STK_T *const)0xFFFF0000)
-#define STACKTOP			0x3FFFF000
+#define STACKTOP			0x03FFEFFF
 
 /* I/Oアドレス(必要なもののみ) */
 

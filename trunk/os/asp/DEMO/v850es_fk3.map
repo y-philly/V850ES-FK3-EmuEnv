@@ -309,52 +309,52 @@ LOAD c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.
  *(.call_table_text)
                 0x0000647c                . = ALIGN (0x4)
 
-.rodata         0x0000647c      0x82f
+.rodata         0x0000647c      0x843
  *(.rodata)
  .rodata        0x0000647c       0x61 log_output.o
  .rodata        0x000064dd       0x2d t_perror.o
  *fill*         0x0000650a        0x2 
  .rodata        0x0000650c      0x19c strerror.o
- .rodata        0x000066a8      0x186 banner.o
- *fill*         0x0000682e        0x2 
- .rodata        0x00006830       0x48 serial.o
- .rodata        0x00006878       0x44 logtask.o
- .rodata        0x000068bc      0x150 kernel_cfg.o
-                0x000068bc                _imr_table
-                0x000068fc                __kernel_istkpt
-                0x00006900                __kernel_istk
-                0x00006904                __kernel_istksz
-                0x00006908                __kernel_intinib_table
-                0x0000692c                __kernel_tnum_intno
-                0x00006930                __kernel_inhinib_table
-                0x00006954                __kernel_tnum_inhno
-                0x00006958                __kernel_tmax_almid
-                0x0000695c                __kernel_tmax_cycid
-                0x00006960                __kernel_tmax_mpfid
-                0x00006964                __kernel_tmax_mbxid
-                0x00006968                __kernel_tmax_pdqid
-                0x0000696c                __kernel_tmax_dtqid
-                0x00006970                __kernel_tmax_flgid
-                0x00006974                __kernel_seminib_table
-                0x000069bc                __kernel_tmax_semid
-                0x000069c0                __kernel_torder_table
-                0x000069c8                __kernel_tinib_table
-                0x00006a08                __kernel_tmax_tskid
- .rodata        0x00006a0c        0x6 libkernel.a(target_serial.o)
-                0x00006a0c                _siopinib_table
- *fill*         0x00006a12        0x2 
- .rodata        0x00006a14      0x128 libkernel.a(prc_config.o)
-                0x00006a7c                _int_pol_table
- .rodata        0x00006b3c       0x16 libkernel.a(startup.o)
- .rodata        0x00006b52       0x5b libkernel.a(task.o)
- .rodata        0x00006bad       0x37 libkernel.a(time_event.o)
- .rodata        0x00006be4       0x49 libkernel.a(semaphore.o)
- .rodata        0x00006c2d       0x7e libkernel.a(wait.o)
-                0x00006cab                _textend = .
-                0x00006cac                . = ALIGN (0x4)
-                0x00006cac                __idata_start = .
+ .rodata        0x000066a8      0x199 banner.o
+ *fill*         0x00006841        0x3 
+ .rodata        0x00006844       0x48 serial.o
+ .rodata        0x0000688c       0x44 logtask.o
+ .rodata        0x000068d0      0x150 kernel_cfg.o
+                0x000068d0                _imr_table
+                0x00006910                __kernel_istkpt
+                0x00006914                __kernel_istk
+                0x00006918                __kernel_istksz
+                0x0000691c                __kernel_intinib_table
+                0x00006940                __kernel_tnum_intno
+                0x00006944                __kernel_inhinib_table
+                0x00006968                __kernel_tnum_inhno
+                0x0000696c                __kernel_tmax_almid
+                0x00006970                __kernel_tmax_cycid
+                0x00006974                __kernel_tmax_mpfid
+                0x00006978                __kernel_tmax_mbxid
+                0x0000697c                __kernel_tmax_pdqid
+                0x00006980                __kernel_tmax_dtqid
+                0x00006984                __kernel_tmax_flgid
+                0x00006988                __kernel_seminib_table
+                0x000069d0                __kernel_tmax_semid
+                0x000069d4                __kernel_torder_table
+                0x000069dc                __kernel_tinib_table
+                0x00006a1c                __kernel_tmax_tskid
+ .rodata        0x00006a20        0x6 libkernel.a(target_serial.o)
+                0x00006a20                _siopinib_table
+ *fill*         0x00006a26        0x2 
+ .rodata        0x00006a28      0x128 libkernel.a(prc_config.o)
+                0x00006a90                _int_pol_table
+ .rodata        0x00006b50       0x16 libkernel.a(startup.o)
+ .rodata        0x00006b66       0x5b libkernel.a(task.o)
+ .rodata        0x00006bc1       0x37 libkernel.a(time_event.o)
+ .rodata        0x00006bf8       0x49 libkernel.a(semaphore.o)
+ .rodata        0x00006c41       0x7e libkernel.a(wait.o)
+                0x00006cbf                _textend = .
+                0x00006cc0                . = ALIGN (0x4)
+                0x00006cc0                __idata_start = .
 
-.data           0x03ff7000        0x0 load address 0x00006cac
+.data           0x03ff7000        0x0 load address 0x00006cc0
                 0x03ff7000                . = ALIGN (0x4)
                 0x03ff7000                __data_start = .
  *(.data)
@@ -389,9 +389,9 @@ LOAD c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.
  .data          0x03ff7000        0x0 c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.01/../../../../v850-elf/lib/soft-float\libc.a(lib_a-memcpy.o)
                 0x03ff7000                . = ALIGN (0x4)
                 0x03ff7000                _edata = .
-                0x00006cac                __idata_end = (__idata_start + SIZEOF (.data))
+                0x00006cc0                __idata_end = (__idata_start + SIZEOF (.data))
 
-.bss            0x03ff7000     0x1278 load address 0x00006cac
+.bss            0x03ff7000     0x1278 load address 0x00006cc0
                 0x03ff7000                . = ALIGN (0x4)
                 0x03ff7000                __bss_start = .
  *(.bss)

@@ -15,14 +15,14 @@
 #endif /* TOPPERS_ENABLE_TRACE */
 
 
-#define TARGET_NAME    "CQ_V850"
+#define TARGET_NAME    "V850ES-FK3-EmuEnv"
 
 
 #ifdef PRC_COPYRIGHT
 #define TARGET_COPYRIGHT	PRC_COPYRIGHT
 #else
 #define TARGET_COPYRIGHT	\
-			"Copyright (C) 2010-2011 by Meika Sugimoto\n"
+			"Copyright (C) 2016 by Eiwa System Management, Inc.\n"
 #endif /* PRC_COPYRIGHT */
 
 

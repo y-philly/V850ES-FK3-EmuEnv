@@ -6,16 +6,29 @@ static void InitMboxTx(CanDriverChannelType channel, CanDriverMboxType mbox, Can
 static void InitMboxRx(CanDriverChannelType channel, CanDriverMboxType mbox, CanDriverCanIdType canid);
 static void InitMboxUnused(CanDriverChannelType channel, CanDriverMboxType mbox);
 
-#define CAN_DRIVER_CHANNEL	1U
-#define CAN_DRIVER_DLC		8U
-#define CAN_DRIVER_ID_STD_SHIFT	2U
-#define CAN_DRIVER_TX_MBOX		0U
-#define CAN_DRIVER_RX_MBOX		1U
-#define CAN_DRIVER_XX_MBOX		2U
-#define CAN_DRIVER_DATA_IS_ARRIVAL(reg16)	((((reg16) & MPU_CAN_CnMCTRLm_DN_READ_BIT) == MPU_CAN_CnMCTRLm_DN_READ_BIT))
+static void CanDriver_RegWrite8(CanDriverUint8 *addr, CanDriverUint8 data)
+{
+	(*(volatile CanDriverUint8*)addr) = data;
+	return;
+}
 
-#define CAN_DRIVER_TX_CANID		0x100
-#define CAN_DRIVER_RX_CANID		0x200
+static CanDriverUint8 CanDriver_RegRead8(CanDriverUint8 *addr)
+{
+	return (*(volatile CanDriverUint8*)addr);
+}
+
+
+static void CanDriver_RegWrite16(CanDriverUint16 *addr, CanDriverUint16 data)
+{
+	(*(volatile CanDriverUint16*)addr) = data;
+	return;
+}
+
+static CanDriverUint16 CanDriver_RegRead16(CanDriverUint16 *addr)
+{
+	return (*(volatile CanDriverUint16*)addr);
+}
+
 void can_driver_init(void)
 {
 	//TODO チャネルの初期化
@@ -54,11 +67,11 @@ CanDriverReturnType can_driver_write(CanDriverChannelType channel, CanDriverMbox
 		return CAN_DRIVER_E_INVALID;
 	}
 
+#if 1
 	reg16 = CanDriver_RegRead16((CanDriverUint16*)MPU_CAN_ADDR_CnMCTRLm(channel, mbox));
 	if ((reg16 & MPU_CAN_CnMCTRLm_TRQ_READ_BIT) == MPU_CAN_CnMCTRLm_TRQ_READ_BIT) {
 		return CAN_DRIVER_E_BUSY;
 	}
-
 	error = EnableBuffer(channel, mbox, 1U);
 	if (error != CAN_DRIVER_E_OK) {
 		return error;
@@ -76,6 +89,13 @@ CanDriverReturnType can_driver_write(CanDriverChannelType channel, CanDriverMbox
 
 	reg16 = MPU_CAN_CnMCTRLm_TRQ_WRITE_SET_BIT;
 	CanDriver_RegWrite16((CanDriverUint16*)MPU_CAN_ADDR_CnMCTRLm(channel, mbox), reg16);
+#else
+	for (i = 0; i < CAN_DRIVER_DLC; i++) {
+		CanDriver_RegWrite8((CanDriverUint8 *)MPU_CAN_ADDR_CnMDATAxm(channel, mbox, i), buffer[i]);
+	}
+	reg16 = MPU_CAN_CnMCTRLm_TRQ_WRITE_SET_BIT;
+	CanDriver_RegWrite16((CanDriverUint16*)MPU_CAN_ADDR_CnMCTRLm(channel, mbox), reg16);
+#endif
 
 	return CAN_DRIVER_E_OK;
 }

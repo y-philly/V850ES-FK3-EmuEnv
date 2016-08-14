@@ -1,7 +1,9 @@
 #ifndef _CAN_DRIVER_H_
 #define _CAN_DRIVER_H_
 
+#ifndef UINT_C
 #define UINT_C(arg)	arg##U
+#endif
 
 /*
  * CANレジスタ定義
@@ -88,28 +90,17 @@ extern void can_driver_init(void);
 extern CanDriverReturnType can_driver_write(CanDriverChannelType channel, CanDriverMboxType mbox, CanDriverMessageBufferType buffer);
 extern CanDriverReturnType can_driver_read(CanDriverChannelType channel, CanDriverMboxType mbox, CanDriverMessageBufferType buffer);
 
-static inline void CanDriver_RegWrite8(CanDriverUint8 *addr, CanDriverUint8 data)
-{
-	(*addr) = data;
-	return;
-}
+#define CAN_DRIVER_CHANNEL	1U
+#define CAN_DRIVER_DLC		8U
+#define CAN_DRIVER_ID_STD_SHIFT	2U
+#define CAN_DRIVER_TX_MBOX		0U
+#define CAN_DRIVER_RX_MBOX		1U
+#define CAN_DRIVER_XX_MBOX		2U
+#define CAN_DRIVER_DATA_IS_ARRIVAL(reg16)	((((reg16) & MPU_CAN_CnMCTRLm_DN_READ_BIT) == MPU_CAN_CnMCTRLm_DN_READ_BIT))
 
-static inline CanDriverUint8 CanDriver_RegRead8(CanDriverUint8 *addr)
-{
-	return (*addr);
-}
+#define CAN_DRIVER_TX_CANID		0x100
+#define CAN_DRIVER_RX_CANID		0x200
 
-
-static inline void CanDriver_RegWrite16(CanDriverUint16 *addr, CanDriverUint16 data)
-{
-	(*addr) = data;
-	return;
-}
-
-static inline CanDriverUint16 CanDriver_RegRead16(CanDriverUint16 *addr)
-{
-	return (*addr);
-}
 
 
 #endif /* _CAN_DRIVER_H_ */

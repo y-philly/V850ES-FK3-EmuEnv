@@ -136,7 +136,7 @@ ALL_CFG_COBJS := $(CFG_COBJS) cfg1_out.o
 #
 COPTS := $(COPTS) -g 
 ifndef OMIT_WARNING_ALL
-  COPTS := $(COPTS) -Wall
+  COPTS := $(COPTS) -Wall  -Wno-unused-label -Wpointer-arith -gdwarf-2 
 endif
 ifndef OMIT_OPTIMIZATION
   COPTS := $(COPTS) -O2

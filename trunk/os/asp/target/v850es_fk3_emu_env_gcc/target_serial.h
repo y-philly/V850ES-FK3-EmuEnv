@@ -10,12 +10,12 @@
 
 
 
-#define INHNO_SIO_TX	 50			
-#define INTNO_SIO_TX	 50			
-#define INHNO_SIO_RX	 49			
-#define INTNO_SIO_RX	 49			
-#define INTPRI_SIO		 (-4)		
-#define INTATR_SIO		 TA_NULL	
+#define INHNO_SIO_TX	 45
+#define INTNO_SIO_TX	 45
+#define INHNO_SIO_RX	 44
+#define INTNO_SIO_RX	 44
+#define INTPRI_SIO		 (-4)
+#define INTATR_SIO		 TA_NULL
 
 
 #ifndef TOPPERS_MACRO_ONLY

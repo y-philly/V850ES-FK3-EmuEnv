@@ -10,10 +10,10 @@
 #define TIMER_CLOCK ((PCLOCK/4u) / 1000)
 
 
-#define INHNO_TIMER 	40		
-#define INTNO_TIMER 	40	 	
-#define INTPRI_TIMER	(-6)	
-#define INTATR_TIMER	TA_NULL	
+#define INHNO_TIMER 	38
+#define INTNO_TIMER 	38
+#define INTPRI_TIMER	(-6)
+#define INTATR_TIMER	TA_NULL
 
 
 typedef uint32_t    CLOCK;

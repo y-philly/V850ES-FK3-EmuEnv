@@ -92,6 +92,7 @@ LOAD log_output.o
 LOAD vasyslog.o
 LOAD t_perror.o
 LOAD strerror.o
+LOAD can_driver.o
 LOAD banner.o
 LOAD syslog.o
 LOAD serial.o
@@ -132,6 +133,7 @@ LOAD c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.
                 0x00000dfa                _t_perror
  .text          0x00000e4a       0x26 strerror.o
                 0x00000e4a                _itron_strerror
+ .text          0x00000e70        0x0 can_driver.o
  .text          0x00000e70       0x36 banner.o
                 0x00000e70                _print_banner
  .text          0x00000ea6      0x28e syslog.o
@@ -359,6 +361,7 @@ LOAD c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.
  .data          0x03ff7000        0x0 vasyslog.o
  .data          0x03ff7000        0x0 t_perror.o
  .data          0x03ff7000        0x0 strerror.o
+ .data          0x03ff7000        0x0 can_driver.o
  .data          0x03ff7000        0x0 banner.o
  .data          0x03ff7000        0x0 syslog.o
  .data          0x03ff7000        0x0 serial.o
@@ -395,6 +398,7 @@ LOAD c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.
  .bss           0x03ff7000        0x0 vasyslog.o
  .bss           0x03ff7000        0x0 t_perror.o
  .bss           0x03ff7000        0x0 strerror.o
+ .bss           0x03ff7000        0x0 can_driver.o
  .bss           0x03ff7000        0x0 banner.o
  .bss           0x03ff7000      0x418 syslog.o
  .bss           0x03ff7418      0x6a8 serial.o
@@ -483,6 +487,7 @@ LOAD c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.
  .comment       0x00000000       0x2a vasyslog.o
  .comment       0x00000000       0x2a t_perror.o
  .comment       0x00000000       0x2a strerror.o
+ .comment       0x00000000       0x2a can_driver.o
  .comment       0x00000000       0x2a banner.o
  .comment       0x00000000       0x2a syslog.o
  .comment       0x00000000       0x2a serial.o
@@ -510,6 +515,7 @@ LOAD c:/kpit/gnuv850v14.01-elf/v850-elf/bin/../lib/gcc/v850-elf/4.9-GNUV850_v14.
  .note.renesas  0x00000000       0xb4 vasyslog.o
  .note.renesas  0x00000000       0xb4 t_perror.o
  .note.renesas  0x00000000       0xb4 strerror.o
+ .note.renesas  0x00000000       0xb4 can_driver.o
  .note.renesas  0x00000000       0xb4 banner.o
  .note.renesas  0x00000000       0xb4 syslog.o
  .note.renesas  0x00000000       0xb4 serial.o
@@ -613,6 +619,7 @@ OUTPUT(asp elf32-v850-rh850)
  .debug_line    0x0000029e      0x129 vasyslog.o
  .debug_line    0x000003c7       0xc0 t_perror.o
  .debug_line    0x00000487       0x84 strerror.o
+ .debug_line    0x0000050b        0x0 can_driver.o
  .debug_line    0x0000050b       0x9c banner.o
  .debug_line    0x000005a7      0x1ba syslog.o
  .debug_line    0x00000761      0x345 serial.o
@@ -762,7 +769,7 @@ OUTPUT(asp elf32-v850-rh850)
  .debug_ranges  0x000012a8      0x228 libkernel.a(interrupt.o)
  .debug_ranges  0x000014d0      0x318 libkernel.a(wait.o)
 
-.debug_str      0x00000000     0x1dd6
+.debug_str      0x00000000     0x1de3
  .debug_str     0x00000000      0x1b2 sample1.o
                                 0x211 (size before relaxing)
  .debug_str     0x000001b2       0xba log_output.o
@@ -773,39 +780,41 @@ OUTPUT(asp elf32-v850-rh850)
                                 0x1e3 (size before relaxing)
  .debug_str     0x000002e6       0x16 strerror.o
                                 0x144 (size before relaxing)
- .debug_str     0x000002fc       0x2a banner.o
+ .debug_str     0x000002fc        0xd can_driver.o
+                                 0x84 (size before relaxing)
+ .debug_str     0x00000309       0x2a banner.o
                                 0x1c4 (size before relaxing)
- .debug_str     0x00000326      0x133 syslog.o
+ .debug_str     0x00000333      0x133 syslog.o
                                 0x2eb (size before relaxing)
- .debug_str     0x00000459      0x34b serial.o
+ .debug_str     0x00000466      0x34b serial.o
                                 0x4dd (size before relaxing)
- .debug_str     0x000007a4       0x64 logtask.o
+ .debug_str     0x000007b1       0x64 logtask.o
                                 0x2b6 (size before relaxing)
- .debug_str     0x00000808      0xac5 kernel_cfg.o
+ .debug_str     0x00000815      0xac5 kernel_cfg.o
                                 0xd07 (size before relaxing)
- .debug_str     0x000012cd       0xf8 libkernel.a(target_config.o)
+ .debug_str     0x000012da       0xf8 libkernel.a(target_config.o)
                                 0x278 (size before relaxing)
- .debug_str     0x000013c5       0x87 libkernel.a(target_timer.o)
+ .debug_str     0x000013d2       0x87 libkernel.a(target_timer.o)
                                 0x2ba (size before relaxing)
- .debug_str     0x0000144c       0xc6 libkernel.a(target_serial.o)
+ .debug_str     0x00001459       0xc6 libkernel.a(target_serial.o)
                                 0x320 (size before relaxing)
- .debug_str     0x00001512       0xd1 libkernel.a(prc_config.o)
+ .debug_str     0x0000151f       0xd1 libkernel.a(prc_config.o)
                                 0x389 (size before relaxing)
- .debug_str     0x000015e3       0x80 libkernel.a(startup.o)
+ .debug_str     0x000015f0       0x80 libkernel.a(startup.o)
                                 0x333 (size before relaxing)
- .debug_str     0x00001663      0x332 libkernel.a(task.o)
+ .debug_str     0x00001670      0x332 libkernel.a(task.o)
                                 0x7ba (size before relaxing)
- .debug_str     0x00001995       0xd9 libkernel.a(time_event.o)
+ .debug_str     0x000019a2       0xd9 libkernel.a(time_event.o)
                                 0x417 (size before relaxing)
- .debug_str     0x00001a6e       0xa9 libkernel.a(task_manage.o)
+ .debug_str     0x00001a7b       0xa9 libkernel.a(task_manage.o)
                                 0x5ba (size before relaxing)
- .debug_str     0x00001b17       0xaa libkernel.a(task_sync.o)
+ .debug_str     0x00001b24       0xaa libkernel.a(task_sync.o)
                                 0x5d0 (size before relaxing)
- .debug_str     0x00001bc1       0xf9 libkernel.a(semaphore.o)
+ .debug_str     0x00001bce       0xf9 libkernel.a(semaphore.o)
                                 0x770 (size before relaxing)
- .debug_str     0x00001cba       0x69 libkernel.a(sys_manage.o)
+ .debug_str     0x00001cc7       0x69 libkernel.a(sys_manage.o)
                                 0x522 (size before relaxing)
- .debug_str     0x00001d23       0x4c libkernel.a(interrupt.o)
+ .debug_str     0x00001d30       0x4c libkernel.a(interrupt.o)
                                 0x5e9 (size before relaxing)
- .debug_str     0x00001d6f       0x67 libkernel.a(wait.o)
+ .debug_str     0x00001d7c       0x67 libkernel.a(wait.o)
                                 0x712 (size before relaxing)

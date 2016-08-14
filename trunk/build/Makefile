@@ -48,9 +48,9 @@ endif
 CFLAGS	:= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
 
-#LFLAGS	:= -mwindows -Wl,--allow-multiple-definition 
-LFLAGS	:= -Wl,--allow-multiple-definition 
-LFLAGS	+= -Wl,--enable-stdcall-fixup 
+#LFLAGS	:= -mwindows -Wl,--allow-multiple-definition
+LFLAGS	:= -Wl,--allow-multiple-definition
+LFLAGS	+= -Wl,--enable-stdcall-fixup
 
 LIBS	:= -lpthread
 ifdef USE_CANLIB
@@ -103,4 +103,4 @@ $(TARGET):	$(OBJS)
 	$(GCC) -O3 -c $(CFLAGS) $<
 
 clean:
-	rm -f $(OBJS) $(TARGET).exe 
+	rm -f $(OBJS) $(TARGET).exe

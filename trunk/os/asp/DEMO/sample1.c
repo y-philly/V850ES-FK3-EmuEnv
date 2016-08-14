@@ -2,13 +2,13 @@
  *  TOPPERS/ASP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
  *      Advanced Standard Profile Kernel
- * 
+ *
  *  Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
  *                              Toyohashi Univ. of Technology, JAPAN
  *  Copyright (C) 2004-2012 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
- * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -30,13 +30,13 @@
  *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
  *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
  *      免責すること．
- * 
+ *
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
  *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
- * 
+ *
  *  $Id: sample1.c 2416 2012-09-07 08:06:20Z ertl-hiro $
  */
 
@@ -48,7 +48,6 @@
 #include "syssvc/syslog.h"
 #include "kernel_cfg.h"
 #include "sample1.h"
-#include "can_driver.h"
 
 /*
  *  サービスコールのエラーのログ出力
@@ -70,28 +69,20 @@ void main_task(intptr_t exinf)
 {
 	ER_UINT	ercd;
 	char		c;
-	CanDriverMessageBufferType buffer;
-	
-	buffer[0] = 0;
-	buffer[1] = 1;
-	buffer[2] = 2;
-	buffer[3] = 3;
-	buffer[4] = 4;
-	buffer[5] = 5;
-	buffer[6] = 6;
-	buffer[7] = 7;
 
-	can_driver_init();
-	
-	can_driver_write(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX_MBOX, buffer);
-	while (1) {
-		;
-	}
-	
-#if 0
+void
+target_fput_log(char c);
+
+	target_fput_log('a');
+	target_fput_log('b');
+	target_fput_log('c');
+	target_fput_log('\n');
+
 	syslog_1(LOG_NOTICE, "main_task is started. %d", 1);
 	SVC_PERROR(syslog_msk_log(LOG_UPTO(LOG_INFO), LOG_UPTO(LOG_EMERG)));
 	syslog(LOG_NOTICE, "Sample program starts (exinf = %d).", (int_t) exinf);
+
+	(void) dly_tsk(10000);
 
 	/*
 	 *  シリアルポートの初期化
@@ -117,7 +108,6 @@ void main_task(intptr_t exinf)
 	};
 
 	syslog(LOG_NOTICE, "Sample program ends.");
-#endif
 	SVC_PERROR(ext_ker());
 	assert(0);
 }

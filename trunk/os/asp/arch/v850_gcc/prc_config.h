@@ -241,7 +241,7 @@ x_sense_lock(void)
 #define i_sense_lock()    x_sense_lock()
 
 /* ena_int/disintで有効な割込み番号の範囲の判定 */
-#define VALID_INTNO_CFGINT(intno)	(((7u <= (intno)) && ((intno) <= 63u))	\
+#define VALID_INTNO_CFGINT(intno)	(((7u <= (intno)) && ((intno) <= 116u))	\
 										|| (intno == 1u))
 #define VALID_INTNO_DISINT(intno)	VALID_INTNO_CFGINT((intno))
 

@@ -42,7 +42,7 @@
 #include "kernel_impl.h"
 #include "target_serial.h"
 
-#define TNUM_SIOP	(3)
+#define TNUM_SIOP	(8)
 
 /*
  *  シリアルポートの初期化ブロック
@@ -95,9 +95,14 @@ SIOPCB siopcb_table[TNUM_SIOP];
  */
 const SIOPINIB siopinib_table[TNUM_SIOP] =
 {
-	{ 50u , 49u } , 	/* UART0 */
-	{ 52u , 51u } , 	/* UART1 */
-	{ 54u , 53u }	 	/* UART2 */
+	{ 45u , 44u },		/* UARTD0 */
+	{ 47u , 48u },		/* UARTD1 */
+	{ 74u , 73u },		/* UARTD2 */
+	{ 85u , 84u },		/* UARTD3 */
+	{ 87u , 86u },		/* UARTD4 */
+	{ 95u , 94u },		/* UARTD5 */
+	{ 116u , 115u },	/* UARTD6 */
+	{ 119u , 118u },	/* UARTD7 */
 };
 
 
@@ -108,7 +113,7 @@ void
 sio_initialize(intptr_t exinf)
 {
 	uint_t	i;
-	
+
 	/*
 	 *  シリアルI/Oポート管理ブロックの初期化
 	 */
@@ -127,33 +132,33 @@ SIOPCB *
 sio_opn_por(ID siopid, intptr_t exinf)
 {
 	SIOPCB	*siopcb = get_siopcb(siopid);
-	
+
 	if(siopcb->openflag == false)
 	{
 		siopcb->exinf = exinf;
 		siopcb->openflag = true;
 		siopcb->port_id = siopid - 1;
-		
+
 		/* UARTを有効にする */
 		sil_wrb_mem((void *)UAnCTL0(siopcb->port_id), 0x80);	/* UART enable */
-		
+
 		/* ボーレート発生器の初期化 */
 		sil_wrb_mem((void *)UAnCTL1(siopcb->port_id), SERIAL_CLKDIV);
 		sil_wrb_mem((void *)UAnCTL2(siopcb->port_id), SERIAL_COMPAREVALUE);
-		
+
 		/* モード設定 */
-		sil_wrb_mem((void *)UAnCTL0(siopcb->port_id), 
+		sil_wrb_mem((void *)UAnCTL0(siopcb->port_id),
 			sil_reb_mem((void *)UAnCTL0(siopcb->port_id)) | 0x12);
-		
+
 		/* 送受信許可 */
-		sil_wrb_mem((void *)UAnCTL0(siopcb->port_id), 
+		sil_wrb_mem((void *)UAnCTL0(siopcb->port_id),
 			sil_reb_mem((void *)UAnCTL0(siopcb->port_id)) | 0x60);
-		
+
 		/* 送受信割込み有効 */
 		(void)ena_int(siopcb->p_siopinib->tx_intno);
 		(void)ena_int(siopcb->p_siopinib->rx_intno);
 	}
-	
+
 	return siopcb;
 }
 
@@ -164,14 +169,14 @@ bool_t
 sio_snd_chr(SIOPCB *siopcb, char chr)
 {
 	bool_t	result = false;
-	
+
 	/* 送信可能かチェック */
 	if((sil_reb_mem((void *)UAnSTR(siopcb->port_id)) & 0x80) == 0)
 	{
 		sil_wrb_mem((void *)UAnTX(siopcb->port_id), chr);
 		result = true;
 	}
-	
+
 	return result;
 }
 
@@ -181,13 +186,13 @@ sio_snd_chr(SIOPCB *siopcb, char chr)
 int_t sio_rcv_chr(SIOPCB *siopcb)
 {
 	int_t chr = -1;
-	
+
 	if(siopcb->received == true)
 	{
 		chr = (int_t)sil_reb_mem((void *)UAnRX(siopcb->port_id));
 		siopcb->port_id = false;
 	}
-	
+
 	return chr;
 }
 
@@ -236,13 +241,13 @@ void
 sio_cls_por(SIOPCB *siopcb)
 {
 	/* UARTの停止 */
-	sil_wrb_mem((void *)UAnCTL0(siopcb->port_id) , 
+	sil_wrb_mem((void *)UAnCTL0(siopcb->port_id) ,
 		(sil_reb_mem((void *)UAnCTL0(siopcb->port_id)) & ~0x80));
-	
+
 	/* 割込みの禁止 */
 	dis_int(siopcb->p_siopinib->tx_intno);
 	dis_int(siopcb->p_siopinib->rx_intno);
-	
+
 	/* フラグの設定 */
 	siopcb->openflag = false;
 	siopcb->received = false;
@@ -252,7 +257,7 @@ void
 sio_tx_isr(intptr_t exinf)
 {
 	SIOPCB	*siopcb = get_siopcb(exinf);
-	
+
 	/* コールバックを呼び出し */
 	sio_irdy_snd(siopcb->exinf);
 }
@@ -261,7 +266,7 @@ void
 sio_rx_isr(intptr_t exinf)
 {
 	SIOPCB	*siopcb = get_siopcb(exinf);
-	
+
 	/* 受信済みフラグをセット */
 	siopcb->received = true;
 	/* コールバックを呼び出し */

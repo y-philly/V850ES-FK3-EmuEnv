@@ -29,8 +29,8 @@
 extern void	target_fput_log(char c);
 
 
-#define TNUM_PORT		3
-#define TNUM_SIOP		3
+#define TNUM_PORT		8
+#define TNUM_SIOP		8
 
 
 #define SIO_PORTID		1

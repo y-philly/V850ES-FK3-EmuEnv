@@ -69,7 +69,7 @@
 #endif /* TASK_PORTID */
 
 #ifndef STACK_SIZE
-#define	STACK_SIZE		4096		/* タスクのスタックサイズ */
+#define	STACK_SIZE		512		/* タスクのスタックサイズ */
 #endif /* STACK_SIZE */
 
 #ifndef LOOP_REF
@@ -89,5 +89,6 @@ extern void	cpuexc_handler(void *p_excinf);
 #endif /* CPUEXC1 */
 extern void	cyclic_handler(intptr_t exinf);
 extern void	alarm_handler(intptr_t exinf);
+extern void can_rcv_task(intptr_t exinf);
 
 #endif /* TOPPERS_MACRO_ONLY */

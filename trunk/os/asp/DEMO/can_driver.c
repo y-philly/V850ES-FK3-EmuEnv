@@ -1,4 +1,11 @@
 #include "can_driver.h"
+#include "can_driver_cfg.h"
+#include <kernel.h>
+#include <t_syslog.h>
+#include <t_stdlib.h>
+#include "syssvc/serial.h"
+#include "syssvc/syslog.h"
+#include "kernel_cfg.h"
 
 static CanDriverReturnType EnableBuffer(CanDriverChannelType channel, CanDriverMboxType mbox, CanDriverUint8 retry);
 static void DisableBuffer(CanDriverChannelType channel, CanDriverMboxType mbox);
@@ -35,6 +42,18 @@ void can_driver_init(void)
 	/*
 	 * デモ用なので省略する．
 	 */
+	/*
+	 * CANモジュールの受信割り込みの許可を設定する．
+	 *
+	 * 設定対象レジスタ：
+	 * CANモジュール割込み許可レジスタ　CIE1ビットの設定
+	 * bit: SetCIE1	  : 9
+	 * 		ClearCIE1 : 0
+	 * SetCIE1ビット： 1　ClearCIE1ビット： 0　：　受信割り込みを許可ビットをセットする．
+	 */
+	CanDriver_RegWrite16((CanDriverUint16 *)MPU_CAN_ADDR_CnIE(CAN_DRIVER_CHANNEL), MPU_CAN_CnIE_CIE1_WRITE_SET_BIT);
+	
+	
 	
 	//MBOXの初期化
 	/*
@@ -131,6 +150,16 @@ CanDriverReturnType can_driver_read(CanDriverChannelType channel, CanDriverMboxT
 	return CAN_DRIVER_E_OK;
 }
 
+void target_can_handler(void)
+{
+	iact_tsk(CAN_RCV_TASK);
+	return;
+}
+void can_rcv_task(intptr_t exinf)
+{
+	ext_tsk();
+	return;
+}
 /* -------------- static --------------- */
 static void InitMboxCanId(CanDriverChannelType channel, CanDriverMboxType mbox, CanDriverCanIdType canid);
 
@@ -200,7 +229,7 @@ static void InitMboxRx(CanDriverChannelType channel, CanDriverMboxType mbox, Can
 	InitMboxCanId(channel, mbox, canid);
 
 
-	CanDriver_RegWrite16((CanDriverUint16 *)(MPU_CAN_ADDR_CnMCTRLm(channel, mbox)), 0x001CU);
+	CanDriver_RegWrite16((CanDriverUint16 *)(MPU_CAN_ADDR_CnMCTRLm(channel, mbox)), 0x0816U);
 
 	return;
 }

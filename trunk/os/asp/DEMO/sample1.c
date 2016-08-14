@@ -68,8 +68,6 @@ svc_perror(const char *file, int_t line, const char *expr, ER ercd)
  */
 void main_task(intptr_t exinf)
 {
-	ER_UINT	ercd;
-	char		c;
 	CanDriverMessageBufferType buffer;
 	
 	buffer[0] = 0;

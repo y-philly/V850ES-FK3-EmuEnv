@@ -152,11 +152,20 @@ CanDriverReturnType can_driver_read(CanDriverChannelType channel, CanDriverMboxT
 
 void target_can_handler(void)
 {
-	iact_tsk(CAN_RCV_TASK);
+	int err;
+	syslog(LOG_NOTICE, "target_can_handler:enter");
+
+	err = iact_tsk(CAN_RCV_TASK);
+	
+	syslog(LOG_NOTICE, "target_can_handler:exit:err=%d", err);
 	return;
 }
 void can_rcv_task(intptr_t exinf)
 {
+	syslog(LOG_NOTICE, "can_rcv_task:enter");
+	
+	syslog(LOG_NOTICE, "can_rcv_task:exit");
+
 	ext_tsk();
 	return;
 }

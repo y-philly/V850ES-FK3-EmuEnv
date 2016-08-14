@@ -100,5 +100,6 @@ static bool dbg_stdio_can_send(uint32 ch, uint32 msg_id, uint8 *data, uint8 dlc)
 	}
 	printf("\n");
 	printf("#########################CAN DEBUG INFO########################\n");
+	fflush(stdout);
 	return TRUE;
 }

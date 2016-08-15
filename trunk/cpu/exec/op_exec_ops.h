@@ -11,6 +11,7 @@ extern int op_exec_ldhw(CpuManagerType *cpu);
 extern int op_exec_sldb(CpuManagerType *cpu);
 extern int op_exec_sldbu(CpuManagerType *cpu);
 extern int op_exec_sldh(CpuManagerType *cpu);
+extern int op_exec_sldhu(CpuManagerType *cpu);
 extern int op_exec_sldw(CpuManagerType *cpu);
 
 /*

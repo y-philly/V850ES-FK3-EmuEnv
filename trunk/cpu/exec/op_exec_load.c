@@ -144,7 +144,7 @@ int op_exec_sldbu(CpuManagerType *cpu)
 {
 	uint32 addr;
 	uint32 *addrp;
-	sint32 ret;
+	uint32 ret;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
 	uint32 reg2 = cpu->decoded_code.type4_2.reg2;
@@ -173,6 +173,41 @@ int op_exec_sldbu(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
+
+int op_exec_sldhu(CpuManagerType *cpu)
+{
+	uint32 addr;
+	uint32 *addrp;
+	uint32 ret;
+	uint32 disp;
+	uint32 reg1 = CPU_REG_EP;
+	uint32 reg2 = cpu->decoded_code.type4_2.reg2;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	disp = ( (cpu->decoded_code.type4_2.disp) << 1U );
+	disp = op_zero_extend(4, disp);
+	addr = cpu->cpu.r[reg1] + disp;
+
+	cpu_memget_raddrp(cpu, addr, &addrp);
+	if (addrp == NULL) {
+		return -1;
+	}
+	ret = *((uint16*)addrp);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.HU disp4(%u),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], ret));
+
+	cpu->cpu.r[reg2] = ret;
+
+	cpu->cpu.pc += 2;
+	return 0;
+}
+
 int op_exec_sldh(CpuManagerType *cpu)
 {
 	uint32 addr;

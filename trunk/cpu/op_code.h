@@ -40,7 +40,6 @@
 #define OP_CODE_LDH			(0b111001)	/* format7:6 */
 #define OP_CODE_LDHU		(0b111111)	/* format7:6 */
 
-/* LDHU */
 #define OP_CODE_LDW			(0b111001)	/* format7:6 */
 #define OP_CODE_LDSR		(0b111111)	/* format9:6 */
 #define SOP_CODE_LDSR		(0b000001)	/* format9:6 */

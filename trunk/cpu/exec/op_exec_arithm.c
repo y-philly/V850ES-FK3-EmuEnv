@@ -263,6 +263,51 @@ int op_exec_mulh_1(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
+
+int op_exec_divh_1(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type1.reg1;
+	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	sint32 reg1_data = cpu->cpu.r[reg1];
+	sint32 reg2_data = cpu->cpu.r[reg2];
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	/*
+	 * GR [reg2] ← GR [reg2] ÷ GR [reg1]
+	 */
+	if (reg1_data == 0U) {
+		CPU_SET_OV(&cpu->cpu);
+	}
+	else {
+		CPU_CLR_OV(&cpu->cpu);
+		cpu->cpu.r[reg2] = ( (sint32)reg2_data / ((sint32)((sint16)reg1_data)) );
+	}
+
+	/*
+	 * Z 演算結果が0のとき1，そうでないとき0
+	 */
+	op_chk_and_set_zero(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
+	/*
+	 * S 演算結果が負のとき1，そうでないとき0
+	 */
+	op_chk_and_set_sign(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIVH r%d(%d) r%d(%d):r%d(0x%x))\n",
+			cpu->cpu.pc,
+			reg1, reg1_data,
+			reg2, reg2_data,
+			reg2, cpu->cpu.r[reg2]));
+
+	cpu->cpu.pc += 2;
+	return 0;
+}
+
 /*
  * Format2
  */
@@ -600,10 +645,6 @@ int op_exec_divu(CpuManagerType *cpu)
 	uint32 reg2_data = cpu->cpu.r[reg2];
 	uint32 reg3_data = cpu->cpu.r[reg3];
 
-
-	//printf("0x%x:op_exec_divu:reg2_data(%u)=0x%x reg3_data(%u)=0x%x\n", cpu->cpu.pc, reg2, reg2_data, reg3, reg3_data);
-	//fflush(stdout);
-
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
@@ -692,7 +733,7 @@ int op_exec_divhu(CpuManagerType *cpu)
 	 */
 	op_chk_and_set_sign(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIVU r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIVHU r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
 			cpu->cpu.pc,
 			reg1, reg1_data,
 			reg2, reg2_data,
@@ -703,7 +744,60 @@ int op_exec_divhu(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
+int op_exec_divh_11(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type11.reg1;
+	uint32 reg2 = cpu->decoded_code.type11.reg2;
+	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	sint32 reg1_data = cpu->cpu.r[reg1];
+	sint32 reg2_data = cpu->cpu.r[reg2];
+	sint32 reg3_data = cpu->cpu.r[reg3];
 
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	/*
+	 * GR [reg2] ← GR [reg2] ÷ GR [reg1]
+	 */
+	if (reg1_data == 0U) {
+		CPU_SET_OV(&cpu->cpu);
+	}
+	else {
+		CPU_CLR_OV(&cpu->cpu);
+		cpu->cpu.r[reg2] = ( (sint32)reg2_data / ((sint32)((sint16)reg1_data)) );
+		/*
+		 * GR [reg3] ← GR [reg2] % GR [reg1]
+		 */
+		cpu->cpu.r[reg3] = ( (sint32)reg2_data % ((sint32)((sint16)reg1_data)) );
+	}
+
+	/*
+	 * Z 演算結果が0のとき1，そうでないとき0
+	 */
+	op_chk_and_set_zero(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
+	/*
+	 * S 演算結果が負のとき1，そうでないとき0
+	 */
+	op_chk_and_set_sign(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIVH r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
+			cpu->cpu.pc,
+			reg1, reg1_data,
+			reg2, reg2_data,
+			reg3, reg3_data,
+			reg2, cpu->cpu.r[reg2],
+			reg3, cpu->cpu.r[reg3]));
+
+	cpu->cpu.pc += 4;
+	return 0;
+}
 int op_exec_div(CpuManagerType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
@@ -755,7 +849,7 @@ int op_exec_div(CpuManagerType *cpu)
 	 */
 	op_chk_and_set_sign(&cpu->cpu, (sint32)cpu->cpu.r[reg2]);
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIVU r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIV r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
 			cpu->cpu.pc,
 			reg1, reg1_data,
 			reg2, reg2_data,

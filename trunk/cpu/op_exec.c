@@ -153,7 +153,15 @@ static int OpExec1(CpuManagerType *cpu)
 		ret = op_exec_tst(cpu);
 		break;
 	case OP_CODE_SWITCH:
-		ret = op_exec_switch(cpu);
+		if ((cpu->decoded_code.type1.reg1 > 0) && (cpu->decoded_code.type1.reg2 == 0)) {
+			ret = op_exec_switch(cpu);
+		}
+		else if ((cpu->decoded_code.type1.reg1 == 0) && (cpu->decoded_code.type1.reg2 > 0)) {
+			printf("OpExec1 Error:Unknown OP:0x%x\n", cpu->decoded_code.type1.opcode);
+		}
+		else {
+			ret = op_exec_divh_1(cpu);
+		}
 		break;
 	default:
 		printf("OpExec1 Error:Unknown OP:0x%x\n", cpu->decoded_code.type1.opcode);
@@ -487,7 +495,7 @@ static int OpExec11(CpuManagerType *cpu)
 			ret = op_exec_divhu(cpu);
 		}
 		else {
-			printf("OpExec11 Error:Unknown sub1=0x%x sub2=0x%x\n", cpu->decoded_code.type11.sub1, cpu->decoded_code.type11.sub2);
+			ret = op_exec_divh_11(cpu);
 		}
 		break;
 	default:

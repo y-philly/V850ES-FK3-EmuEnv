@@ -56,6 +56,8 @@ extern int op_exec_setf(CpuManagerType *cpu);
 extern int op_exec_div(CpuManagerType *cpu);
 extern int op_exec_divu(CpuManagerType *cpu);
 extern int op_exec_divhu(CpuManagerType *cpu);
+extern int op_exec_divh_11(CpuManagerType *cpu);
+extern int op_exec_divh_1(CpuManagerType *cpu);
 extern int op_exec_mul(CpuManagerType *cpu);
 extern int op_exec_mulu(CpuManagerType *cpu);
 

@@ -474,6 +474,14 @@ static int OpExec11(CpuManagerType *cpu)
 		}
 		break;
 	case SOP_CODE_MUL_11:
+		if (cpu->decoded_code.type11.sub2 == 1U) {
+			//TODO MULU
+			printf("OpExec11 Error:Unknown sub1=0x%x sub2=0x%x\n", cpu->decoded_code.type11.sub1, cpu->decoded_code.type11.sub2);
+		}
+		else {
+			ret = op_exec_mul(cpu);
+		}
+		break;
 	case SOP_CODE_DIVHX1_11:
 	case SOP_CODE_DIVHX2_11:
 	default:

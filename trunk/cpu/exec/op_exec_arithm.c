@@ -649,6 +649,46 @@ int op_exec_divu(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
+int op_exec_mul(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type11.reg1;
+	uint32 reg2 = cpu->decoded_code.type11.reg2;
+	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	sint64 reg1_data = cpu->cpu.r[reg1];
+	sint64 reg2_data = cpu->cpu.r[reg2];
+	sint64 reg3_data = cpu->cpu.r[reg3];
+	sint64 result;
+	uint64 result_u;
+
+	//printf("0x%x:op_exec_divu:reg2_data(%u)=0x%x reg3_data(%u)=0x%x\n", cpu->cpu.pc, reg2, reg2_data, reg3, reg3_data);
+	//fflush(stdout);
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	result = reg2_data * reg3_data;
+	result_u = result;
+	cpu->cpu.r[reg2] = (uint32)result_u;
+	cpu->cpu.r[reg3] = (uint32)(result_u >> 32U);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
+			"0x%x: MUL r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
+			cpu->cpu.pc,
+			reg1, (uint32)reg1_data,
+			reg2, (uint32)reg2_data,
+			reg3, (uint32)reg3_data,
+			reg2, cpu->cpu.r[reg2],
+			reg3, cpu->cpu.r[reg3]));
+
+	cpu->cpu.pc += 4;
+	return 0;
+}
 int op_exec_cmov_11(CpuManagerType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;

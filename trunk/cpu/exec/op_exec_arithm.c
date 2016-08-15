@@ -672,7 +672,7 @@ int op_exec_mul(CpuManagerType *cpu)
 	if (reg3 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = reg2_data * reg3_data;
+	result = reg1_data * reg2_data;
 	result_u = result;
 	cpu->cpu.r[reg2] = (uint32)result_u;
 	cpu->cpu.r[reg3] = (uint32)(result_u >> 32U);

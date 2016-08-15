@@ -93,12 +93,14 @@ extern CanDriverReturnType can_driver_read(CanDriverChannelType channel, CanDriv
 #define CAN_DRIVER_CHANNEL	1U
 #define CAN_DRIVER_DLC		8U
 #define CAN_DRIVER_ID_STD_SHIFT	2U
-#define CAN_DRIVER_TX_MBOX		0U
-#define CAN_DRIVER_RX_MBOX		1U
-#define CAN_DRIVER_XX_MBOX		2U
+#define CAN_DRIVER_TX1_MBOX		0U
+#define CAN_DRIVER_TX2_MBOX		1U
+#define CAN_DRIVER_RX_MBOX		2U
+#define CAN_DRIVER_XX_MBOX		3U
 #define CAN_DRIVER_DATA_IS_ARRIVAL(reg16)	((((reg16) & MPU_CAN_CnMCTRLm_DN_READ_BIT) == MPU_CAN_CnMCTRLm_DN_READ_BIT))
 
-#define CAN_DRIVER_TX_CANID		0x100
+#define CAN_DRIVER_TX1_CANID		0x100
+#define CAN_DRIVER_TX2_CANID		0x101
 #define CAN_DRIVER_RX_CANID		0x200
 
 

@@ -57,13 +57,21 @@ void can_driver_init(void)
 	
 	//MBOXの初期化
 	/*
-	 * 0: TX, 0x100
+	 * 0: TX1, 0x100
 	 */
-	(void)EnableBuffer(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX_MBOX, 1U);
-	InitMboxTx(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX_MBOX, CAN_DRIVER_TX_CANID);
-	DisableBuffer(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX_MBOX);
+	(void)EnableBuffer(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX1_MBOX, 1U);
+	InitMboxTx(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX1_MBOX, CAN_DRIVER_TX1_CANID);
+	DisableBuffer(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX1_MBOX);
+	
+		/*
+	 * 1: TX2, 0x101
+	 */
+	(void)EnableBuffer(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX2_MBOX, 1U);
+	InitMboxTx(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX2_MBOX, CAN_DRIVER_TX2_CANID);
+	DisableBuffer(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX2_MBOX);
+
 	/*
-	 * 1: RX, 0x200
+	 * 2: RX, 0x200
 	 */
 	(void)EnableBuffer(CAN_DRIVER_CHANNEL, CAN_DRIVER_RX_MBOX, 1U);
 	InitMboxRx(CAN_DRIVER_CHANNEL, CAN_DRIVER_RX_MBOX, CAN_DRIVER_RX_CANID);
@@ -82,11 +90,7 @@ CanDriverReturnType can_driver_write(CanDriverChannelType channel, CanDriverMbox
 	if (channel != CAN_DRIVER_CHANNEL) {
 		return CAN_DRIVER_E_INVALID;
 	}
-	else if (mbox != CAN_DRIVER_TX_MBOX) {
-		return CAN_DRIVER_E_INVALID;
-	}
 
-#if 1
 	reg16 = CanDriver_RegRead16((CanDriverUint16*)MPU_CAN_ADDR_CnMCTRLm(channel, mbox));
 	if ((reg16 & MPU_CAN_CnMCTRLm_TRQ_READ_BIT) == MPU_CAN_CnMCTRLm_TRQ_READ_BIT) {
 		return CAN_DRIVER_E_BUSY;
@@ -108,13 +112,7 @@ CanDriverReturnType can_driver_write(CanDriverChannelType channel, CanDriverMbox
 
 	reg16 = MPU_CAN_CnMCTRLm_TRQ_WRITE_SET_BIT;
 	CanDriver_RegWrite16((CanDriverUint16*)MPU_CAN_ADDR_CnMCTRLm(channel, mbox), reg16);
-#else
-	for (i = 0; i < CAN_DRIVER_DLC; i++) {
-		CanDriver_RegWrite8((CanDriverUint8 *)MPU_CAN_ADDR_CnMDATAxm(channel, mbox, i), buffer[i]);
-	}
-	reg16 = MPU_CAN_CnMCTRLm_TRQ_WRITE_SET_BIT;
-	CanDriver_RegWrite16((CanDriverUint16*)MPU_CAN_ADDR_CnMCTRLm(channel, mbox), reg16);
-#endif
+
 
 	return CAN_DRIVER_E_OK;
 }
@@ -153,7 +151,7 @@ CanDriverReturnType can_driver_read(CanDriverChannelType channel, CanDriverMboxT
 void target_can_handler(void)
 {
 	int err;
-	syslog(LOG_NOTICE, "target_can_handler:enter");
+	//syslog(LOG_NOTICE, "target_can_handler:enter");
 
 	err = iact_tsk(CAN_RCV_TASK);
 	
@@ -162,7 +160,24 @@ void target_can_handler(void)
 }
 void can_rcv_task(intptr_t exinf)
 {
+	int i;
+	CanDriverReturnType err;
+	CanDriverMessageBufferType buffer;
+	
 	syslog(LOG_NOTICE, "can_rcv_task:enter");
+	
+	err = can_driver_read(CAN_DRIVER_CHANNEL, CAN_DRIVER_RX_MBOX, buffer);
+	syslog(LOG_NOTICE, "can_driver_read:%d", err);
+	if (err == CAN_DRIVER_E_OK) {
+		for (i = 0; i < CAN_DRIVER_DLC; i++) {
+			syslog(LOG_NOTICE, "msg[%d]=%d", i, buffer[i]);
+		}
+		err = can_driver_write(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX2_MBOX, buffer);
+		syslog(LOG_NOTICE, "can_driver_write:result=%d", err);
+	}
+	else {
+		syslog(LOG_NOTICE, "can not read:%d", err);
+	}
 	
 	syslog(LOG_NOTICE, "can_rcv_task:exit");
 

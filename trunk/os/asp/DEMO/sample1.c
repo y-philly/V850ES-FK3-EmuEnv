@@ -20,14 +20,14 @@ void main_task(intptr_t exinf)
 {
 	CanDriverMessageBufferType buffer;
 
-	buffer[0] = 0;
-	buffer[1] = 1;
-	buffer[2] = 2;
-	buffer[3] = 3;
-	buffer[4] = 4;
-	buffer[5] = 5;
-	buffer[6] = 6;
-	buffer[7] = 7;
+	buffer[0] = 9;
+	buffer[1] = 9;
+	buffer[2] = 9;
+	buffer[3] = 9;
+	buffer[4] = 9;
+	buffer[5] = 9;
+	buffer[6] = 9;
+	buffer[7] = 9;
 
 	can_driver_init();
 
@@ -35,7 +35,7 @@ void main_task(intptr_t exinf)
 	SVC_PERROR(syslog_msk_log(LOG_UPTO(LOG_INFO), LOG_UPTO(LOG_EMERG)));
 	syslog(LOG_NOTICE, "Sample program starts (exinf = %d).", (int_t) exinf);
 
-	can_driver_write(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX_MBOX, buffer);
+	can_driver_write(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX1_MBOX, buffer);
 	while (1) {
 		;
 	}

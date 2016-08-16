@@ -148,44 +148,6 @@ CanDriverReturnType can_driver_read(CanDriverChannelType channel, CanDriverMboxT
 	return CAN_DRIVER_E_OK;
 }
 
-void target_can_handler(void)
-{
-	int err;
-	//syslog(LOG_NOTICE, "target_can_handler:enter");
-
-	err = iact_tsk(CAN_RCV_TASK);
-	
-	syslog(LOG_NOTICE, "target_can_handler:exit:err=%d", err);
-	return;
-}
-void can_rcv_task(intptr_t exinf)
-{
-	int i;
-	CanDriverReturnType err;
-	CanDriverMessageBufferType buffer;
-	
-	syslog(LOG_NOTICE, "can_rcv_task:enter");
-	
-	err = can_driver_read(CAN_DRIVER_CHANNEL, CAN_DRIVER_RX_MBOX, buffer);
-	syslog(LOG_NOTICE, "can_driver_read:%d", err);
-	if (err == CAN_DRIVER_E_OK) {
-#if 0
-		for (i = 0; i < CAN_DRIVER_DLC; i++) {
-			syslog(LOG_NOTICE, "msg[%d]=%d", i, buffer[i]);
-		}
-#endif
-		err = can_driver_write(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX2_MBOX, buffer);
-		syslog(LOG_NOTICE, "can_driver_write:result=%d", err);
-	}
-	else {
-		syslog(LOG_NOTICE, "can not read:%d", err);
-	}
-	
-	syslog(LOG_NOTICE, "can_rcv_task:exit");
-
-	ext_tsk();
-	return;
-}
 /* -------------- static --------------- */
 static void InitMboxCanId(CanDriverChannelType channel, CanDriverMboxType mbox, CanDriverCanIdType canid);
 

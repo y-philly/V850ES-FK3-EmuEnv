@@ -420,8 +420,7 @@ static int OpExec9(CpuManagerType *cpu)
 			ret = op_exec_clr1_9(cpu);
 			break;
 		case 0b11:
-			//TODO TST1
-			printf("OpExec9 Error:Unknown OP:0x%x\n", cpu->decoded_code.type9.opcode);
+			ret = op_exec_tst1_9(cpu);
 			break;
 		default:
 			break;

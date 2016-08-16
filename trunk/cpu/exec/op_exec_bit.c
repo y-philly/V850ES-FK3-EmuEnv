@@ -223,3 +223,44 @@ int op_exec_clr1_9(CpuManagerType *cpu)
 	return 0;
 }
 
+int op_exec_tst1_9(CpuManagerType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code.type9.gen;
+	sint32 reg2 = cpu->decoded_code.type9.reg2;
+	uint32 addr;
+	uint32 *addrp;
+	uint8 bit3;
+	uint8 bit;
+
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	addr = cpu->cpu.r[reg1];
+
+	cpu_memget_raddrp(cpu, addr, &addrp);
+	if (addrp == NULL) {
+		return -1;
+	}
+	bit = *((uint8*)addrp);
+	bit3 = (cpu->cpu.r[reg2] & 0x07);
+
+	if ((bit & (1 << bit3)) == (1 << bit3)) {
+		CPU_CLR_Z(&cpu->cpu);
+	}
+	else {
+		CPU_SET_Z(&cpu->cpu);
+	}
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
+			"0x%x: TST1 bit#3(%d), r%d(0x%x),r%d(0x%x):psw=0x%x\n",
+			cpu->cpu.pc, bit3, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], cpu->cpu.psw));
+
+	cpu->cpu.pc += 4;
+
+	return 0;
+}
+

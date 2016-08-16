@@ -375,6 +375,7 @@ static int OpExec8(CpuManagerType *cpu)
 		ret = op_exec_clr1_8(cpu);
 		break;
 	case 0b01:
+		//TODO NOT1
 	default:
 		printf("OpExec8 Error:Unknown OP:0x%x sub=0x%x\n", cpu->decoded_code.type8.opcode, cpu->decoded_code.type8.sub);
 		break;
@@ -409,13 +410,20 @@ static int OpExec9(CpuManagerType *cpu)
 	case SOP_CODE_BITOPS:
 		switch (subopbits) {
 		case 0b00:
-			//TODO
+			ret = op_exec_set1_9(cpu);
+			break;
 		case 0b01:
-			//TODO
+			//TODO NOT1
+			printf("OpExec9 Error:Unknown OP:0x%x\n", cpu->decoded_code.type9.opcode);
+			break;
 		case 0b10:
-			//TODO
+			//TODO CLR1
+			printf("OpExec9 Error:Unknown OP:0x%x\n", cpu->decoded_code.type9.opcode);
+			break;
 		case 0b11:
-			//TODO
+			//TODO TST1
+			printf("OpExec9 Error:Unknown OP:0x%x\n", cpu->decoded_code.type9.opcode);
+			break;
 		default:
 			break;
 		}

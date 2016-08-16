@@ -419,8 +419,7 @@ return_from_int:
 	sld.w	 8[ep] , r31
 	addi	80 , ep, sp
 	sld.w	12[ep] , r30
-	
-	ei
+
 	reti	/* 割込み元へ */
 
 return_to_task:

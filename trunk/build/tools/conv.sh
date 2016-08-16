@@ -9,7 +9,11 @@ fi
 ELF=${1}
 
 v850-elf-objcopy.exe -O binary ${ELF} ${ELF}.bin
+#v850-elf-objdump.exe -S -d ${ELF} > ${ELF}.dump
+v850-elf-objdump.exe -l -D ${ELF} > ${ELF}.dump
 
-v850-elf-objdump.exe -S -d ${ELF} > ${ELF}.dump
+sh create_debuginfo.sh ${ELF}.dump
 
-#nkf32 -s -f ${ELF}.dump > ../binary.dump
+cd ..
+make
+

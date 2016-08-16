@@ -4,6 +4,7 @@ require './excel_reader'
 require './spread_sheet_reader'
 require './excel_writer'
 require 'timeout'
+require './source_navi'
 
 class CpuInfo
     @@r = Array.new(32)
@@ -16,10 +17,10 @@ class CpuInfo
     @@fepsw = "0x0"
     @@ctbp = "0x0"
     def self.get_sp()
-	return @@r[3]
+      return @@r[3]
     end
     def self.load(path, workbook)
-	#p "cpu"
+      #p "cpu"
     	writer = ExcelWriter.new(workbook, "CPU")
     	array = Array.new()
     	f = open(path, "r")
@@ -27,26 +28,26 @@ class CpuInfo
     	    array[array.length] = line.split()[1]
     	}
     	f.close
-	#p "cpuX"
+    	#p "cpuX"
     	for i in 1..32
     	  if @@r[i-1] != array[i]
     	    writer.set(2 + i, 3, array[i])
     	  end
     	  @@r[i-1] = array[i]
     	end
-	#p "cpu2"
+    	#p "cpu2"
     	if array[0] != @@pc
     	  writer.set(3, 5, array[0]) #PC
     	end
     	@@pc = array[0]
     	
-	#p "cpu3"
+    	#p "cpu3"
     	if array[33] != @@eipc
     	  writer.set(4, 5, array[33]) #EIPC
     	end
     	@@eipc = array[33]
     	
-	#p "cpu4"
+    	#p "cpu4"
       if array[34] != @@eipsw
         writer.set(5, 5, array[34]) #EIPSW
       end
@@ -57,25 +58,25 @@ class CpuInfo
       end
       @@ecr = array[35]
       
-	#p "cpu5"
+      #p "cpu5"
       if array[36] != @@psw
         writer.set(7, 5, array[36]) #PSW
       end
       @@psw = array[36]
       
-	#p "cpu6"
+      #p "cpu6"
       if array[37] != @@fepc
         writer.set(8, 5, array[37]) #FEPC
       end
       @@fepc = array[37]
       
-	#p "cpu7"
+      #p "cpu7"
       if array[38] != @@fepsw
         writer.set(9, 5, array[38]) #FEPSW
       end
       @@fepsw = array[38]
       
-	#p "cpu8"
+      #p "cpu8"
       if array[39] != @@ctbp
         writer.set(10, 5, array[39]) #CTBP
       end
@@ -88,34 +89,34 @@ class StackInfo
     @@sp_focus = -1
     @@sp = Array.new(1024)
     def self.load(path, workbook)
-	#p "stack_start"
+        #p "stack_start"
       	writer = ExcelWriter.new(workbook, "STACK")
       	f = open(path, "r")
       	i = 3
-    	f.each { |line|
-	    elm = line.split[1].strip
-	    if @@sp[i] != elm
-    		writer.set(i, 4, elm)
-	    end
-	    @@sp[i] = elm
-	    i = i + 1
-    	}
+      	f.each { |line|
+    	    elm = line.split[1].strip
+    	    if @@sp[i] != elm
+        		writer.set(i, 4, elm)
+    	    end
+    	    @@sp[i] = elm
+    	    i = i + 1
+      	}
     	f.close
-	#p "stack_x1"
-	sp = CpuInfo.get_sp().hex
-	#p "stack_x1.1"
-	base = "0x3fffb3a8".hex
-	#p "stack_x1.2:" + sp.to_s + ":" + ":" + base.to_s + ":" + (base - 512).to_s
+    	#p "stack_x1"
+    	sp = CpuInfo.get_sp().hex
+    	#p "stack_x1.1"
+    	base = "0x3fffb3a8".hex
+    	#p "stack_x1.2:" + sp.to_s + ":" + ":" + base.to_s + ":" + (base - 512).to_s
 
-	if ((sp <= base) && (sp >= (base - 512)))
-	    focus = (base - sp) / 4
+    	if ((sp <= base) && (sp >= (base - 512)))
+    	    focus = (base - sp) / 4
 
 	    p focus.to_s
 	    if focus != @@sp_focus
-		if @@sp_focus != -1
-			writer.range_clr_focus(@@sp_focus +3, "B", "E")
-		end
-		writer.range_set_focus(focus +3, "B", "E")
+  		if @@sp_focus != -1
+  			writer.range_clr_focus(@@sp_focus +3, "B", "E")
+  		end
+  		writer.range_set_focus(focus +3, "B", "E")
 	    end
 	    @@sp_focus = focus
 	end
@@ -134,10 +135,10 @@ class SymbolInfo
     @@list_gl = Array.new()
 
     def initialize(type, name, addr, size)
-	self.type = type
-	self.name = name
-	self.addr = addr
-	self.size = size
+    	self.type = type
+    	self.name = name
+    	self.addr = addr
+    	self.size = size
     end
 
 
@@ -157,35 +158,35 @@ class SymbolInfo
         		func_writer.set(func_l, 2, name)
         		func_writer.set(func_l, 3, "0x" + addr)
         		func_writer.set(func_l, 4, size)
-			@@list_func[@@list_func.length] = SymbolInfo.new(type, name, addr, size)
+        		@@list_func[@@list_func.length] = SymbolInfo.new(type, name, addr, size)
         		func_l = func_l + 1
     	    else
         		gl_writer.set(gl_l, 2, name)
         		gl_writer.set(gl_l, 3, "0x" + addr)
         		gl_writer.set(gl_l, 4, size)
-			@@list_gl[@@list_gl.length] = SymbolInfo.new(type, name, addr, size)
+        		@@list_gl[@@list_gl.length] = SymbolInfo.new(type, name, addr, size)
         		gl_l = gl_l + 1
     	    end
       	}
       	f.close
-
-	f = open("symbol.c", "w")
-	f.print("#include \"dbg.h\"\n")
-	f.print("#define SYMBOL_FUNC_SIZE	" + @@list_func.length.to_s + "\n")
-	f.print("const uint32 symbol_func_size = SYMBOL_FUNC_SIZE;\n")
-	f.print("DbgSymbolType symbol_func[SYMBOL_FUNC_SIZE] = { \n")
-	@@list_func.each { |elm|
-		f.print("{ \""+  elm.name + "\", 0x" + elm.addr  + ", " + elm.size + " }, \n")
-	}
-	f.print("};\n")
-	f.print("#define SYMBOL_GLOBAL_SIZE	" + @@list_gl.length.to_s + "\n")
-	f.print("const uint32 symbol_gl_size = SYMBOL_GLOBAL_SIZE; \n")
-	f.print("DbgSymbolType symbol_gl[SYMBOL_GLOBAL_SIZE] = { \n")
-	@@list_gl.each { |elm|
-		f.print("{ \""+  elm.name + "\", 0x" + elm.addr  + ", " + elm.size + " }, \n")
-	}
-	f.print("};\n")
-	f.close
+      
+      	f = open("symbol.c", "w")
+      	f.print("#include \"dbg.h\"\n")
+      	f.print("#define SYMBOL_FUNC_SIZE	" + @@list_func.length.to_s + "\n")
+      	f.print("const uint32 symbol_func_size = SYMBOL_FUNC_SIZE;\n")
+      	f.print("DbgSymbolType symbol_func[SYMBOL_FUNC_SIZE] = { \n")
+      	@@list_func.each { |elm|
+      		f.print("{ \""+  elm.name + "\", 0x" + elm.addr  + ", " + elm.size + " }, \n")
+      	}
+      	f.print("};\n")
+      	f.print("#define SYMBOL_GLOBAL_SIZE	" + @@list_gl.length.to_s + "\n")
+      	f.print("const uint32 symbol_gl_size = SYMBOL_GLOBAL_SIZE; \n")
+      	f.print("DbgSymbolType symbol_gl[SYMBOL_GLOBAL_SIZE] = { \n")
+      	@@list_gl.each { |elm|
+      		f.print("{ \""+  elm.name + "\", 0x" + elm.addr  + ", " + elm.size + " }, \n")
+      	}
+      	f.print("};\n")
+      	f.close
     	end
 end
 
@@ -245,65 +246,95 @@ end
 class AsmInfo
     @lastno
     @source
+    @navi
 
     def self.init()
-	@lastno = -1
-	p "AsmInfo.init:start"
-	SourceInfo.init("../asm_line.txt")
-	@source = SourceInfo.get()
-	File.open("./source.dump", "wb") do |file|
-	    Marshal.dump(@source, file)
-	end
-	p "AsmInfo.init:end"
+    	@lastno = -1
+    	p "AsmInfo.init:start"
+    	SourceInfo.init("../asm_line.txt")
+    	@source = SourceInfo.get()
+    	File.open("./source.dump", "wb") do |file|
+    	    Marshal.dump(@source, file)
+    	end
+    	p "AsmInfo.init:end"
     end
 
     def self.load_source()
-	File.open("./source.dump", "r") do |file|
-	    @source = Marshal.restore(file)
-	end
+    	File.open("./source.dump", "r") do |file|
+    	    @source = Marshal.restore(file)
+    	end
     end
 
     def self.load(path, workbook)
-	p "AsmInfo.load:start"
-	#writer = ExcelWriter.new(workbook, "ASM")
-	f_asm = open("asm.csv", "w")
-
-	f = open(path, "r")
-	f.each { | line|
-		str = line.chomp
-		str = str.gsub(/,/ , '  ')
-		str = str.gsub(/\t/, '    ')
-		f_asm.print("\"" + str + "\",\n")
-	}
-	f_asm.close
-	f.close
-	p "AsmInfo.load:End"
+    	p "AsmInfo.load:start"
+    	#writer = ExcelWriter.new(workbook, "ASM")
+    	f_asm = open("asm.csv", "w")
+    
+    	f = open(path, "r")
+    	f.each { | line|
+    		str = line.chomp
+    		str = str.gsub(/,/ , '  ')
+    		str = str.gsub(/\t/, '    ')
+    		f_asm.print("\"" + str + "\",\n")
+    	}
+    	f_asm.close
+    	f.close
+    	p "AsmInfo.load:End"
+    end
+    
+    def self.setNavi(path)
+      p "SourceNavi:start"
+      
+      @navi = SourceNavi.new()
+      
+      file_name = nil
+      file_lineno = nil
+      lineno = 1
+      f = open(path, "r")
+      f.each { |line|
+        elm = line.split(":")
+        if elm.length == 3
+          file_name = elm[0] + ":" + elm[1]
+          file_lineno = elm[2]
+        end
+        @navi.add(file_name, file_lineno, lineno)
+        lineno = lineno + 1
+      }
+      f.close
+      
+      p "SourceNavi:end"
     end
 
     def self.update(path, workbook)
-	#p "update:" + path
-	writer = ExcelWriter.new(workbook, "ASM")
-	f = open(path, "r")
-	last_line = nil
-	f.each { | line|
-	    last_line = line
-	}
-	f.close
-	caddr = last_line.strip
-
-	#p "update:" + caddr
-	l = @source.search_line(caddr)
-
-	if l != $lastno
-		if (l > 0) && (l != @lastno)
-			#p "update:" + l.to_s + ":lastno=" + @lastno.to_s
-			if (@lastno != -1)
-				writer.clear_set(@lastno, 1, "")
-			end
-			writer.active_set(l, 1, ">")
-			@lastno = l
-		end
-	end
+    	#p "update:" + path
+    	writer = ExcelWriter.new(workbook, "ASM")
+    	f = open(path, "r")
+    	last_line = nil
+    	f.each { | line|
+    	    last_line = line
+    	}
+    	f.close
+    	caddr = last_line.strip
+    
+    	#p "update:" + caddr
+    	l = @source.search_line(caddr)
+    
+    	if l != $lastno
+    		if (l > 0) && (l != @lastno)
+    			#p "update:" + l.to_s + ":lastno=" + @lastno.to_s
+    			if (@lastno != -1)
+    				writer.clear_set(@lastno, 1, "")
+    			end
+    			writer.active_set(l, 1, ">")
+    			@lastno = l
+    			e = @navi.search(l)
+    			if e != nil
+            f_sakura = open("arg_sakura.txt", "w")
+            f_sakura.print(e.file_name + ":" + e.file_line)
+            f_sakura.close
+    			end
+    		end
+    	end
     end
 end
 
@@ -358,7 +389,11 @@ class DebuggerV850
 		excel = nil
 		workbook = nil
 		begin
-		    	is_fin = false
+		  is_fin = false
+		  
+      AsmInfo.setNavi("../asm.dump")
+
+		  
 			fso = WIN32OLE.new('Scripting.FileSystemObject')
 			absPath = fso.GetAbsolutePathName(path)
 

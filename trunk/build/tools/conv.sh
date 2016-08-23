@@ -17,5 +17,6 @@ sh elf2symbol.sh ${ELF}
 sh create_debuginfo.sh ${ELF}.dump
 
 cd ..
-make
+#make
+make USE_CANLIB=TRUE
 

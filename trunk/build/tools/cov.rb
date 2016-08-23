@@ -3,6 +3,8 @@ require 'win32ole'
 require '../gui_debugger/excel_reader'
 require '../gui_debugger/spread_sheet_reader'
 require '../gui_debugger/excel_writer'
+require '../gui_debugger/source_navi'
+require '../gui_debugger/elf_debug_manager'
 
 
 class PcInfo
@@ -12,7 +14,7 @@ class PcInfo
 		f = File.open("../cov.csv", "r")
 		f.each { |line|
 			str = line.split(",")[0]
-			@@table[@@table.length] = str
+			@@table[@@table.length] = str.split("x")[1]
 		}
 		f.close()
 	end
@@ -21,28 +23,18 @@ class PcInfo
 	end
 end
 
-class AsmInfo
-	@@table
+class CovAsmInfo
+	@@source
 	def self.init()
-		File.open("../gui_debugger/table.dump", "r") do |file|
-			@@table = Marshal.restore(file)
+		File.open("../gui_debugger/source.dump", "r") do |file|
+			@@source = Marshal.restore(file)
 		end
 	end
 
 	def self.lineno(pc)
-		l = 0
-		@@table.each { | entry | 
-			if entry != "NONE,NONE"
-				n = entry.split(",")[0]
-				if pc == n
-					return l
-				end
-			end
-			l = l + 1
-		}
-		return -1
+		#p pc
+		return @@source.search_line(pc)
 	end
-
 end
 
 class CovMaster
@@ -76,7 +68,7 @@ class CovMaster
 		end
 	end
 	def self.activate(lineno, pc)
-		@@writer.active_set(lineno, 1, pc)
+		@@writer.active_set(lineno, 1, "PASSED(0x"+pc+")")
 	end
 
 	def self.fin()
@@ -95,14 +87,15 @@ end
 
 
 
-AsmInfo.init()
+CovAsmInfo.init()
 PcInfo.init()
 CovMaster.init("./asm.xlsx")
 
 	t = PcInfo.ref()
 	t.each { |pc|
-		lineno = AsmInfo.lineno(pc)
-		CovMaster.activate(lineno - 2, pc)
+		#p pc
+		lineno = CovAsmInfo.lineno(pc)
+		CovMaster.activate(lineno, pc)
 	}
 
 CovMaster.fin()

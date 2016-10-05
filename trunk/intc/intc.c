@@ -96,9 +96,11 @@ void intc_init(CpuManagerType *cpu)
 }
 static void set_wait_intno(int intno, uint32 lvl)
 {
-	intc_control.is_waiting_lvl[intno] = lvl;
-	intc_control.waiting_lvl_num[intno]++;
-	intc_control.waiting_int_num++;
+	if (intc_control.is_waiting_lvl[intno] == INTC_NUM_INTLVL) {
+		intc_control.is_waiting_lvl[intno] = lvl;
+		intc_control.waiting_lvl_num[intno] = 1;
+		intc_control.waiting_int_num++;
+	}
 }
 static void clr_wait_intno(int intno)
 {

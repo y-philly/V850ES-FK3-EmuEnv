@@ -104,12 +104,14 @@ static void set_wait_intno(int intno, uint32 lvl)
 }
 static void clr_wait_intno(int intno)
 {
-	intc_control.waiting_lvl_num[intno]--;
-	//printf("clr_wait_intno:intno=%d lvl_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
-	if (intc_control.waiting_lvl_num[intno] == 0) {
-		intc_control.is_waiting_lvl[intno] = INTC_NUM_INTLVL;
+	if (intc_control.waiting_lvl_num[intno] > 0) {
+		intc_control.waiting_lvl_num[intno]--;
+		//printf("clr_wait_intno:intno=%d lvl_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
+		if (intc_control.waiting_lvl_num[intno] == 0) {
+			intc_control.is_waiting_lvl[intno] = INTC_NUM_INTLVL;
+		}
+		intc_control.waiting_int_num--;
 	}
-	intc_control.waiting_int_num--;
 }
 int is_masked(CpuManagerType *cpu, uint32 intno)
 {
@@ -514,6 +516,7 @@ void intc_hook_update_reg8(CpuManagerType *cpu, uint32 regaddr, uint8 data)
 		else {
 			*xxICn &= ~(1 << 6);
 			//printf("xxIcn(intno=%d):clear\n", intno);
+			clr_wait_intno(pintno);
 		}
 	}
 	return;

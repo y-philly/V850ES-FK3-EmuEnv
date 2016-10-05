@@ -37,6 +37,7 @@ VPATH	+= $(ROOTDIR)/device/serial
 VPATH	+= $(ROOTDIR)/device/can
 VPATH	+= $(ROOTDIR)/device/adc
 VPATH	+= $(ROOTDIR)/device/wdg
+VPATH	+= $(ROOTDIR)/device/comm
 VPATH	+= $(ROOTDIR)/lib
 
 ifdef USE_CANLIB
@@ -81,6 +82,7 @@ OBJS	+= dbg_can.o
 OBJS	+= can.o
 OBJS	+= adc.o
 OBJS	+= wdg.o
+OBJS	+= comm.o
 OBJS	+= serial.o
 OBJS	+= debugger.o
 OBJS	+= symbol.o

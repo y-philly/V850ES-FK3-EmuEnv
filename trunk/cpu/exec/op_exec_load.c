@@ -266,6 +266,9 @@ int op_exec_sldw(CpuManagerType *cpu)
 	disp = disp << 2;
 	addr = cpu->cpu.r[reg1] + disp;
 
+	comm_hook_load_reg32(cpu, addr);
+
+
 	cpu_memget_raddrp(cpu, addr, &addrp);
 	if (addrp == NULL) {
 		return -1;
@@ -377,12 +380,17 @@ int op_exec_ldhw(CpuManagerType *cpu)
 		//LD.W
 		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
 		addr = cpu->cpu.r[reg1] + disp;
+
+		comm_hook_load_reg32(cpu, addr);
+
+
 		cpu_memget_raddrp(cpu, addr, &addrp);
 		if (addrp == NULL) {
 			return -1;
 		}
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.W disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], *((sint32*)addrp)));
 		ret = *((sint32*)addrp);
+
 	}
 	cpu->cpu.r[reg2] = ret;
 

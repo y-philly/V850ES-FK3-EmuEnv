@@ -1,15 +1,18 @@
 #include "device/inc/device.h"
+#include "intc.h"
 #include <stdio.h>
 
 void device_init(DeviceType *device)
 {
 	device->clock = 0;
+	device->intclock = 0;
 	device_init_timer(device);
 	device_init_timer_m(device);
 	device_init_serial(device);
 	device_init_can(device);
 	device_init_adc(device);
 	device_init_wdg(device);
+	device_init_comm(device);
 
 	return;
 }
@@ -17,6 +20,9 @@ void device_init(DeviceType *device)
 void device_supply_clock(DeviceType *device)
 {
 	device->clock++;
+	if (intc_control.current_intno != -1) {
+		device->intclock++;
+	}
 
 	device_supply_clock_timer(device);
 	device_supply_clock_timer_m(device);
@@ -24,12 +30,13 @@ void device_supply_clock(DeviceType *device)
 	device_supply_clock_can(device);
 	device_supply_clock_adc(device);
 	device_supply_clock_wdg(device);
+	device_supply_clock_comm(device);
 	return;
 }
 
 void device_print_clock(DeviceType *device)
 {
-	printf("clock = %I64u\n", device->clock);
+	printf("clock = cpu:%I64u intc:%I64u\n", device->clock, device->intclock);
 	return;
 }
 

@@ -65,11 +65,9 @@ void can_rcv_task(intptr_t exinf)
 	err = can_driver_read(CAN_DRIVER_CHANNEL, CAN_DRIVER_RX_MBOX, buffer);
 	syslog(LOG_NOTICE, "can_driver_read:%d", err);
 	if (err == CAN_DRIVER_E_OK) {
-#if 1
 		for (i = 0; i < CAN_DRIVER_DLC; i++) {
 			syslog(LOG_NOTICE, "msg[%d]=%d", i, buffer[i]);
 		}
-#endif
 		err = can_driver_write(CAN_DRIVER_CHANNEL, CAN_DRIVER_TX2_MBOX, buffer);
 		syslog(LOG_NOTICE, "can_driver_write:result=%d", err);
 	}

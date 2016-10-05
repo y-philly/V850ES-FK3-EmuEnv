@@ -14,6 +14,11 @@ extern void intc_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 d
 extern uint32* can_get_reg16_addr(CpuManagerType *cpu, uint32 regaddr);
 extern void can_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data);
 
+extern void comm_hook_update_reg32(CpuManagerType *cpu, uint32 regaddr, uint32 data);
+extern void comm_hook_load_reg32(CpuManagerType *cpu, uint32 regaddr);
+
+
+
 /*
  * 内部関数
  */

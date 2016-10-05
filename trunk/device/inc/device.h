@@ -6,6 +6,7 @@
 typedef struct {
 	void *cpu;
 	uint64 clock;
+	uint64 intclock;//割込み処理で消費している時間
 	TargetRamType *io_memory1;
 	TargetRamType *io_memory2;
 
@@ -51,6 +52,7 @@ extern void device_init_serial(DeviceType *device);
 extern void device_init_can(DeviceType *device);
 extern void device_init_adc(DeviceType *device);
 extern void device_init_wdg(DeviceType *device);
+extern void device_init_comm(DeviceType *device);
 
 /*
  * デバイスクロック共有
@@ -62,6 +64,9 @@ extern void device_supply_clock_serial(DeviceType *device);
 extern void device_supply_clock_can(DeviceType *device);
 extern void device_supply_clock_adc(DeviceType *device);
 extern void device_supply_clock_wdg(DeviceType *device);
+extern void device_supply_clock_comm(DeviceType *device);
+
+extern int CpuEmuCommDevisProc1;
 
 /*
  * デバイスクロック参照

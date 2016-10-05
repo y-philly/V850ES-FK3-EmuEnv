@@ -126,13 +126,22 @@ void debug_cmd(void)
 int main(int argc, const char *argv[])
 {
 	char *path;
+	char *proc;
 	pthread_t thread;
 
-	if (argc != 2) {
-		printf("Usage: %s binary\n", argv[0]);
+	if (argc != 3) {
+		printf("Usage: %s binary proc\n", argv[0]);
 		return 1;
 	}
 	path = (char*)argv[1];
+	proc = (char*)argv[2];
+
+	if (strncmp(proc, "proc1", 5) == 0) {
+		CpuEmuCommDevisProc1 = 1;
+	}
+	else {
+		CpuEmuCommDevisProc1 = 0;
+	}
 
 
 	cpu_init(&loader);

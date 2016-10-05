@@ -99,7 +99,12 @@ int op_exec_sstw(CpuManagerType *cpu)
 		return -1;
 	}
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SST.W r%d(0x%x), disp7(0x%x) r%d(0x%x):0x%x\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], disp, reg2, cpu->cpu.r[reg2], (uint32)cpu->cpu.r[reg2]));
+
+	comm_hook_update_reg32(cpu, addr, cpu->cpu.r[reg2]);
+
 	*((uint32*)addrp) =	cpu->cpu.r[reg2];
+
+
 
 	cpu->cpu.pc += 2;
 	return 0;
@@ -147,6 +152,10 @@ int op_exec_sthw(CpuManagerType *cpu)
 			return -1;
 		}
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ST.W r%d(0x%x), disp16(%d) r%d(0x%x):0x%x\n", cpu->cpu.pc, reg2, cpu->cpu.r[reg2], disp, reg1, cpu->cpu.r[reg1], (sint32)cpu->cpu.r[reg2]));
+
+		comm_hook_update_reg32(cpu, addr, cpu->cpu.r[reg2]);
+
+
 		*((sint32*)addrp) = cpu->cpu.r[reg2];
 	}
 

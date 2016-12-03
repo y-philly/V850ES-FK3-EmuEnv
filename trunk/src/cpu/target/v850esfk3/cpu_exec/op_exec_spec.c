@@ -1,5 +1,6 @@
 #include "cpu_exec/op_exec_ops.h"
 #include "cpu.h"
+#include "bus.h"
 #include <stdio.h> //TODO
 
 static int get_sysreg(CpuRegisterType *cpu, uint32 regid, uint32 **regp)
@@ -201,9 +202,10 @@ int op_exec_switch(CpuManagerType *cpu)
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg1_data;
 	uint32 addr;
-	uint32 *addrp;
 	sint32 tmp_pc;
 	uint32 next_pc;
+	sint16 data16;
+	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
@@ -215,15 +217,15 @@ int op_exec_switch(CpuManagerType *cpu)
 	/*
 	 * Load-memory (adr, Half-word)
 	 */
-	cpu_memget_addrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data16(cpu->core_id, addr, (uint16*)&data16);
+	if (err != STD_E_OK) {
 		printf("ERROR:SWITCH pc=0x%x reg1=%u(0x%x) addr=0x%x\n", cpu->cpu.pc, reg1, reg1_data, addr);
 		return -1;
 	}
 	/*
 	 * (sign-extend (Load-memory (adr, Half-word) ))
 	 */
-	tmp_pc = (sint32)( *((sint16*)addrp) );
+	tmp_pc = (sint32)( data16 );
 	/*
 	 * (sign-extend (Load-memory (adr, Half-word) ) ) logically shift left by 1
 	 */
@@ -255,6 +257,7 @@ int op_exec_prepare(CpuManagerType *cpu)
 	uint32 *addrp;
 	uint32 *sp = (uint32*)&(cpu->cpu.r[3]);	//sp:r3
 	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
+	Std_ReturnType err;
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: PREPARE sp=0x%x ", cpu->cpu.pc, *sp));
 	for (i = start_reg; i < 32; i++) {
@@ -264,8 +267,8 @@ int op_exec_prepare(CpuManagerType *cpu)
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->cpu.r[i]));
 
 		addr = (*sp) - 4U;
-		cpu_memget_addrp(cpu, addr, &addrp);
-		if (addrp == NULL) {
+		err = bus_get_pointer(cpu->core_id, addr, (uint8**)&addrp);
+		if (err != STD_E_OK) {
 			printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
 			return -1;
 		}
@@ -283,8 +286,9 @@ int op_exec_prepare(CpuManagerType *cpu)
 	}
 
 	addr = cpu->cpu.pc + 4U;
-	cpu_memget_addrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+
+	err = bus_get_pointer(cpu->core_id, addr, (uint8**)&addrp);
+	if (err != STD_E_OK) {
 		printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
 		return -1;
 	}
@@ -326,6 +330,7 @@ int op_exec_dispose(CpuManagerType *cpu)
 	uint32 *addrp;
 	uint32 *sp = (uint32*)&(cpu->cpu.r[3]);	//sp:r3
 	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
+	Std_ReturnType err;
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DISPOSE imm=0x%x sp=0x%x ", cpu->cpu.pc, imm, *sp));
 
@@ -336,8 +341,8 @@ int op_exec_dispose(CpuManagerType *cpu)
 		}
 
 		addr = (*sp);
-		cpu_memget_addrp(cpu, addr, &addrp);
-		if (addrp == NULL) {
+		err = bus_get_pointer(cpu->core_id, addr, (uint8**)&addrp);
+		if (err != STD_E_OK) {
 			printf("ERROR:DISPOSE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
 			return -1;
 		}

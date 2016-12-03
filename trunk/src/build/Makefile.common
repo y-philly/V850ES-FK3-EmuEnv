@@ -1,0 +1,45 @@
+TARGET	:= athrill
+
+WFLAGS	:= -g -Wall
+GCC		:= gcc
+
+IFLAGS	+= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/bus
+IFLAGS	+= -I$(ROOTDIR)/device/mpu
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
+
+VPATH	+= $(ROOTDIR)/main
+VPATH	+= $(ROOTDIR)/cpu
+VPATH	+= $(ROOTDIR)/device/mpu
+VPATH	+= $(ROOTDIR)/cpu/target/$(ARCH)
+VPATH	+= $(ROOTDIR)/config/target/$(ARCH)
+
+CFLAGS	+= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+LFLAGS	:= -Wl,--allow-multiple-definition
+LFLAGS	+= -Wl,--enable-stdcall-fixup
+
+LIBS	+= -lpthread
+
+OBJS	+= main.o
+OBJS	+= mpu.o
+OBJS	+= mpu_config.o
+OBJS	+= cpu_config.o
+
+
+.SUFFIXES:	.c .o
+
+all:	$(TARGET)
+
+$(TARGET):	$(OBJS)
+	$(GCC) -O3 $(LFLAGS) $(OBJS) -o $(TARGET)  $(LIBS)
+
+.c.o:	$<
+	$(GCC) -O3 -c $(CFLAGS) $<
+
+clean:
+	rm -f $(OBJS) $(TARGET).exe

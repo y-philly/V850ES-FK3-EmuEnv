@@ -77,7 +77,7 @@ int op_exec_set1_8(CpuManagerType *cpu)
 		CPU_SET_Z(&cpu->cpu);
 	}
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SET1 bit#3(%d), disp16(%d), addr=0x%x r%d(0x%x):psw=0x%x, bit=0x%x\n", cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, *bitp));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SET1 bit#3(%d), disp16(%d), addr=0x%x r%d(0x%x):psw=0x%x, bit=0x%x\n", cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, bit));
 
 	cpu->cpu.pc += 4;
 
@@ -119,7 +119,7 @@ int op_exec_clr1_8(CpuManagerType *cpu)
 		CPU_SET_Z(&cpu->cpu);
 	}
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: CLR1 bit#3(%d), disp16(%d), addr=0x%x r%d(0x%x):psw=0x%x, bit=0x%x\n", cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, *bitp));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: CLR1 bit#3(%d), disp16(%d), addr=0x%x r%d(0x%x):psw=0x%x, bit=0x%x\n", cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, bit));
 
 	cpu->cpu.pc += 4;
 
@@ -164,7 +164,7 @@ int op_exec_not1_8(CpuManagerType *cpu)
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
 			"0x%x: NOT1 bit#3(%d), disp16(%d), addr=0x%x r%d(0x%x):psw=0x%x, bit=0x%x\n",
-			cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, *bitp));
+			cpu->cpu.pc, bit3, disp16, addr, reg1, cpu->cpu.r[reg1], cpu->cpu.psw, bit));
 
 	cpu->cpu.pc += 4;
 
@@ -222,7 +222,7 @@ int op_exec_set1_9(CpuManagerType *cpu)
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
 			"0x%x: SET1 bit#3(%d), addr=0x%x r%d(0x%x) r%d(0x%x):psw=0x%x, bit=0x%x\n",
 			cpu->cpu.pc,
-			bit3, addr, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],cpu->cpu.psw, *bitp));
+			bit3, addr, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],cpu->cpu.psw, bit));
 
 	cpu->cpu.pc += 4;
 
@@ -273,7 +273,7 @@ int op_exec_clr1_9(CpuManagerType *cpu)
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
 			"0x%x: CLR1 bit#3(%d), addr=0x%x r%d(0x%x) r%d(0x%x):psw=0x%x, bit=0x%x\n",
 			cpu->cpu.pc,
-			bit3, addr, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],cpu->cpu.psw, *bitp));
+			bit3, addr, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],cpu->cpu.psw, bit));
 
 	cpu->cpu.pc += 4;
 
@@ -367,7 +367,7 @@ int op_exec_not1_9(CpuManagerType *cpu)
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
 			"0x%x: NOT1 bit#3(%d), addr=0x%x r%d(0x%x) r%d(0x%x):psw=0x%x, bit=0x%x\n",
 			cpu->cpu.pc,
-			bit3, addr, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],cpu->cpu.psw, *bitp));
+			bit3, addr, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],cpu->cpu.psw, bit));
 
 	cpu->cpu.pc += 4;
 

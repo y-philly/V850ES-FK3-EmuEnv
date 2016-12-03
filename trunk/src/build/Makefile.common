@@ -13,6 +13,7 @@ IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 
 VPATH	+= $(ROOTDIR)/main
 VPATH	+= $(ROOTDIR)/cpu
+VPATH	+= $(ROOTDIR)/lib
 VPATH	+= $(ROOTDIR)/device/mpu
 VPATH	+= $(ROOTDIR)/cpu/target/$(ARCH)
 VPATH	+= $(ROOTDIR)/config/target/$(ARCH)
@@ -27,6 +28,7 @@ LIBS	+= -lpthread
 
 OBJS	+= main.o
 OBJS	+= mpu.o
+OBJS	+= dbg_print.o
 OBJS	+= mpu_config.o
 OBJS	+= cpu_config.o
 

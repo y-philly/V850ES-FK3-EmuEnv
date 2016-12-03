@@ -1,6 +1,6 @@
 #include "../cpu_exec/op_exec_ops.h"
 #include "cpu.h"
-
+#include "bus.h"
 
 
 /*
@@ -12,8 +12,8 @@ int op_exec_tst1_8(CpuManagerType *cpu)
 	sint32 disp16 = cpu->decoded_code.type8.disp;
 	sint32 bit3 = cpu->decoded_code.type8.bit;
 	uint32 addr;
-	uint32 *addrp;
 	uint8 bit;
+	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
@@ -21,11 +21,12 @@ int op_exec_tst1_8(CpuManagerType *cpu)
 
 	addr = cpu->cpu.r[reg1] + disp16;
 
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
-	bit = *((uint8*)addrp);
+
+
 	if ((bit & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
 	}
@@ -45,9 +46,9 @@ int op_exec_set1_8(CpuManagerType *cpu)
 	sint32 disp16 = cpu->decoded_code.type8.disp;
 	sint32 bit3 = cpu->decoded_code.type8.bit;
 	uint32 addr;
-	uint32 *addrp;
-	uint8 *bitp;
 	uint8 org_bit;
+	uint8 bit;
+	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
@@ -55,15 +56,19 @@ int op_exec_set1_8(CpuManagerType *cpu)
 
 	addr = cpu->cpu.r[reg1] + disp16;
 
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
 
-	bitp = (uint8*)addrp;
-	org_bit = *bitp;
 
-	*bitp |= (1 << bit3);
+	org_bit = bit;
+
+	bit |= (1 << bit3);
+	err = bus_put_data8(cpu->core_id, addr, bit);
+	if (err != STD_E_OK) {
+		return -1;
+	}
 
 	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
@@ -85,25 +90,27 @@ int op_exec_clr1_8(CpuManagerType *cpu)
 	sint32 disp16 = cpu->decoded_code.type8.disp;
 	sint32 bit3 = cpu->decoded_code.type8.bit;
 	uint32 addr;
-	uint32 *addrp;
-	uint8 *bitp;
 	uint8 org_bit;
+	uint8 bit;
+	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
 
 	addr = cpu->cpu.r[reg1] + disp16;
-
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
 
-	bitp = (uint8*)addrp;
-	org_bit = *bitp;
+	org_bit = bit;
 
-	*bitp &= ~(1 << bit3);
+	bit &= ~(1 << bit3);
+	err = bus_put_data8(cpu->core_id, addr, bit);
+	if (err != STD_E_OK) {
+		return -1;
+	}
 
 	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
@@ -125,31 +132,34 @@ int op_exec_not1_8(CpuManagerType *cpu)
 	sint32 disp16 = cpu->decoded_code.type8.disp;
 	sint32 bit3 = cpu->decoded_code.type8.bit;
 	uint32 addr;
-	uint32 *addrp;
-	uint8 *bitp;
 	uint8 org_bit;
+	uint8 bit;
+	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
 
 	addr = cpu->cpu.r[reg1] + disp16;
-
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
 
-	bitp = (uint8*)addrp;
-	org_bit = *bitp;
+	org_bit = bit;
+
 
 	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
-		*bitp &= ~(1 << bit3);
+		bit &= ~(1 << bit3);
 	}
 	else {
 		CPU_SET_Z(&cpu->cpu);
-		*bitp |= (1 << bit3);
+		bit |= (1 << bit3);
+	}
+	err = bus_put_data8(cpu->core_id, addr, bit);
+	if (err != STD_E_OK) {
+		return -1;
 	}
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
@@ -170,10 +180,10 @@ int op_exec_set1_9(CpuManagerType *cpu)
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;
 	uint32 addr;
-	uint32 *addrp;
-	uint8 *bitp;
 	uint8 org_bit;
 	uint8 bit3;
+	uint8 bit;
+	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
@@ -188,16 +198,19 @@ int op_exec_set1_9(CpuManagerType *cpu)
 	 */
 
 	addr = cpu->cpu.r[reg1];
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
 
-	bitp = (uint8*)addrp;
-	org_bit = *bitp;
+	org_bit = bit;
 
 	bit3 = (cpu->cpu.r[reg2] & 0x07);
-	*bitp |= (1 << bit3);
+	bit |= (1 << bit3);
+	err = bus_put_data8(cpu->core_id, addr, bit);
+	if (err != STD_E_OK) {
+		return -1;
+	}
 
 	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
@@ -220,8 +233,8 @@ int op_exec_clr1_9(CpuManagerType *cpu)
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;
 	uint32 addr;
-	uint32 *addrp;
-	uint8 *bitp;
+	uint8 bit;
+	Std_ReturnType err;
 	uint8 org_bit;
 	uint8 bit3;
 
@@ -238,17 +251,18 @@ int op_exec_clr1_9(CpuManagerType *cpu)
 	 */
 
 	addr = cpu->cpu.r[reg1];
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
-
-	bitp = (uint8*)addrp;
-	org_bit = *bitp;
+	org_bit = bit;
 
 	bit3 = (cpu->cpu.r[reg2] & 0x07);
-	*bitp &= ~(1 << bit3);
-
+	bit &= ~(1 << bit3);
+	err = bus_put_data8(cpu->core_id, addr, bit);
+	if (err != STD_E_OK) {
+		return -1;
+	}
 	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
 	}
@@ -271,7 +285,7 @@ int op_exec_tst1_9(CpuManagerType *cpu)
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;
 	uint32 addr;
-	uint32 *addrp;
+	Std_ReturnType err;
 	uint8 bit3;
 	uint8 bit;
 
@@ -284,11 +298,11 @@ int op_exec_tst1_9(CpuManagerType *cpu)
 	}
 	addr = cpu->cpu.r[reg1];
 
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
-	bit = *((uint8*)addrp);
+
 	bit3 = (cpu->cpu.r[reg2] & 0x07);
 
 	if ((bit & (1 << bit3)) == (1 << bit3)) {
@@ -311,8 +325,8 @@ int op_exec_not1_9(CpuManagerType *cpu)
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;
 	uint32 addr;
-	uint32 *addrp;
-	uint8 *bitp;
+	Std_ReturnType err;
+	uint8 bit;
 	uint8 org_bit;
 	uint8 bit3;
 
@@ -328,23 +342,26 @@ int op_exec_not1_9(CpuManagerType *cpu)
 	 * Store-memory-bit (adr, reg2, Zフラグ)
 	 */
 	addr = cpu->cpu.r[reg1];
-	cpu_memget_raddrp(cpu, addr, &addrp);
-	if (addrp == NULL) {
+	err = bus_get_data8(cpu->core_id, addr, &bit);
+	if (err != STD_E_OK) {
 		return -1;
 	}
 
-	bitp = (uint8*)addrp;
-	org_bit = *bitp;
+	org_bit = bit;
 
 	bit3 = (cpu->cpu.r[reg2] & 0x07);
 
 	if (((org_bit) & (1 << bit3)) == (1 << bit3)) {
 		CPU_CLR_Z(&cpu->cpu);
-		*bitp &= ~(1 << bit3);
+		bit &= ~(1 << bit3);
 	}
 	else {
 		CPU_SET_Z(&cpu->cpu);
-		*bitp |= (1 << bit3);
+		bit |= (1 << bit3);
+	}
+	err = bus_put_data8(cpu->core_id, addr, bit);
+	if (err != STD_E_OK) {
+		return -1;
 	}
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),

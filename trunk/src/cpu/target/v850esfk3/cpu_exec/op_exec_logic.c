@@ -1,4 +1,4 @@
-#include "../cpu_exec/op_exec_ops.h"
+#include "cpu_exec/op_exec_ops.h"
 #include "cpu.h"
 
 /*
@@ -66,7 +66,7 @@ int op_exec_tst(CpuManagerType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
-	sint32 result;
+	sint32 result = 0;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;

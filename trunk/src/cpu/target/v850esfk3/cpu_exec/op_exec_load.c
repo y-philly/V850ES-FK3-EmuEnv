@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "../cpu_exec/op_exec_ops.h"
+#include "cpu_exec/op_exec_ops.h"
 #include "cpu.h"
 
 void cpu_memget_addrp(CpuManagerType *cpu, uint32 addr, uint32 **addrp)

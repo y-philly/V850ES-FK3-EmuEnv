@@ -27,6 +27,7 @@ typedef struct {
 } CpuRegisterType;
 
 typedef struct {
+	CoreIdType			core_id;
 	CpuRegisterType 	cpu;
 	bool				is_halt;
 	uint16 				current_code[OP_DECODE_MAX];

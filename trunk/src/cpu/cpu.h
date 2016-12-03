@@ -6,7 +6,6 @@
 #include "cpu_config.h"
 
 typedef struct {
-	CoreIdType			core_id;
 	CpuManagerType		cpu;
 } CpuCoreType;
 

@@ -1,4 +1,6 @@
 #include "cpu_exec/op_exec_ops.h"
+#include "bus.h"
+#include <stdio.h> //TODO
 
 /*
  * [符号なし加減算]
@@ -442,20 +444,23 @@ int op_exec_mov_6(CpuManagerType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type6.reg1;
 	uint32 imm_high_addr;
-	uint32 *imm_high_addrp;
+	uint16 imm_high16;
 	uint32 imm_high;
 	uint32 imm_data = cpu->decoded_code.type6.imm;
+	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
 	imm_high_addr = cpu->cpu.pc + 4U;
-	cpu_memget_addrp(cpu, imm_high_addr, &imm_high_addrp);
-	if (imm_high_addrp == NULL) {
+
+	err = bus_get_data16(cpu->core_id, imm_high_addr, &imm_high16);
+	if (err != STD_E_OK) {
 		printf("ERROR:MOV pc=0x%x reg1=%u(0x%x) addr=0x%x\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], imm_high_addr);
 		return -1;
 	}
-	imm_high = (uint32)(*((uint16*)imm_high_addrp));
+
+	imm_high = (uint32)(imm_high16);
 
 	imm_data |= (imm_high << 16U);
 

@@ -1,4 +1,4 @@
-#include "../cpu_exec/op_exec_ops.h"
+#include "cpu_exec/op_exec_ops.h"
 #include "cpu.h"
 
 /*

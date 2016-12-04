@@ -10,8 +10,8 @@ int op_exec_jmp(CoreType *cpu)
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JMP r%d(0x%x)\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1]));
-	cpu->cpu.pc = cpu->cpu.r[reg1];
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JMP r%d(0x%x)\n", cpu->reg.pc, reg1, cpu->reg.r[reg1]));
+	cpu->reg.pc = cpu->reg.r[reg1];
 	return 0;
 }
 
@@ -23,11 +23,11 @@ int op_exec_bcond(CoreType *cpu)
 {
 	uint16 cond = cpu->decoded_code.type3.cond;
 	uint16 is_br = FALSE;
-	uint16 flg_s = CPU_ISSET_S(&cpu->cpu);
-	uint16 flg_ov = CPU_ISSET_OV(&cpu->cpu);
-	uint16 flg_z = CPU_ISSET_Z(&cpu->cpu);
-	uint16 flg_cy = CPU_ISSET_CY(&cpu->cpu);
-	uint16 flg_sat = CPU_ISSET_SAT(&cpu->cpu);
+	uint16 flg_s = CPU_ISSET_S(&cpu->reg);
+	uint16 flg_ov = CPU_ISSET_OV(&cpu->reg);
+	uint16 flg_z = CPU_ISSET_Z(&cpu->reg);
+	uint16 flg_cy = CPU_ISSET_CY(&cpu->reg);
+	uint16 flg_sat = CPU_ISSET_SAT(&cpu->reg);
 	uint32 disp_u;
 	sint32 disp;
 
@@ -135,15 +135,15 @@ int op_exec_bcond(CoreType *cpu)
 		break;
 	}
 	if (is_br == TRUE) {
-		sint32 pc = cpu->cpu.pc;
+		sint32 pc = cpu->reg.pc;
 		pc = pc + disp;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: B cond(0x%x):0x%x\n", cpu->cpu.pc, cond, pc));
-		cpu->cpu.pc = pc;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: B cond(0x%x):0x%x\n", cpu->reg.pc, cond, pc));
+		cpu->reg.pc = pc;
 	}
 	else {
-		sint32 pc = cpu->cpu.pc + 2;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: Bcond(0x%x):0x%x\n", cpu->cpu.pc, cond, pc));
-		cpu->cpu.pc = pc;
+		sint32 pc = cpu->reg.pc + 2;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: Bcond(0x%x):0x%x\n", cpu->reg.pc, cond, pc));
+		cpu->reg.pc = pc;
 	}
 	return 0;
 }
@@ -154,22 +154,22 @@ int op_exec_bcond(CoreType *cpu)
 int op_exec_jr(CoreType *cpu)
 {
 	uint32 reg2 = cpu->decoded_code.type5.reg2;
-	sint32 pc = (sint32)cpu->cpu.pc;
+	sint32 pc = (sint32)cpu->reg.pc;
 	sint32 disp;
 
 	if (reg2 > 0) {
-		cpu->cpu.r[reg2] = cpu->cpu.pc + 4;
+		cpu->reg.r[reg2] = cpu->reg.pc + 4;
 	}
 	disp = op_sign_extend(21, cpu->decoded_code.type5.disp);
 	pc += disp;
 
 	if (reg2 == 0) {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JR disp22(%d):0x%x\n", cpu->cpu.pc, disp, pc));
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JR disp22(%d):0x%x\n", cpu->reg.pc, disp, pc));
 	}
 	else {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JARL disp22(%d):0x%x r%u(0x%x)\n", cpu->cpu.pc, disp, pc, reg2, cpu->cpu.r[reg2]));
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JARL disp22(%d):0x%x r%u(0x%x)\n", cpu->reg.pc, disp, pc, reg2, cpu->reg.r[reg2]));
 	}
 
-	cpu->cpu.pc = pc;
+	cpu->reg.pc = pc;
 	return 0;
 }

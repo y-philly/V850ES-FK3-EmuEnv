@@ -25,16 +25,16 @@ void cpu_init(void)
 
 static void private_cpu_reset(CoreType *cpu)
 {
-	cpu->cpu.pc = 0x00;
-	cpu->cpu.r[0] = 0;
+	cpu->reg.pc = 0x00;
+	cpu->reg.r[0] = 0;
 
-	cpu->cpu.eipc = 0;
-	cpu->cpu.eipsw = 0;
-	cpu->cpu.fepc = 0;
-	cpu->cpu.fepsw = 0;
-	cpu->cpu.ecr = 0;
-	cpu->cpu.psw = 0x20;
-	cpu->cpu.ctbp = 0;
+	cpu->reg.eipc = 0;
+	cpu->reg.eipsw = 0;
+	cpu->reg.fepc = 0;
+	cpu->reg.fepsw = 0;
+	cpu->reg.ecr = 0;
+	cpu->reg.psw = 0x20;
+	cpu->reg.ctbp = 0;
 	cpu->is_halt = FALSE;
 	return;
 }
@@ -54,7 +54,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	 * 命令取得する
 	 */
 	err = bus_get_data32(core_id,
-			virtual_cpu.cores[core_id].core.cpu.pc,
+			virtual_cpu.cores[core_id].core.reg.pc,
 			(uint32*)virtual_cpu.cores[core_id].core.current_code);
 	if (err != STD_E_OK) {
 		return err;
@@ -91,16 +91,16 @@ void cpu_illegal_opcode_trap(CoreIdType core_id)
 	uint32 ecr;
 
 	eicc = 0x60;
-	virtual_cpu.cores[core_id].core.cpu.eipc = virtual_cpu.cores[core_id].core.cpu.pc - 4;
-	virtual_cpu.cores[core_id].core.cpu.eipsw = virtual_cpu.cores[core_id].core.cpu.psw;
-	ecr = virtual_cpu.cores[core_id].core.cpu.ecr;
+	virtual_cpu.cores[core_id].core.reg.eipc = virtual_cpu.cores[core_id].core.reg.pc - 4;
+	virtual_cpu.cores[core_id].core.reg.eipsw = virtual_cpu.cores[core_id].core.reg.psw;
+	ecr = virtual_cpu.cores[core_id].core.reg.ecr;
 	ecr = ecr & 0x00FF;
 	ecr |= (eicc << 16);
-	virtual_cpu.cores[core_id].core.cpu.ecr = ecr;
-	CPU_SET_NP(&virtual_cpu.cores[core_id].core.cpu);
-	CPU_SET_EP(&virtual_cpu.cores[core_id].core.cpu);
-	CPU_SET_ID(&virtual_cpu.cores[core_id].core.cpu);
-	virtual_cpu.cores[core_id].core.cpu.pc = 0x60;
+	virtual_cpu.cores[core_id].core.reg.ecr = ecr;
+	CPU_SET_NP(&virtual_cpu.cores[core_id].core.reg);
+	CPU_SET_EP(&virtual_cpu.cores[core_id].core.reg);
+	CPU_SET_ID(&virtual_cpu.cores[core_id].core.reg);
+	virtual_cpu.cores[core_id].core.reg.pc = 0x60;
 
 	return;
 }

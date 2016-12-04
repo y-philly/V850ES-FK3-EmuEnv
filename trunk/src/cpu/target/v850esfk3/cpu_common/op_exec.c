@@ -64,7 +64,7 @@ int OpExec(CoreType *cpu)
 	default:
 		break;
 	}
-	cpu->cpu.r[0] = 0U;
+	cpu->reg.r[0] = 0U;
 	return ret;
 }
 

@@ -16,12 +16,12 @@ int op_exec_or(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_or(&cpu->cpu, cpu->cpu.r[reg2], cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: OR r%d(%d),r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
+	result = op_or(&cpu->reg, cpu->reg.r[reg2], cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: OR r%d(%d),r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = result;
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 
 }
@@ -34,13 +34,13 @@ int op_exec_zxb(CoreType *cpu)
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	data = (uint8)cpu->cpu.r[reg1];
+	data = (uint8)cpu->reg.r[reg1];
 	result = (uint32)data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ZXB r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1],  result));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ZXB r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1],  result));
 
-	cpu->cpu.r[reg1] = result;
+	cpu->reg.r[reg1] = result;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_zxh(CoreType *cpu)
@@ -52,13 +52,13 @@ int op_exec_zxh(CoreType *cpu)
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	data = (uint16)cpu->cpu.r[reg1];
+	data = (uint16)cpu->reg.r[reg1];
 	result = (uint32)data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ZXH r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1],  result));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ZXH r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1],  result));
 
-	cpu->cpu.r[reg1] = result;
+	cpu->reg.r[reg1] = result;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -74,10 +74,10 @@ int op_exec_tst(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_and(&cpu->cpu, cpu->cpu.r[reg2], cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: TST r%d(%d), r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],  result));
+	result = op_and(&cpu->reg, cpu->reg.r[reg2], cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: TST r%d(%d), r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2],  result));
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -93,11 +93,11 @@ int op_exec_and(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_and(&cpu->cpu, cpu->cpu.r[reg2], cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: AND r%d(%d), r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],  result));
-	cpu->cpu.r[reg2] = result;
+	result = op_and(&cpu->reg, cpu->reg.r[reg2], cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: AND r%d(%d), r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2],  result));
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_not(CoreType *cpu)
@@ -112,15 +112,15 @@ int op_exec_not(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = ~cpu->cpu.r[reg1];
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: NOT r%d(%d), r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],  result));
+	result = ~cpu->reg.r[reg1];
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: NOT r%d(%d), r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2],  result));
 
-	cpu->cpu.r[reg2] = result;
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
-	CPU_CLR_OV(&cpu->cpu);
+	cpu->reg.r[reg2] = result;
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_xor(CoreType *cpu)
@@ -135,15 +135,15 @@ int op_exec_xor(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = cpu->cpu.r[reg2] ^ cpu->cpu.r[reg1];
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: XOR r%d(%d), r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2],  result));
-	cpu->cpu.r[reg2] = result;
+	result = cpu->reg.r[reg2] ^ cpu->reg.r[reg1];
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: XOR r%d(%d), r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2],  result));
+	cpu->reg.r[reg2] = result;
 
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
-	CPU_CLR_OV(&cpu->cpu);
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_sxh(CoreType *cpu)
@@ -154,12 +154,12 @@ int op_exec_sxh(CoreType *cpu)
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	tmp = ((sint16)cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SXH r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1],  tmp));
+	tmp = ((sint16)cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SXH r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1],  tmp));
 
-	cpu->cpu.r[reg1] = (sint32)tmp;
+	cpu->reg.r[reg1] = (sint32)tmp;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_sxb(CoreType *cpu)
@@ -170,11 +170,11 @@ int op_exec_sxb(CoreType *cpu)
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	tmp = ((sint8)cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SXB r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1],  tmp));
-	cpu->cpu.r[reg1] = (sint32)tmp;
+	tmp = ((sint8)cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SXB r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1],  tmp));
+	cpu->reg.r[reg1] = (sint32)tmp;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -222,20 +222,20 @@ int op_exec_shl_2(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	reg2_data = cpu->cpu.r[reg2];
+	reg2_data = cpu->reg.r[reg2];
 	imm_data = OP_FORMAT2_IMM_ZERO_EXTEND(cpu->decoded_code.type2.imm);
 
 	result = reg2_data << imm_data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHL imm5(%d),r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg2, cpu->cpu.r[reg2], result));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHL imm5(%d),r%d(%d):%d\n", cpu->reg.pc, imm_data, reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = (sint32)result;
+	cpu->reg.r[reg2] = (sint32)result;
 
-	CPU_CLR_OV(&cpu->cpu);
-	op_chk_and_set_shl_carry(&cpu->cpu, reg2_data, imm_data);
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
+	op_chk_and_set_shl_carry(&cpu->reg, reg2_data, imm_data);
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_shr_2(CoreType *cpu)
@@ -248,19 +248,19 @@ int op_exec_shr_2(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	reg2_data = cpu->cpu.r[reg2];
+	reg2_data = cpu->reg.r[reg2];
 	imm_data = OP_FORMAT2_IMM_ZERO_EXTEND(cpu->decoded_code.type2.imm);
 
 	result = reg2_data >> imm_data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHR imm5(%d),r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg2, cpu->cpu.r[reg2], result));
-	cpu->cpu.r[reg2] = (sint32)result;
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHR imm5(%d),r%d(%d):%d\n", cpu->reg.pc, imm_data, reg2, cpu->reg.r[reg2], result));
+	cpu->reg.r[reg2] = (sint32)result;
 
-	CPU_CLR_OV(&cpu->cpu);
-	op_chk_and_set_shr_carry(&cpu->cpu, reg2_data, imm_data);
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
+	op_chk_and_set_shr_carry(&cpu->reg, reg2_data, imm_data);
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_sar_2(CoreType *cpu)
@@ -273,20 +273,20 @@ int op_exec_sar_2(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	reg2_data = cpu->cpu.r[reg2];
+	reg2_data = cpu->reg.r[reg2];
 	imm_data = OP_FORMAT2_IMM_ZERO_EXTEND(cpu->decoded_code.type2.imm);
 
 	result = reg2_data >> imm_data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SAR imm5(%d),r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg2, cpu->cpu.r[reg2], result));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SAR imm5(%d),r%d(%d):%d\n", cpu->reg.pc, imm_data, reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = (sint32)result;
+	cpu->reg.r[reg2] = (sint32)result;
 
-	CPU_CLR_OV(&cpu->cpu);
-	op_chk_and_set_shr_carry(&cpu->cpu, reg2_data, imm_data);
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
+	op_chk_and_set_shr_carry(&cpu->reg, reg2_data, imm_data);
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 
 	return 0;
 }
@@ -310,12 +310,12 @@ int op_exec_andi(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_andi(&cpu->cpu, imm_data, cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ANDI imm5(%d),r%d(%d) r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
+	result = op_andi(&cpu->reg, imm_data, cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ANDI imm5(%d),r%d(%d) r%d(%d):%d\n", cpu->reg.pc, imm_data, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = result;
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 
@@ -332,11 +332,11 @@ int op_exec_ori(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_ori(&cpu->cpu, imm_data, cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ORI imm5(%d),r%d(%d) r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
-	cpu->cpu.r[reg2] = result;
+	result = op_ori(&cpu->reg, imm_data, cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ORI imm5(%d),r%d(%d) r%d(%d):%d\n", cpu->reg.pc, imm_data, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 
@@ -353,11 +353,11 @@ int op_exec_xori(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_xori(&cpu->cpu, imm_data, cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: XORI imm5(%d),r%d(%d) r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
-	cpu->cpu.r[reg2] = result;
+	result = op_xori(&cpu->reg, imm_data, cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: XORI imm5(%d),r%d(%d) r%d(%d):%d\n", cpu->reg.pc, imm_data, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 
@@ -379,20 +379,20 @@ int op_exec_shl_9(CoreType *cpu)
 		return -1;
 	}
 
-	reg2_data = cpu->cpu.r[reg2];
-	reg1_data = (cpu->cpu.r[reg1] & 0x0000001F);
+	reg2_data = cpu->reg.r[reg2];
+	reg1_data = (cpu->reg.r[reg1] & 0x0000001F);
 
 	result = reg2_data << reg1_data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHL r%d(%d),r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHL r%d(%d),r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = (sint32)result;
+	cpu->reg.r[reg2] = (sint32)result;
 
-	CPU_CLR_OV(&cpu->cpu);
-	op_chk_and_set_shl_carry(&cpu->cpu, reg2_data, reg1_data);
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
+	op_chk_and_set_shl_carry(&cpu->reg, reg2_data, reg1_data);
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 
 	return 0;
 }
@@ -412,19 +412,19 @@ int op_exec_shr_9(CoreType *cpu)
 		return -1;
 	}
 
-	reg2_data = cpu->cpu.r[reg2];
-	reg1_data = (cpu->cpu.r[reg1] & 0x0000001F);
+	reg2_data = cpu->reg.r[reg2];
+	reg1_data = (cpu->reg.r[reg1] & 0x0000001F);
 
 	result = reg2_data >> reg1_data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHR r%d(%d),r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
-	cpu->cpu.r[reg2] = (sint32)result;
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SHR r%d(%d),r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
+	cpu->reg.r[reg2] = (sint32)result;
 
-	CPU_CLR_OV(&cpu->cpu);
-	op_chk_and_set_shr_carry(&cpu->cpu, reg2_data, reg1_data);
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
+	op_chk_and_set_shr_carry(&cpu->reg, reg2_data, reg1_data);
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 
 	return 0;
 }
@@ -444,20 +444,20 @@ int op_exec_sar_9(CoreType *cpu)
 		return -1;
 	}
 
-	reg2_data = cpu->cpu.r[reg2];
-	reg1_data = (cpu->cpu.r[reg1] & 0x0000001F);
+	reg2_data = cpu->reg.r[reg2];
+	reg1_data = (cpu->reg.r[reg1] & 0x0000001F);
 
 	result = reg2_data >> reg1_data;
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SAR r%d(%d),r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SAR r%d(%d),r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = (sint32)result;
+	cpu->reg.r[reg2] = (sint32)result;
 
-	CPU_CLR_OV(&cpu->cpu);
-	op_chk_and_set_shr_carry(&cpu->cpu, reg2_data, reg1_data);
-	op_chk_and_set_zero(&cpu->cpu, cpu->cpu.r[reg2]);
-	op_chk_and_set_sign(&cpu->cpu, cpu->cpu.r[reg2]);
+	CPU_CLR_OV(&cpu->reg);
+	op_chk_and_set_shr_carry(&cpu->reg, reg2_data, reg1_data);
+	op_chk_and_set_zero(&cpu->reg, cpu->reg.r[reg2]);
+	op_chk_and_set_sign(&cpu->reg, cpu->reg.r[reg2]);
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 
 	return 0;
 }

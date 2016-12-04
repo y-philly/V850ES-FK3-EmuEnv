@@ -60,14 +60,14 @@ int op_exec_ldsr(CoreType *cpu)
 	if (regid >= CPU_SYSREG_NUM) {
 		return -1;
 	}
-	ret = get_sysreg(&cpu->cpu, regid, &sysreg);
+	ret = get_sysreg(&cpu->reg, regid, &sysreg);
 	if (ret < 0) {
 		return -1;
 	}
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LDSR r%d(0x%x) regID(%d):0x%x\n", cpu->cpu.pc, reg2, cpu->cpu.r[reg2], regid, *sysreg));
-	*sysreg = cpu->cpu.r[reg2];
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LDSR r%d(0x%x) regID(%d):0x%x\n", cpu->reg.pc, reg2, cpu->reg.r[reg2], regid, *sysreg));
+	*sysreg = cpu->reg.r[reg2];
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 
 	return 0;
 }
@@ -85,14 +85,14 @@ int op_exec_stsr(CoreType *cpu)
 	if (regid >= CPU_SYSREG_NUM) {
 		return -1;
 	}
-	ret = get_sysreg(&cpu->cpu, regid, &sysreg);
+	ret = get_sysreg(&cpu->reg, regid, &sysreg);
 	if (ret < 0) {
 		return -1;
 	}
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: STSR regID(%d) r%d(0x%x):0x%x\n", cpu->cpu.pc, regid, reg2, cpu->cpu.r[reg2], *sysreg));
-	cpu->cpu.r[reg2] = *sysreg;
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: STSR regID(%d) r%d(0x%x):0x%x\n", cpu->reg.pc, regid, reg2, cpu->reg.r[reg2], *sysreg));
+	cpu->reg.r[reg2] = *sysreg;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 
@@ -105,60 +105,60 @@ int op_exec_diei(CoreType *cpu)
 {
 	if (cpu->decoded_code.type10.gen1 == 0x04) {
 		/* EI */
-		CPU_CLR_ID(&cpu->cpu);
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: EI\n", cpu->cpu.pc));
+		CPU_CLR_ID(&cpu->reg);
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: EI\n", cpu->reg.pc));
 	}
 	else {
 		/* DI */
-		CPU_SET_ID(&cpu->cpu);
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DI\n", cpu->cpu.pc));
+		CPU_SET_ID(&cpu->reg);
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DI\n", cpu->reg.pc));
 
 	}
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 
 	return 0;
 }
 
 int op_exec_nop(CoreType *cpu)
 {
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: NOP\n", cpu->cpu.pc));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: NOP\n", cpu->reg.pc));
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 
 	return 0;
 }
 int op_exec_reti(CoreType *cpu)
 {
-	if (CPU_ISSET_EP(&cpu->cpu)) {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->cpu.pc, cpu->cpu.eipc));
-		cpu->cpu.pc = cpu->cpu.eipc;
-		cpu->cpu.psw = cpu->cpu.eipsw;
+	if (CPU_ISSET_EP(&cpu->reg)) {
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->reg.pc, cpu->reg.eipc));
+		cpu->reg.pc = cpu->reg.eipc;
+		cpu->reg.psw = cpu->reg.eipsw;
 		//CPU例外の場合は，ISPRの設定は行わないため不要
 		//intc_clr_currlvl_ispr(cpu);
 	}
-	else if (CPU_ISSET_NP(&cpu->cpu)) {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->cpu.pc, cpu->cpu.fepc));
-		cpu->cpu.pc = cpu->cpu.fepc;
-		cpu->cpu.psw = cpu->cpu.fepsw;
+	else if (CPU_ISSET_NP(&cpu->reg)) {
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->reg.pc, cpu->reg.fepc));
+		cpu->reg.pc = cpu->reg.fepc;
+		cpu->reg.psw = cpu->reg.fepsw;
 		intc_clr_nmi(cpu);
 	}
 	else {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->cpu.pc, cpu->cpu.eipc));
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->reg.pc, cpu->reg.eipc));
 		//printf("0x%x: RETI:0x%x\n", cpu->cpu.pc, cpu->cpu.eipc);
 		//fflush(stdout);
-		cpu->cpu.pc = cpu->cpu.eipc;
-		cpu->cpu.psw = cpu->cpu.eipsw;
+		cpu->reg.pc = cpu->reg.eipc;
+		cpu->reg.psw = cpu->reg.eipsw;
 		intc_clr_currlvl_ispr(cpu);
 	}
 	return 0;
 }
 int op_exec_halt(CoreType *cpu)
 {
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: HALT:0x%x\n", cpu->cpu.pc, cpu->cpu.pc + 4));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: HALT:0x%x\n", cpu->reg.pc, cpu->reg.pc + 4));
 	//printf("0x%x: HALT:0x%x\n", cpu->cpu.pc, cpu->cpu.pc + 4);
 	//fflush(stdout);
 	cpu->is_halt = TRUE;
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 
@@ -183,16 +183,16 @@ int op_exec_trap(CoreType *cpu)
 	}
 
 	if (ret == 0) {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: TRAP:0x%x\n", cpu->cpu.pc, pc));
-		cpu->cpu.eipc = cpu->cpu.pc + 4;
-		cpu->cpu.eipsw = cpu->cpu.psw;
-		ecr = cpu->cpu.ecr;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: TRAP:0x%x\n", cpu->reg.pc, pc));
+		cpu->reg.eipc = cpu->reg.pc + 4;
+		cpu->reg.eipsw = cpu->reg.psw;
+		ecr = cpu->reg.ecr;
 		ecr = ecr & 0x00FF;
 		ecr |= (eicc << 16);
-		cpu->cpu.ecr = ecr;
-		CPU_SET_EP(&cpu->cpu);
-		CPU_SET_ID(&cpu->cpu);
-		cpu->cpu.pc = pc;
+		cpu->reg.ecr = ecr;
+		CPU_SET_EP(&cpu->reg);
+		CPU_SET_ID(&cpu->reg);
+		cpu->reg.pc = pc;
 	}
 
 	return 0;
@@ -212,15 +212,15 @@ int op_exec_switch(CoreType *cpu)
 		return -1;
 	}
 
-	reg1_data = cpu->cpu.r[reg1];
+	reg1_data = cpu->reg.r[reg1];
 
-	addr = (cpu->cpu.pc + 2U) + (reg1_data << 1U);
+	addr = (cpu->reg.pc + 2U) + (reg1_data << 1U);
 	/*
 	 * Load-memory (adr, Half-word)
 	 */
 	err = bus_get_data16(cpu->core_id, addr, (uint16*)&data16);
 	if (err != STD_E_OK) {
-		printf("ERROR:SWITCH pc=0x%x reg1=%u(0x%x) addr=0x%x\n", cpu->cpu.pc, reg1, reg1_data, addr);
+		printf("ERROR:SWITCH pc=0x%x reg1=%u(0x%x) addr=0x%x\n", cpu->reg.pc, reg1, reg1_data, addr);
 		return -1;
 	}
 	/*
@@ -235,13 +235,13 @@ int op_exec_switch(CoreType *cpu)
 	/*
 	 * (PC + 2) + (sign-extend (Load-memory (adr, Half-word) ) ) logically shift left by 1
 	 */
-	next_pc = (cpu->cpu.pc + 2U) + ((uint32)tmp_pc);
+	next_pc = (cpu->reg.pc + 2U) + ((uint32)tmp_pc);
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SWITCH r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], next_pc));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SWITCH r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], next_pc));
 
 
 
-	cpu->cpu.pc = next_pc;
+	cpu->reg.pc = next_pc;
 	return 0;
 }
 
@@ -256,24 +256,24 @@ int op_exec_prepare(CoreType *cpu)
 	uint16 i;
 	uint32 addr;
 	uint32 *addrp;
-	uint32 *sp = (uint32*)&(cpu->cpu.r[3]);	//sp:r3
+	uint32 *sp = (uint32*)&(cpu->reg.r[3]);	//sp:r3
 	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
 	Std_ReturnType err;
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: PREPARE sp=0x%x ", cpu->cpu.pc, *sp));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: PREPARE sp=0x%x ", cpu->reg.pc, *sp));
 	for (i = start_reg; i < 32; i++) {
 		if (cpu->decoded_code.type13.list[i] == 0) {
 			continue;
 		}
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->cpu.r[i]));
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->reg.r[i]));
 
 		addr = (*sp) - 4U;
 		err = bus_get_pointer(cpu->core_id, addr, (uint8**)&addrp);
 		if (err != STD_E_OK) {
-			printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+			printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->reg.pc, *sp);
 			return -1;
 		}
-		*addrp = cpu->cpu.r[i];
+		*addrp = cpu->reg.r[i];
 		*sp = addr;
 	}
 	*sp = (*sp) - imm;
@@ -281,42 +281,42 @@ int op_exec_prepare(CoreType *cpu)
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "imm5(%u) ", imm));
 
 	if (subop == 1U) {
-		cpu->cpu.pc += 4;
+		cpu->reg.pc += 4;
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":sp=0x%x\n", *sp));
 		return 0;
 	}
 
-	addr = cpu->cpu.pc + 4U;
+	addr = cpu->reg.pc + 4U;
 
 	err = bus_get_pointer(cpu->core_id, addr, (uint8**)&addrp);
 	if (err != STD_E_OK) {
-		printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+		printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->reg.pc, *sp);
 		return -1;
 	}
 
 	switch (ff) {
 	case 0b00:
-		cpu->cpu.r[30] = *sp;
-		cpu->cpu.pc += 4;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		cpu->reg.r[30] = *sp;
+		cpu->reg.pc += 4;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->reg.r[30]));
 		break;
 	case 0b01:
-		cpu->cpu.r[30] = (sint32)(*((sint16*)addrp));
-		cpu->cpu.pc += 6;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		cpu->reg.r[30] = (sint32)(*((sint16*)addrp));
+		cpu->reg.pc += 6;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->reg.r[30]));
 		break;
 	case 0b10:
-		cpu->cpu.r[30] = ((uint32)(*((uint16*)addrp))) << 16U;
-		cpu->cpu.pc += 6;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		cpu->reg.r[30] = ((uint32)(*((uint16*)addrp))) << 16U;
+		cpu->reg.pc += 6;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->reg.r[30]));
 		break;
 	case 0b11:
-		cpu->cpu.r[30] = (*((uint32*)addrp));
-		cpu->cpu.pc += 8;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->cpu.r[30]));
+		cpu->reg.r[30] = (*((uint32*)addrp));
+		cpu->reg.pc += 8;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "ep=0x%x\n", cpu->reg.r[30]));
 		break;
 	default:
-		printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+		printf("ERROR:PREPARE pc=0x%x sp=0x%x\n", cpu->reg.pc, *sp);
 		return -1;
 	}
 	return 0;
@@ -329,11 +329,11 @@ int op_exec_dispose(CoreType *cpu)
 	uint16 i;
 	uint32 addr;
 	uint32 *addrp;
-	uint32 *sp = (uint32*)&(cpu->cpu.r[3]);	//sp:r3
+	uint32 *sp = (uint32*)&(cpu->reg.r[3]);	//sp:r3
 	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
 	Std_ReturnType err;
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DISPOSE imm=0x%x sp=0x%x ", cpu->cpu.pc, imm, *sp));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DISPOSE imm=0x%x sp=0x%x ", cpu->reg.pc, imm, *sp));
 
 	*sp = (*sp) + imm;
 	for (i = 31; i >= start_reg; i--) {
@@ -344,21 +344,21 @@ int op_exec_dispose(CoreType *cpu)
 		addr = (*sp);
 		err = bus_get_pointer(cpu->core_id, addr, (uint8**)&addrp);
 		if (err != STD_E_OK) {
-			printf("ERROR:DISPOSE pc=0x%x sp=0x%x\n", cpu->cpu.pc, *sp);
+			printf("ERROR:DISPOSE pc=0x%x sp=0x%x\n", cpu->reg.pc, *sp);
 			return -1;
 		}
-		cpu->cpu.r[i] = *addrp;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->cpu.r[i]));
+		cpu->reg.r[i] = *addrp;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->reg.r[i]));
 		*sp = addr + 4;
 	}
 
 	if (reg1 != 0U) {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->cpu.r[reg1], cpu->cpu.r[3]));
-		cpu->cpu.pc = cpu->cpu.r[reg1];
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->reg.r[reg1], cpu->reg.r[3]));
+		cpu->reg.pc = cpu->reg.r[reg1];
 	}
 	else {
-		cpu->cpu.pc += 4;
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->cpu.pc, cpu->cpu.r[3]));
+		cpu->reg.pc += 4;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->reg.pc, cpu->reg.r[3]));
 	}
 
 	return 0;

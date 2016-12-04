@@ -28,7 +28,7 @@ int op_exec_sldb(CoreType *cpu)
 	disp = cpu->decoded_code.type4_1.disp;
 	disp = (disp << 1) | cpu->decoded_code.type4_1.gen;
 	disp = op_zero_extend(7, disp);
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data8(cpu->core_id, addr, (uint8*)&data8);
 	if (err != STD_E_OK) {
@@ -36,11 +36,11 @@ int op_exec_sldb(CoreType *cpu)
 	}
 	ret = data8;
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.B disp7(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], ret));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.B disp7(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], ret));
 
-	cpu->cpu.r[reg2] = ret;
+	cpu->reg.r[reg2] = ret;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_sldbu(CoreType *cpu)
@@ -62,7 +62,7 @@ int op_exec_sldbu(CoreType *cpu)
 
 	disp = cpu->decoded_code.type4_2.disp;
 	disp = op_zero_extend(3, disp);
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data8(cpu->core_id, addr, &data8);
 	if (err != STD_E_OK) {
@@ -70,11 +70,11 @@ int op_exec_sldbu(CoreType *cpu)
 	}
 	ret = data8;
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.BU disp4(%u),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], ret));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.BU disp4(%u),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], ret));
 
-	cpu->cpu.r[reg2] = ret;
+	cpu->reg.r[reg2] = ret;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -97,7 +97,7 @@ int op_exec_sldhu(CoreType *cpu)
 
 	disp = ( (cpu->decoded_code.type4_2.disp) << 1U );
 	disp = op_zero_extend(4, disp);
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data16(cpu->core_id, addr, &data16);
 	if (err != STD_E_OK) {
@@ -105,11 +105,11 @@ int op_exec_sldhu(CoreType *cpu)
 	}
 	ret = data16;
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.HU disp4(%u),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], ret));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.HU disp4(%u),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], ret));
 
-	cpu->cpu.r[reg2] = ret;
+	cpu->reg.r[reg2] = ret;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -136,7 +136,7 @@ int op_exec_sldh(CoreType *cpu)
 	disp = disp << 1;
 
 
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data16(cpu->core_id, addr, (uint16*)&data16);
 	if (err != STD_E_OK) {
@@ -144,11 +144,11 @@ int op_exec_sldh(CoreType *cpu)
 	}
 	ret = data16;
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.H disp8(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], ret));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.H disp8(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], ret));
 
-	cpu->cpu.r[reg2] = ret;
+	cpu->reg.r[reg2] = ret;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -172,7 +172,7 @@ int op_exec_sldw(CoreType *cpu)
 	disp = cpu->decoded_code.type4_1.disp;
 	disp = op_zero_extend(6, disp);
 	disp = disp << 2;
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	//TODO:comm_hook_load_reg32(cpu, addr);
 
@@ -182,11 +182,11 @@ int op_exec_sldw(CoreType *cpu)
 	}
 	ret = data32;
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.W disp8(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], ret));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SLD.W disp8(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], ret));
 
-	cpu->cpu.r[reg2] = ret;
+	cpu->reg.r[reg2] = ret;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 /*
@@ -211,17 +211,17 @@ int op_exec_ldb(CoreType *cpu)
 
 	disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) | cpu->decoded_code.type7.gen);
 
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data8(cpu->core_id, addr, (uint8*)&data8);
 	if (err != STD_E_OK) {
 		return -1;
 	}
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.B disp16(%d),r%d(0x%x), r%d(0x%x) addr=0x%x:0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], addr, data8));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.B disp16(%d),r%d(0x%x), r%d(0x%x) addr=0x%x:0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], addr, data8));
 
-	cpu->cpu.r[reg2] = data8;
+	cpu->reg.r[reg2] = data8;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 
@@ -245,18 +245,18 @@ int op_exec_ldbu(CoreType *cpu)
 	disp_bit = (cpu->decoded_code.type7.opcode & 0x0001);
 	disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) | disp_bit);
 
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data8(cpu->core_id, addr, &data8);
 	if (err != STD_E_OK) {
 		return -1;
 	}
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.BU disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], data8));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.BU disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], data8));
 
-	cpu->cpu.r[reg2] = data8;
+	cpu->reg.r[reg2] = data8;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 int op_exec_ldhw(CoreType *cpu)
@@ -281,19 +281,19 @@ int op_exec_ldhw(CoreType *cpu)
 	if (cpu->decoded_code.type7.gen == 0x00) {
 		//LD.H
 		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
-		addr = cpu->cpu.r[reg1] + disp;
+		addr = cpu->reg.r[reg1] + disp;
 
 		err = bus_get_data16(cpu->core_id, addr, (uint16*)&data16);
 		if (err != STD_E_OK) {
 			return -1;
 		}
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.H disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], data16));
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.H disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], data16));
 		ret = data16;
 	}
 	else {
 		//LD.W
 		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
-		addr = cpu->cpu.r[reg1] + disp;
+		addr = cpu->reg.r[reg1] + disp;
 
 		//TODO: comm_hook_load_reg32(cpu, addr);
 
@@ -302,13 +302,13 @@ int op_exec_ldhw(CoreType *cpu)
 			return -1;
 		}
 
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.W disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], data32));
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.W disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], data32));
 		ret = data32;
 
 	}
-	cpu->cpu.r[reg2] = ret;
+	cpu->reg.r[reg2] = ret;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }
 
@@ -330,18 +330,18 @@ int op_exec_ldhu(CoreType *cpu)
 	}
 
 	disp = op_zero_extend(15, (cpu->decoded_code.type7.disp << 1) );
-	addr = cpu->cpu.r[reg1] + disp;
+	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data16(cpu->core_id, addr, &data16);
 	if (err != STD_E_OK) {
 		return -1;
 	}
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.HU disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->cpu.pc, disp, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], data16));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.HU disp16(%d),r%d(0x%x), r%d(0x%x):0x%x\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], data16));
 	ret = data16;
 
-	cpu->cpu.r[reg2] = ret;
+	cpu->reg.r[reg2] = ret;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }

@@ -231,14 +231,14 @@ static void intc_raise(CoreType *cpu, uint32 intno)
 	/*
 	 * PSW.NP
 	 */
-	if (CPU_ISSET_NP(&cpu->cpu) == TRUE) {
+	if (CPU_ISSET_NP(&cpu->reg) == TRUE) {
 		//printf("can not raise INT(%d) because NP is set\n", intno);
 		return;
 	}
 	/*
 	 * PSW.ID
 	 */
-	if (CPU_ISSET_ID(&cpu->cpu) == TRUE) {
+	if (CPU_ISSET_ID(&cpu->reg) == TRUE) {
 		//printf("can not raise INT(%d) because ID is set\n", intno);
 		return;
 	}
@@ -253,17 +253,17 @@ static void intc_raise(CoreType *cpu, uint32 intno)
 
 	intc_control.current_intno = intno;
 
-	cpu->cpu.eipc = cpu->cpu.pc;
-	cpu->cpu.eipsw = cpu->cpu.psw;
-	wdata16 = (cpu->cpu.ecr & 0xFF00);
+	cpu->reg.eipc = cpu->reg.pc;
+	cpu->reg.eipsw = cpu->reg.psw;
+	wdata16 = (cpu->reg.ecr & 0xFF00);
 	wdata16 |= INTC_MASK_ECR_CODE(intno);
-	cpu->cpu.ecr = wdata16;
+	cpu->reg.ecr = wdata16;
 
-	CPU_SET_ID(&cpu->cpu);
-	CPU_CLR_EP(&cpu->cpu);
+	CPU_SET_ID(&cpu->reg);
+	CPU_CLR_EP(&cpu->reg);
 	*ispr = (*ispr) | (1 << lvl);
 
-	cpu->cpu.pc = INTC_MASK_INTR_ADDR(intno);
+	cpu->reg.pc = INTC_MASK_INTR_ADDR(intno);
 
 	if (intno >= 100) {
 		//printf("RAISED INT(%d):waiting_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
@@ -353,44 +353,44 @@ void intc_clr_currlvl_ispr(CoreType *cpu)
 
 static bool can_raise_inwtdt2(CoreType *cpu)
 {
-	return CPU_ISSET_NP(&cpu->cpu);
+	return CPU_ISSET_NP(&cpu->reg);
 }
 static void raise_intwdt2(CoreType *cpu)
 {
 	cpu->is_halt = FALSE;
 
-	cpu->cpu.fepc = 0x0;
-	cpu->cpu.fepsw = cpu->cpu.psw;
+	cpu->reg.fepc = 0x0;
+	cpu->reg.fepsw = cpu->reg.psw;
 
-	cpu->cpu.ecr |= (INTC_FECC_INTWDT2 << 16);
+	cpu->reg.ecr |= (INTC_FECC_INTWDT2 << 16);
 
-	CPU_SET_NP(&cpu->cpu);
-	CPU_CLR_EP(&cpu->cpu);
-	CPU_SET_ID(&cpu->cpu);
+	CPU_SET_NP(&cpu->reg);
+	CPU_CLR_EP(&cpu->reg);
+	CPU_SET_ID(&cpu->reg);
 
-	cpu->cpu.pc = INTC_FECC_INTWDT2;
+	cpu->reg.pc = INTC_FECC_INTWDT2;
 
 	//printf("RAISED INTWDT2\n");
 	return;
 }
 static void raise_nmi(CoreType *cpu)
 {
-	if (CPU_ISSET_NP(&cpu->cpu) == TRUE) {
+	if (CPU_ISSET_NP(&cpu->reg) == TRUE) {
 		return;
 	}
 	cpu->is_halt = FALSE;
 
-	cpu->cpu.fepc = cpu->cpu.pc;
-	cpu->cpu.fepsw = cpu->cpu.psw;
+	cpu->reg.fepc = cpu->reg.pc;
+	cpu->reg.fepsw = cpu->reg.psw;
 
-	cpu->cpu.ecr |= (INTC_FECC_NMI << 16);
+	cpu->reg.ecr |= (INTC_FECC_NMI << 16);
 
-	CPU_SET_NP(&cpu->cpu);
-	CPU_CLR_EP(&cpu->cpu);
-	CPU_SET_ID(&cpu->cpu);
+	CPU_SET_NP(&cpu->reg);
+	CPU_CLR_EP(&cpu->reg);
+	CPU_SET_ID(&cpu->reg);
 
 
-	cpu->cpu.pc = INTC_FECC_NMI;
+	cpu->reg.pc = INTC_FECC_NMI;
 
 	//printf("RAISED NMI\n");
 	return;

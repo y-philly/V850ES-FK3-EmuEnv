@@ -16,12 +16,12 @@ int op_exec_satadd_1(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_satadd(&cpu->cpu, cpu->cpu.r[reg2], cpu->cpu.r[reg1]);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATADD r%d(%d),r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
+	result = op_satadd(&cpu->reg, cpu->reg.r[reg2], cpu->reg.r[reg1]);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATADD r%d(%d),r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = result;
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 int op_exec_satsub_1(CoreType *cpu)
@@ -36,12 +36,12 @@ int op_exec_satsub_1(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_satadd(&cpu->cpu, cpu->cpu.r[reg2], -((sint32)cpu->cpu.r[reg1]));
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATSUB r%d(%d),r%d(%d):%d\n", cpu->cpu.pc, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
+	result = op_satadd(&cpu->reg, cpu->reg.r[reg2], -((sint32)cpu->reg.r[reg1]));
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATSUB r%d(%d),r%d(%d):%d\n", cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = result;
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -57,12 +57,12 @@ int op_exec_satadd_2(CoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	result = op_satadd(&cpu->cpu, cpu->cpu.r[reg2], imm_data);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATADD imm5(%d),r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg2, cpu->cpu.r[reg2], result));
+	result = op_satadd(&cpu->reg, cpu->reg.r[reg2], imm_data);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATADD imm5(%d),r%d(%d):%d\n", cpu->reg.pc, imm_data, reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = result;
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 2;
+	cpu->reg.pc += 2;
 	return 0;
 }
 
@@ -86,11 +86,11 @@ int op_exec_satsubi(CoreType *cpu)
 		return -1;
 	}
 
-	result = op_satadd(&cpu->cpu, cpu->cpu.r[reg1], -imm_data);
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATSUBI imm16(%d), r%d(%d), r%d(%d):%d\n", cpu->cpu.pc, imm_data, reg1, cpu->cpu.r[reg1], reg2, cpu->cpu.r[reg2], result));
+	result = op_satadd(&cpu->reg, cpu->reg.r[reg1], -imm_data);
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SATSUBI imm16(%d), r%d(%d), r%d(%d):%d\n", cpu->reg.pc, imm_data, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], result));
 
-	cpu->cpu.r[reg2] = result;
+	cpu->reg.r[reg2] = result;
 
-	cpu->cpu.pc += 4;
+	cpu->reg.pc += 4;
 	return 0;
 }

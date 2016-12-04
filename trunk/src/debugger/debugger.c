@@ -29,7 +29,7 @@ typedef enum {
 
 
 typedef struct {
-	CoreType		*cpu;
+	CoreType		*reg;
 	bool				view_mode;
 	uint32				memory_ref_type;
 	uint32				memory_ref_off;
@@ -102,7 +102,7 @@ static CpuProfileType *CpuProfile;
 
 void debug_init(CoreType *cpu, DeviceType *device)
 {
-	dbg_info.cpu = cpu;
+	dbg_info.reg = cpu;
 	dbg_info.break_cnt = 1;
 	dbg_info.cmd_mode = DBG_MODE_CMD;
 	dbg_info.view_mode = TRUE;
@@ -137,7 +137,7 @@ int debugger_is_break(void)
 	for (i = 0; i < dbg->break_cnt; i++) {
 		//printf("break_points[%d]=0x%x\n", i, dbg->break_points[i]);
 		//fflush(stdout);
-		if (dbg->cpu->cpu.pc == dbg->break_points[i]) {
+		if (dbg->reg->reg.pc == dbg->break_points[i]) {
 			dbg->cmd_mode = DBG_MODE_CMD;
 			return TRUE;
 		}
@@ -178,7 +178,7 @@ static int set_break(DebugInfoType *dbg, uint32 break_addr)
 static int set_intr(DebugInfoType *dbg, uint32 intno)
 {
 	printf("INT:%d\n", intno);
-	return intc_raise_intr(dbg->cpu, intno);
+	return intc_raise_intr(dbg->reg, intno);
 }
 
 
@@ -407,25 +407,25 @@ static void debug_cpu_out(void)
 	char buffer[1024];
 	int i;
 	fd = open(".\\cpuinfo.txt", O_CREAT | O_TRUNC |O_WRONLY|O_BINARY, 00777);
-	sprintf(buffer, "PC		0x%x\n", dbg_info.cpu->cpu.pc);
+	sprintf(buffer, "PC		0x%x\n", dbg_info.reg->reg.pc);
 	write(fd, buffer, strlen(buffer));
 	for (i = 0; i < 32; i++) {
-		sprintf(buffer, "R%d		0x%x\n", i, dbg_info.cpu->cpu.r[i]);
+		sprintf(buffer, "R%d		0x%x\n", i, dbg_info.reg->reg.r[i]);
 		write(fd, buffer, strlen(buffer));
 	}
-	sprintf(buffer, "EIPC	0x%x\n", dbg_info.cpu->cpu.eipc);
+	sprintf(buffer, "EIPC	0x%x\n", dbg_info.reg->reg.eipc);
 	write(fd, buffer, strlen(buffer));
-	sprintf(buffer, "EIPSW	0x%x\n", dbg_info.cpu->cpu.eipsw);
+	sprintf(buffer, "EIPSW	0x%x\n", dbg_info.reg->reg.eipsw);
 	write(fd, buffer, strlen(buffer));
-	sprintf(buffer, "ECR		0x%x\n", dbg_info.cpu->cpu.ecr);
+	sprintf(buffer, "ECR		0x%x\n", dbg_info.reg->reg.ecr);
 	write(fd, buffer, strlen(buffer));
-	sprintf(buffer, "PSW		0x%x\n", dbg_info.cpu->cpu.psw);
+	sprintf(buffer, "PSW		0x%x\n", dbg_info.reg->reg.psw);
 	write(fd, buffer, strlen(buffer));
-	sprintf(buffer, "FEPC	0x%x\n", dbg_info.cpu->cpu.fepc);
+	sprintf(buffer, "FEPC	0x%x\n", dbg_info.reg->reg.fepc);
 	write(fd, buffer, strlen(buffer));
-	sprintf(buffer, "FEPSW	0x%x\n", dbg_info.cpu->cpu.fepsw);
+	sprintf(buffer, "FEPSW	0x%x\n", dbg_info.reg->reg.fepsw);
 	write(fd, buffer, strlen(buffer));
-	sprintf(buffer, "CTBP	0x%x\n", dbg_info.cpu->cpu.ctbp);
+	sprintf(buffer, "CTBP	0x%x\n", dbg_info.reg->reg.ctbp);
 	write(fd, buffer, strlen(buffer));
 
 	close(fd);
@@ -434,7 +434,7 @@ static void debug_cpu_out(void)
 
 static void debug_pc_out(void)
 {
-	fprintf(stderr, "%x\n", dbg_info.cpu->cpu.pc);
+	fprintf(stderr, "%x\n", dbg_info.reg->reg.pc);
 	fflush(stderr);
 	return;
 }
@@ -621,7 +621,7 @@ int debugger_docmd(DbgCmdType *cmd)
 		//fflush(stdout);
 		break;
 	case DBG_CMD_ID_FUNC_RETURN:
-		dbg_return_addr = dbg_info.cpu->cpu.r[31U];
+		dbg_return_addr = dbg_info.reg->reg.r[31U];
 		set_break(&dbg_info, dbg_return_addr);
 		dbg_info.cmd_mode = DBG_MODE_CONT;
 		break;
@@ -631,7 +631,7 @@ int debugger_docmd(DbgCmdType *cmd)
 		}
 		else {
 			printf("NMI\n");
-			intc_raise_nmi(dbg_info.cpu, INTC_NMINO_NMI);
+			intc_raise_nmi(dbg_info.reg, INTC_NMINO_NMI);
 		}
 		need_recv_cmd = TRUE;
 		break;
@@ -946,7 +946,7 @@ void debugger_save(void)
 	uint32 funcid;
 	uint32 funcaddr;
 
-	value.rawdata = dbg_info.cpu->cpu.pc;
+	value.rawdata = dbg_info.reg->reg.pc;
 	hash_add(HASH_ID_PC, &value);
 
 	funcid = symbol_pc2funcid(value.rawdata, &funcaddr);

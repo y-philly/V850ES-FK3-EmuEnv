@@ -41,7 +41,7 @@ OBJS	+=	timer.o
 OBJS	+=	timer_m.o
 OBJS	+=	serial.o
 OBJS	+=	comm.o
-#OBJS	+=	can.o
+OBJS	+=	can.o
 
 include ../../Makefile.common
 

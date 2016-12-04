@@ -13,7 +13,7 @@ void device_init(DeviceType *device)
 	device_init_timer(device);
 	device_init_timer_m(device);
 	device_init_serial(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
-	//device_init_can(device);
+	device_init_can(device,  &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);
 	device_init_adc(device);
 	//device_init_wdg(device);
 	device_init_comm(device);
@@ -31,7 +31,7 @@ void device_supply_clock(DeviceType *device)
 	device_supply_clock_timer(device);
 	device_supply_clock_timer_m(device);
 	device_supply_clock_serial(device);
-	//device_supply_clock_can(device);
+	device_supply_clock_can(device);
 	device_supply_clock_adc(device);
 	//device_supply_clock_wdg(device);
 	device_supply_clock_comm(device);
@@ -44,6 +44,9 @@ void device_print_clock(DeviceType *device)
 	return;
 }
 
+/*
+ * TODO　デバイスがバスに依存するのはおかしいので，どこかのタイミングで削除したい．
+ */
 static int device_get_iomem(DeviceType *device, uint32 addr, uint32 **addrp)
 {
 	Std_ReturnType err;
@@ -145,6 +148,7 @@ int device_io_read32(DeviceType *device, uint32 addr, uint32 *data)
 	*data = *datap;
 	return 0;
 }
+
 
 #include "intc.h"
 

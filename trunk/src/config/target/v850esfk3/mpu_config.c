@@ -8,6 +8,7 @@
 #define MPU_ADDRESS_REGION_SIZE_INX_INTC	(0xFFFFF1FB - 0xFFFFF100)
 #define MPU_ADDRESS_REGION_SIZE_INX_SERIAL	(0xFFFFFA78 - 0xFFFFFA00)
 #define MPU_ADDRESS_REGION_SIZE_INX_COMM	(0xFFFFF590 - 0xFFFFF560)
+#define MPU_ADDRESS_REGION_SIZE_INX_CAN		(0x03FEDCF0 - 0x03FEC000)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH0		(1024U * 4U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH1		(1024U * 12U)
 
@@ -16,11 +17,13 @@ static uint8 memory_data_RAM[MPU_ADDRESS_REGION_SIZE_INX_RAM];
 static uint8 memory_data_INTC[MPU_ADDRESS_REGION_SIZE_INX_INTC];
 static uint8 memory_data_SERIAL[MPU_ADDRESS_REGION_SIZE_INX_SERIAL];
 static uint8 memory_data_COMM[MPU_ADDRESS_REGION_SIZE_INX_COMM];
+static uint8 memory_data_CAN[MPU_ADDRESS_REGION_SIZE_INX_CAN];
 static uint8 memory_data_PH0[MPU_ADDRESS_REGION_SIZE_INX_PH0];
 static uint8 memory_data_PH1[MPU_ADDRESS_REGION_SIZE_INX_PH1];
 
 extern MpuAddressRegionOperationType	serial_memory_operation;
 extern MpuAddressRegionOperationType	comm_memory_operation;
+extern MpuAddressRegionOperationType	can_memory_operation;
 extern MpuAddressRegionOperationType	intc_memory_operation;
 
 MpuAddressMapType mpu_address_map = {
@@ -85,6 +88,19 @@ MpuAddressMapType mpu_address_map = {
 						.data		= memory_data_COMM,
 						.ops		= &comm_memory_operation
 				},
+				/*
+				 * CAN
+				 */
+				{
+						.type		= DEVICE,
+						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.start		= 0x03FEC000,
+						.size		= MPU_ADDRESS_REGION_SIZE_INX_CAN,
+						.mask		= MPU_ADDRESS_REGION_MASK_PH,
+						.data		= memory_data_CAN,
+						.ops		= &can_memory_operation
+				},
+
 				/*
 				 * INDEX :DEVICE(その他内蔵周辺I/O領域)
 				 */

@@ -15,6 +15,25 @@
 #define CAN_CHANNEL_ID_1	1U
 #define CAN1_BASEADDR		0x03FEC700
 
+static Std_ReturnType can_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
+static Std_ReturnType can_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
+static Std_ReturnType can_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data);
+static Std_ReturnType can_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data);
+static Std_ReturnType can_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data);
+static Std_ReturnType can_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data);
+
+MpuAddressRegionOperationType	can_memory_operation = {
+		.get_data8 		= 	can_get_data8,
+		.get_data16		=	can_get_data16,
+		.get_data32		=	can_get_data32,
+
+		.put_data8 		= 	can_put_data8,
+		.put_data16		=	can_put_data16,
+		.put_data32		=	can_put_data32,
+
+		.get_pointer	= NULL
+};
+
 /*
  * TODO
  *
@@ -225,20 +244,25 @@ typedef struct {
 } CanDeviceType;
 
 static CanDeviceType CanDevice;
+static MpuAddressRegionType *can_region;
 
-void device_init_can(DeviceType *device)
+void device_init_can(DeviceType *device, MpuAddressRegionType *region)
 {
 	uint32 msg_id;
 	uint32* addr;
-	bool result;
+	uint32 off;
+
+	can_region = region;
 
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_state = CAN_DEVICE_CHANNEL_STATE_NONE;
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state = CAN_DEVICE_CHANNEL_STATE_NONE;
 
-	cpu_memget_raddrp(device->cpu, CAN_ADDR_C1IE, &addr);
+	off = CAN_ADDR_C1IE - can_region->start;
+	addr = (uint32*)&(can_region->data[off]);
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].ie = (uint16*)addr;
 
-	cpu_memget_raddrp(device->cpu, CAN_ADDR_C1INTS, &addr);
+	off = CAN_ADDR_C1INTS - can_region->start;
+	addr = (uint32*)&(can_region->data[off]);
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].ints = (uint16*)addr;
 
 
@@ -246,33 +270,41 @@ void device_init_can(DeviceType *device)
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].snd_cnt = 0U;
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].rcv_cnt = 0U;
 
-		cpu_memget_raddrp(device->cpu, CAN_ADDR_C1MCTRLm(msg_id), &addr);
+		off = CAN_ADDR_C1MCTRLm(msg_id) - can_region->start;
+		addr = (uint32*)&(can_region->data[off]);
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].ctrl = (uint16*)addr;
 
-		cpu_memget_addrp(device->cpu, CAN_ADDR_C1MDATAxm(0, msg_id), &addr);
+		off = CAN_ADDR_C1MDATAxm(0, msg_id) - can_region->start;
+		addr = (uint32*)&(can_region->data[off]);
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].buffer = (uint8*)addr;
 
-		cpu_memget_addrp(device->cpu, CAN_ADDR_C1MCONFm(msg_id), &addr);
+		off = CAN_ADDR_C1MCONFm(msg_id) - can_region->start;
+		addr = (uint32*)&(can_region->data[off]);
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].conf = (uint8*)addr;
 
-		cpu_memget_addrp(device->cpu, CAN_ADDR_C1MDLCm(msg_id), &addr);
+		off = CAN_ADDR_C1MDLCm(msg_id) - can_region->start;
+		addr = (uint32*)&(can_region->data[off]);
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].dlc = (uint8*)addr;
 
-		cpu_memget_addrp(device->cpu, CAN_ADDR_C1MIDLm(msg_id), &addr);
+		off = CAN_ADDR_C1MIDLm(msg_id) - can_region->start;
+		addr = (uint32*)&(can_region->data[off]);
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].idl = (uint16*)addr;
 
-		cpu_memget_addrp(device->cpu, CAN_ADDR_C1MIDHm(msg_id), &addr);
+		off = CAN_ADDR_C1MIDHm(msg_id) - can_region->start;
+		addr = (uint32*)&(can_region->data[off]);
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].idh = (uint16*)addr;
 	}
 
 	/*
 	 * CAN初期化
 	 */
+#if 0 //TODO 呼び出しもとで初期化すべき
 	result = dbg_can_ops.init(0);
 	if (result == FALSE) {
 		//printf("device_init_can:err\n");
 		exit(1);
 	}
+#endif
 	return;
 }
 static uint32 get_canid(uint32 channel, uint32 msg_id)
@@ -692,52 +724,6 @@ void device_supply_clock_can(DeviceType *device)
 	return;
 }
 
-uint32* can_get_reg16_addr(CpuManagerType *cpu, uint32 regaddr)
-{
-	uint32* addr = NULL;
-	uint32 msg_id;
-	uint32 off;
-
-	/*
-	 * C1IE check
-	 */
-	if (regaddr == CAN_ADDR_C1IE) {
-		off = regaddr - cpu->io_mem2r.addr;
-
-		addr = (uint32*)&cpu->io_mem2r.data[off];
-	}
-	/*
-	 * C1INTS check
-	 */
-	else if (regaddr == CAN_ADDR_C1INTS) {
-		off = regaddr - cpu->io_mem2r.addr;
-
-		addr = (uint32*)&cpu->io_mem2r.data[off];
-	}
-	/*
-	 * C1CTRL check
-	 */
-	else if (regaddr == CAN_ADDR_C1CTRL) {
-		off = regaddr - cpu->io_mem2r.addr;
-
-		addr = (uint32*)&cpu->io_mem2r.data[off];
-	}
-	else {
-		/*
-		 * C1MCTRLm check
-		 */
-		for (msg_id = 0U; msg_id < CAN_MSGBUF_NUM; msg_id++) {
-			if (regaddr == CAN_ADDR_C1MCTRLm(msg_id)) {
-				off = regaddr - cpu->io_mem2r.addr;
-				addr = (uint32*)&cpu->io_mem2r.data[off];
-
-				break;
-			}
-		}
-	}
-
-	return addr;
-}
 
 static void can_set_c1mctrlm(uint16 wdata, uint16 *rdata)
 {
@@ -989,54 +975,44 @@ static void can_set_c1ints(uint16 wdata, uint16 *rdata)
 	return;
 }
 
-void can_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data)
+static bool can_hook_update_reg16(uint32 regaddr, uint16 data)
 {
 	uint32 msg_id;
 	uint32 off;
-	uint16 *wdata;
 	uint16 *rdata;
 
 	/*
 	 * C1IE check
 	 */
 	if (regaddr == CAN_ADDR_C1IE) {
-		off = regaddr - cpu->io_mem2r.addr;
+		off = regaddr - can_region->start;
 
-		wdata = (uint16*)&cpu->io_mem2.data[off];
-		*wdata = data;
-
-		rdata = (uint16*)&cpu->io_mem2r.data[off];
+		rdata = (uint16*)&can_region->data[off];
 		can_set_c1ie(data, rdata);
 		//printf("########### CAN_ADDR_C1IE=0x%x #############\n", *rdata);
-		return;
+		return TRUE;
 	}
 	/*
 	 * C1INTS check
 	 */
 	if (regaddr == CAN_ADDR_C1INTS) {
-		off = regaddr - cpu->io_mem2r.addr;
+		off = regaddr - can_region->start;
 
-		wdata = (uint16*)&cpu->io_mem2.data[off];
-		*wdata = data;
-
-		rdata = (uint16*)&cpu->io_mem2r.data[off];
+		rdata = (uint16*)&can_region->data[off];
 		can_set_c1ints(data, rdata);
-		return;
+		return TRUE;
 	}
 
 	/*
 	 * C1CTRL check
 	 */
 	if (regaddr == CAN_ADDR_C1CTRL) {
-		off = regaddr - cpu->io_mem2r.addr;
+		off = regaddr - can_region->start;
 
-		wdata = (uint16*)&cpu->io_mem2.data[off];
-		*wdata = data;
-
-		rdata = (uint16*)&cpu->io_mem2r.data[off];
+		rdata = (uint16*)&can_region->data[off];
 		can_set_c1ctrl(data, rdata);
 		//printf("########### CAN_ADDR_C1CTRL=0x%x #############\n", *rdata);
-		return;
+		return TRUE;
 	}
 
 	/*
@@ -1044,19 +1020,16 @@ void can_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data)
 	 */
 	for (msg_id = 0U; msg_id < CAN_MSGBUF_NUM; msg_id++) {
 		if (regaddr == CAN_ADDR_C1MCTRLm(msg_id)) {
-			off = regaddr - cpu->io_mem2r.addr;
+			off = regaddr - can_region->start;
 
-			wdata = (uint16*)&cpu->io_mem2.data[off];
-			*wdata = data;
-
-			rdata = (uint16*)&cpu->io_mem2r.data[off];
+			rdata = (uint16*)&can_region->data[off];
 			can_set_c1mctrlm(data, rdata);
 			//printf("########### CAN_ADDR_C1MCTRL%d=0x%x #############\n", msg_id, *rdata);
-			return;
+			return TRUE;
 		}
 	}
 
-	return;
+	return FALSE;
 
 }
 
@@ -1065,3 +1038,44 @@ void device_can_register_ops(void *can, DeviceCanOpType *ops)
 	CanDevice.ops = ops;
 	return;
 }
+
+
+static Std_ReturnType can_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint8*)(&region->data[off]));
+	return STD_E_OK;
+}
+static Std_ReturnType can_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint16*)(&region->data[off]));
+	return STD_E_OK;
+}
+static Std_ReturnType can_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint32*)(&region->data[off]));
+	return STD_E_OK;
+}
+static Std_ReturnType can_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data)
+{
+	uint32 off = (addr - region->start);
+	*((uint8*)(&region->data[off])) = data;
+	return STD_E_OK;
+}
+static Std_ReturnType can_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data)
+{
+	uint32 off = (addr - region->start);
+	if (can_hook_update_reg16(addr, data) == FALSE) {
+		*((uint16*)(&region->data[off])) = data;
+	}
+	return STD_E_OK;
+}
+static Std_ReturnType can_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data)
+{
+	uint32 off = (addr - region->start);
+	*((uint32*)(&region->data[off])) = data;
+	return STD_E_OK;
+}
+

@@ -10,6 +10,7 @@ typedef enum {
 	DEVICE
 } MpuAddressRegionEnumType;
 
+#define MPU_ADDRESS_REGION_MASK_ALL				0xFFFFFFFF
 
 struct mpu_address_region_operation_type;
 typedef struct {
@@ -17,6 +18,7 @@ typedef struct {
 	CoreIdType									core_id;
 	uint32										start;
 	uint32										size;
+	uint32										mask;
 	uint8										*data;
 	struct mpu_address_region_operation_type	*ops;
 } MpuAddressRegionType;

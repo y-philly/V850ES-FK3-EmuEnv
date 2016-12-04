@@ -32,6 +32,7 @@ OBJS	+= dbg_print.o
 OBJS	+= mpu_config.o
 OBJS	+= cpu_config.o
 OBJS	+= intc.o
+OBJS	+= hash.o
 
 
 .SUFFIXES:	.c .o

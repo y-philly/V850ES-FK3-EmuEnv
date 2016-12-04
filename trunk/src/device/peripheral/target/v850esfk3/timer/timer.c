@@ -21,11 +21,15 @@ typedef struct {
 } TimerDeviceType;
 
 static TimerDeviceType TimerDevice[TAAnChannelNum];
+static MpuAddressRegionType *timer_region;
 
-void device_init_timer(DeviceType *device)
+void device_init_timer(DeviceType *device, MpuAddressRegionType *region)
 {
 	int i = 0;
 	uint16 base;
+
+	timer_region = region;
+
 	for (i = 0; i < TAAnChannelNum; i++) {
 		TimerDevice[i].cnt = 0;
 		TimerDevice[i].mode = TIMER_MODE_STOP;

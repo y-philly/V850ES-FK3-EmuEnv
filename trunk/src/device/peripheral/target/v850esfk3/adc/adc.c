@@ -46,12 +46,15 @@ typedef struct {
 static AdcDeviceType AdcDevice[MPU_ADC_ADA_NUM];
 static uint16 adc_ada0_data[ADC_ADA0_CHANNEL_NUM];
 static uint16 adc_ada1_data[ADC_ADA1_CHANNEL_NUM];
+static MpuAddressRegionType *adc_region;
 
-void device_init_adc(DeviceType *device)
+void device_init_adc(DeviceType *device, MpuAddressRegionType *region)
 {
 	int i;
 	int cntl;
 	
+	adc_region = region;
+
 	//printf("AD init\n");
 
 	device->dev.adc = &AdcDevice;

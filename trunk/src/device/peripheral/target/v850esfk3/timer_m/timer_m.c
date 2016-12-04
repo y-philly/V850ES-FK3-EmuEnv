@@ -16,9 +16,12 @@ typedef struct {
 } TimerMDeviceType;
 
 static TimerMDeviceType TimerMDevice;
+static MpuAddressRegionType *timer_m_region;
 
-void device_init_timer_m(DeviceType *device)
+void device_init_timer_m(DeviceType *device, MpuAddressRegionType *region)
 {
+	timer_m_region = region;
+
 	TimerMDevice.cnt = 0;
 	TimerMDevice.precnt = 0;
 	TimerMDevice.mode = TIMER_MODE_STOP;

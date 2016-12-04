@@ -60,9 +60,12 @@ static void rx_fifo_read(MpuAddressRegionType *region, uint32 *data);
 static void rx_fifo_read_status(MpuAddressRegionType *region, uint32 *data);
 
 int CpuEmuCommDevisProc1;
+static MpuAddressRegionType *comm_region;
 
-void device_init_comm(DeviceType *device)
+void device_init_comm(DeviceType *device, MpuAddressRegionType *region)
 {
+	comm_region = region;
+
 	if (CpuEmuCommDevisProc1 == 1) {
 		CpuEmuCommDev.rx_fifo.path = CPU_EMU_COMM_FIFO1_PATH;
 		CpuEmuCommDev.tx_fifo.path = CPU_EMU_COMM_FIFO2_PATH;

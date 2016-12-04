@@ -47,13 +47,13 @@ typedef struct {
  */
 extern void device_init(DeviceType *device);
 extern void device_init_intc(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_timer(DeviceType *device);
-extern void device_init_timer_m(DeviceType *device);
+extern void device_init_timer(DeviceType *device, MpuAddressRegionType *region);
+extern void device_init_timer_m(DeviceType *device, MpuAddressRegionType *region);
 extern void device_init_serial(DeviceType *device, MpuAddressRegionType *region);
 extern void device_init_can(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_adc(DeviceType *device);
-extern void device_init_wdg(DeviceType *device);
-extern void device_init_comm(DeviceType *device);
+extern void device_init_adc(DeviceType *device, MpuAddressRegionType *region);
+extern void device_init_wdg(DeviceType *device, MpuAddressRegionType *region);
+extern void device_init_comm(DeviceType *device, MpuAddressRegionType *region);
 
 /*
  * デバイスクロック共有

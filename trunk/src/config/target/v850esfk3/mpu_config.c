@@ -111,7 +111,7 @@ MpuAddressMapType mpu_address_map = {
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_PH0,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
 						.data		= memory_data_PH0,
-						.ops		= NULL	//TODO
+						.ops		= &default_memory_operation
 				},
 				/*
 				 * INDEX :DEVICE(プログラマブル周辺I/O領域)
@@ -123,7 +123,7 @@ MpuAddressMapType mpu_address_map = {
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_PH1,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
 						.data		= memory_data_PH1,
-						.ops		= NULL	//TODO
+						.ops		= &default_memory_operation
 				},
 		}
 };

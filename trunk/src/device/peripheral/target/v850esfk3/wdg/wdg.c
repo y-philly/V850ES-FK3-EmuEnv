@@ -8,9 +8,12 @@ typedef struct {
 } WdgDeviceType;
 
 static WdgDeviceType WdgDevice;
+static MpuAddressRegionType *wdg_region;
 
-void device_init_wdg(DeviceType *device)
+void device_init_wdg(DeviceType *device, MpuAddressRegionType *region)
 {
+	wdg_region = region;
+
 	device->dev.wdg = &WdgDevice;
 	WdgDevice.state = 0;
 	WdgDevice.cnt = 0;

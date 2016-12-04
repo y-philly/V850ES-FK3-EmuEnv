@@ -10,13 +10,13 @@ void device_init(DeviceType *device)
 	device->clock = 0;
 	device->intclock = 0;
 	device_init_intc(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
-	device_init_timer(device);
-	device_init_timer_m(device);
+	device_init_timer(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	device_init_timer_m(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_serial(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
 	device_init_can(device,  &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);
-	device_init_adc(device);
-	//device_init_wdg(device);
-	device_init_comm(device);
+	device_init_adc(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	//device_init_wdg(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	device_init_comm(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 
 	return;
 }

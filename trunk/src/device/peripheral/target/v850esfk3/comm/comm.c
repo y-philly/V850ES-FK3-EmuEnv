@@ -1,6 +1,8 @@
 #include "inc/comm.h"
 #include "intc.h"
 #include "intc_ops.h"
+#include "mpu_types.h"
+#include "std_errno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -8,6 +10,27 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+
+static Std_ReturnType comm_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
+static Std_ReturnType comm_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
+static Std_ReturnType comm_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data);
+static Std_ReturnType comm_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data);
+static Std_ReturnType comm_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data);
+static Std_ReturnType comm_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data);
+
+MpuAddressRegionOperationType	comm_memory_operation = {
+		.get_data8 		= 	comm_get_data8,
+		.get_data16		=	comm_get_data16,
+		.get_data32		=	comm_get_data32,
+
+		.put_data8 		= 	comm_put_data8,
+		.put_data16		=	comm_put_data16,
+		.put_data32		=	comm_put_data32,
+
+		.get_pointer	= NULL
+};
+
 
 #define MAX_BUFFER_SIZE	4096
 #define SYNC_COUNT		10000	//500 usec
@@ -33,8 +56,8 @@ static void tx_fifo_init(void);
 static void tx_fifo_sync(void);
 static void tx_fifo_write(uint32 data);
 static void rx_fifo_sync(void);
-static void rx_fifo_read(void);
-static void rx_fifo_read_status(void);
+static void rx_fifo_read(MpuAddressRegionType *region, uint32 *data);
+static void rx_fifo_read_status(MpuAddressRegionType *region, uint32 *data);
 
 int CpuEmuCommDevisProc1;
 
@@ -60,7 +83,7 @@ void device_init_comm(DeviceType *device)
 	return;
 }
 
-#if 1
+
 void device_supply_clock_comm(DeviceType *device)
 {
 	CpuEmuCommDev.count++;
@@ -69,24 +92,6 @@ void device_supply_clock_comm(DeviceType *device)
 		tx_fifo_sync();
 		//rx_fifo_sync();
 		CpuEmuCommDev.count = 0;
-	}
-	return;
-}
-#endif
-void comm_hook_update_reg32(CpuManagerType *cpu, uint32 regaddr, uint32 data)
-{
-	if (regaddr == CPU_EMU_COMM_FIFO_TX_DATA_ADDR) {
-		tx_fifo_write(data);
-	}
-	return;
-}
-void comm_hook_load_reg32(CpuManagerType *cpu, uint32 regaddr)
-{
-	if (regaddr == CPU_EMU_COMM_FIFO_RX_DATA_ADDR) {
-		rx_fifo_read();
-	}
-	else if (regaddr == CPU_EMU_COMM_FIFO_RX_STAT_ADDR) {
-		rx_fifo_read_status();
 	}
 	return;
 }
@@ -193,10 +198,12 @@ static void tx_fifo_write(uint32 data)
 	return;
 }
 
-static void rx_fifo_read(void)
+static void rx_fifo_read(MpuAddressRegionType *region, uint32 *data)
 {
 	uint8 data8 = 0;
 	uint32 stat_data;
+	uint32 off_stat = (CPU_EMU_COMM_FIFO_RX_STAT_ADDR & region->mask) - region->start;
+	uint32 *stat_data_addr;
 
 	if (CpuEmuCommDev.rx_fifo.off >= CpuEmuCommDev.rx_fifo.size) {
 		rx_fifo_sync();
@@ -204,7 +211,7 @@ static void rx_fifo_read(void)
 
 	if (CpuEmuCommDev.rx_fifo.off < CpuEmuCommDev.rx_fifo.size) {
 		data8 = CpuEmuCommDev.rx_fifo.buffer[CpuEmuCommDev.rx_fifo.off];
-		(void)device_io_write32(CpuEmuCommDev.device, CPU_EMU_COMM_FIFO_RX_DATA_ADDR, data8);
+		*data = data8;
 		CpuEmuCommDev.rx_fifo.off++;
 	}
 
@@ -214,15 +221,17 @@ static void rx_fifo_read(void)
 	else {
 		stat_data = 1;
 	}
-	//update status register
-	(void)device_io_write32(CpuEmuCommDev.device, CPU_EMU_COMM_FIFO_RX_STAT_ADDR, stat_data);
+	stat_data_addr = (uint32*)&region->data[off_stat];
+	*stat_data_addr = stat_data;
 
 	return;
 }
 
-static void rx_fifo_read_status(void)
+static void rx_fifo_read_status(MpuAddressRegionType *region, uint32 *data)
 {
 	uint32 stat_data;
+	uint32 off_stat = (CPU_EMU_COMM_FIFO_RX_STAT_ADDR & region->mask) - region->start;
+	uint32 *stat_data_addr;
 
 	if (CpuEmuCommDev.rx_fifo.off >= CpuEmuCommDev.rx_fifo.size) {
 		rx_fifo_sync();
@@ -234,10 +243,56 @@ static void rx_fifo_read_status(void)
 	else {
 		stat_data = 1;
 	}
-	//update status register
-	(void)device_io_write32(CpuEmuCommDev.device, CPU_EMU_COMM_FIFO_RX_STAT_ADDR, stat_data);
 
+	stat_data_addr = (uint32*)&region->data[off_stat];
+	*stat_data_addr = stat_data;
+	*data = stat_data;
 	return;
 }
 
+
+static Std_ReturnType comm_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint8*)(&region->data[off]));
+	return STD_E_OK;
+}
+static Std_ReturnType comm_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint16*)(&region->data[off]));
+	return STD_E_OK;
+}
+
+static Std_ReturnType comm_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
+{
+	if (addr == (CPU_EMU_COMM_FIFO_RX_DATA_ADDR & region->mask)) {
+		rx_fifo_read(region, data);
+	}
+	else if (addr == (CPU_EMU_COMM_FIFO_RX_STAT_ADDR & region->mask)) {
+		rx_fifo_read_status(region, data);
+	}
+	return STD_E_OK;
+}
+
+static Std_ReturnType comm_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data)
+{
+	uint32 off = (addr - region->start);
+	*((uint8*)(&region->data[off])) = data;
+
+	return STD_E_OK;
+}
+static Std_ReturnType comm_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data)
+{
+	uint32 off = (addr - region->start);
+	*((uint16*)(&region->data[off])) = data;
+	return STD_E_OK;
+}
+static Std_ReturnType comm_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data)
+{
+	if (addr == (CPU_EMU_COMM_FIFO_TX_DATA_ADDR & region->mask)) {
+		tx_fifo_write(data);
+	}
+	return STD_E_OK;
+}
 

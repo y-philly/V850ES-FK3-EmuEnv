@@ -7,7 +7,7 @@
 #define MPU_ADDRESS_REGION_SIZE_INX_RAM		(1024U * 60U)
 #define MPU_ADDRESS_REGION_SIZE_INX_INTC	((6U * 2U) + 1U)
 #define MPU_ADDRESS_REGION_SIZE_INX_SERIAL	(0xFFFFFA78 - 0xFFFFFA00)
-#define MPU_ADDRESS_REGION_SIZE_INX_COMM	(4)
+#define MPU_ADDRESS_REGION_SIZE_INX_COMM	(0xFFFFF590 - 0xFFFFF560)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH0		(1024U * 4U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH1		(1024U * 12U)
 
@@ -20,6 +20,7 @@ static uint8 memory_data_PH0[MPU_ADDRESS_REGION_SIZE_INX_PH0];
 static uint8 memory_data_PH1[MPU_ADDRESS_REGION_SIZE_INX_PH1];
 
 extern MpuAddressRegionOperationType	serial_memory_operation;
+extern MpuAddressRegionOperationType	comm_memory_operation;
 
 MpuAddressMapType mpu_address_map = {
 		.map = {
@@ -77,11 +78,11 @@ MpuAddressMapType mpu_address_map = {
 				{
 						.type		= DEVICE,
 						.core_id	= CPU_CONFIG_CORE_ID_NONE,
-						.start		= 0x03FFFA00,
+						.start		= 0x03FFF560,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_COMM,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
 						.data		= memory_data_COMM,
-						.ops		= NULL	//TODO
+						.ops		= &comm_memory_operation
 				},
 				/*
 				 * INDEX :DEVICE(その他内蔵周辺I/O領域)

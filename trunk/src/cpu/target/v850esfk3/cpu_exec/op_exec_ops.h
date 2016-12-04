@@ -1,7 +1,8 @@
-﻿#ifndef _OP_EXEC_OPS_H_
+﻿
+#ifndef _OP_EXEC_OPS_H_
 #define _OP_EXEC_OPS_H_
 
-#include "cpu_register.h"
+#include "target_cpu.h"
 #include "cpu_common/cpu_ops.h"
 
 /*

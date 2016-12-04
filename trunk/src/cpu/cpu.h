@@ -2,8 +2,8 @@
 #define _CPU_H_
 
 #include "std_types.h"
-#include "cpu_register.h"
 #include "cpu_config.h"
+#include "target_cpu.h"
 
 typedef struct {
 	TargetCoreType		core;

@@ -1,4 +1,4 @@
-#include "cpu_register.h"
+#include "target_cpu.h"
 
 #define CPU_PSW_ID		(1 << 5)
 #define CPU_PSW_SAT		(1 << 4)

@@ -32,6 +32,6 @@ typedef struct {
 	bool				is_halt;
 	uint16 				current_code[OP_DECODE_MAX];
 	OpDecodedCodeType	decoded_code;
-} CpuManagerType;
+} CoreType;
 
 #endif /* _CPU_REGISTER_H_ */

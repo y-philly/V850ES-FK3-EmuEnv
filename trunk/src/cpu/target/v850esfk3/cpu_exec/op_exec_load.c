@@ -8,7 +8,7 @@
 /*
  * Format4
  */
-int op_exec_sldb(CpuManagerType *cpu)
+int op_exec_sldb(CoreType *cpu)
 {
 	uint32 addr;
 	sint32 ret;
@@ -43,7 +43,7 @@ int op_exec_sldb(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
-int op_exec_sldbu(CpuManagerType *cpu)
+int op_exec_sldbu(CoreType *cpu)
 {
 	uint32 addr;
 	uint32 ret;
@@ -78,7 +78,7 @@ int op_exec_sldbu(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_sldhu(CpuManagerType *cpu)
+int op_exec_sldhu(CoreType *cpu)
 {
 	uint32 addr;
 	uint32 ret;
@@ -113,7 +113,7 @@ int op_exec_sldhu(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_sldh(CpuManagerType *cpu)
+int op_exec_sldh(CoreType *cpu)
 {
 	uint32 addr;
 	sint32 ret;
@@ -152,7 +152,7 @@ int op_exec_sldh(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_sldw(CpuManagerType *cpu)
+int op_exec_sldw(CoreType *cpu)
 {
 	uint32 addr;
 	uint32 ret;
@@ -193,7 +193,7 @@ int op_exec_sldw(CpuManagerType *cpu)
  * Format7
  */
 
-int op_exec_ldb(CpuManagerType *cpu)
+int op_exec_ldb(CoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;
@@ -225,7 +225,7 @@ int op_exec_ldb(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_ldbu(CpuManagerType *cpu)
+int op_exec_ldbu(CoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;
@@ -259,7 +259,7 @@ int op_exec_ldbu(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
-int op_exec_ldhw(CpuManagerType *cpu)
+int op_exec_ldhw(CoreType *cpu)
 {
 	uint32 addr;
 	sint32 ret;
@@ -312,7 +312,7 @@ int op_exec_ldhw(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_ldhu(CpuManagerType *cpu)
+int op_exec_ldhu(CoreType *cpu)
 {
 	uint32 addr;
 	uint32 ret;

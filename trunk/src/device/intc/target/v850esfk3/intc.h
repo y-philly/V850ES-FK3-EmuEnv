@@ -9,7 +9,7 @@
 #define INTC_FECC_INTWDT2			0x20
 #define INTC_NMINO_NMI			0
 #define INTC_NMINO_INTWDT2		1
-extern int intc_raise_nmi(CpuManagerType *cpu, uint32 nmino);
+extern int intc_raise_nmi(CoreType *cpu, uint32 nmino);
 
 
 /*

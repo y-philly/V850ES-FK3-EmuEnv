@@ -29,7 +29,7 @@ typedef enum {
 
 
 typedef struct {
-	CpuManagerType		*cpu;
+	CoreType		*cpu;
 	bool				view_mode;
 	uint32				memory_ref_type;
 	uint32				memory_ref_off;
@@ -100,7 +100,7 @@ typedef struct {
 
 static CpuProfileType *CpuProfile;
 
-void debug_init(CpuManagerType *cpu, DeviceType *device)
+void debug_init(CoreType *cpu, DeviceType *device)
 {
 	dbg_info.cpu = cpu;
 	dbg_info.break_cnt = 1;

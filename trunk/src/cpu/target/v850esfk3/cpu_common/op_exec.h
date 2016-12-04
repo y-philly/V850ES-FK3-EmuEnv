@@ -3,7 +3,7 @@
 
 #include "cpu.h"
 
-extern int OpExec(CpuManagerType *cpu);
+extern int OpExec(CoreType *cpu);
 
 
 #endif /* _OP_EXEC_H_ */

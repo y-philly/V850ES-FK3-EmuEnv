@@ -106,7 +106,7 @@ int op_chk_and_set_sign(CpuRegisterType *cpu, sint32 result)
 /*
  * Format1
  */
-int op_exec_sub(CpuManagerType *cpu)
+int op_exec_sub(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
@@ -136,7 +136,7 @@ int op_exec_sub(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_subr(CpuManagerType *cpu)
+int op_exec_subr(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
@@ -164,7 +164,7 @@ int op_exec_subr(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
-int op_exec_cmp_1(CpuManagerType *cpu)
+int op_exec_cmp_1(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
@@ -192,7 +192,7 @@ int op_exec_cmp_1(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_add_1(CpuManagerType *cpu)
+int op_exec_add_1(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
@@ -221,7 +221,7 @@ int op_exec_add_1(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
-int op_exec_mov_1(CpuManagerType *cpu)
+int op_exec_mov_1(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
@@ -239,7 +239,7 @@ int op_exec_mov_1(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
-int op_exec_mulh_1(CpuManagerType *cpu)
+int op_exec_mulh_1(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
@@ -265,7 +265,7 @@ int op_exec_mulh_1(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_divh_1(CpuManagerType *cpu)
+int op_exec_divh_1(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg2 = cpu->decoded_code.type1.reg2;
@@ -312,7 +312,7 @@ int op_exec_divh_1(CpuManagerType *cpu)
 /*
  * Format2
  */
-int op_exec_cmp_2(CpuManagerType *cpu)
+int op_exec_cmp_2(CoreType *cpu)
 {
 	uint32 reg2 = cpu->decoded_code.type2.reg2;
 	sint32 imm_data;
@@ -335,7 +335,7 @@ int op_exec_cmp_2(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
-int op_exec_add_2(CpuManagerType *cpu)
+int op_exec_add_2(CoreType *cpu)
 {
 	uint32 reg2 = cpu->decoded_code.type2.reg2;
 	sint32 imm_data;
@@ -360,7 +360,7 @@ int op_exec_add_2(CpuManagerType *cpu)
 
 	return 0;
 }
-int op_exec_mov_2(CpuManagerType *cpu)
+int op_exec_mov_2(CoreType *cpu)
 {
 	uint32 reg2 = cpu->decoded_code.type2.reg2;
 	sint32 imm_data;
@@ -375,7 +375,7 @@ int op_exec_mov_2(CpuManagerType *cpu)
 	cpu->cpu.pc += 2;
 	return 0;
 }
-int op_exec_mulh_2(CpuManagerType *cpu)
+int op_exec_mulh_2(CoreType *cpu)
 {
 	uint32 reg2 = cpu->decoded_code.type2.reg2;
 	sint32 imm_data;
@@ -399,7 +399,7 @@ int op_exec_mulh_2(CpuManagerType *cpu)
 /*
  * Format6
  */
-int op_exec_addi(CpuManagerType *cpu)
+int op_exec_addi(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type6.reg1;
 	uint32 reg2 = cpu->decoded_code.type6.reg2;
@@ -420,7 +420,7 @@ int op_exec_addi(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
-int op_exec_movea(CpuManagerType *cpu)
+int op_exec_movea(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type6.reg1;
 	uint32 reg2 = cpu->decoded_code.type6.reg2;
@@ -440,7 +440,7 @@ int op_exec_movea(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
-int op_exec_mov_6(CpuManagerType *cpu)
+int op_exec_mov_6(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type6.reg1;
 	uint32 imm_high_addr;
@@ -472,7 +472,7 @@ int op_exec_mov_6(CpuManagerType *cpu)
 }
 
 
-int op_exec_movhi(CpuManagerType *cpu)
+int op_exec_movhi(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type6.reg1;
 	uint32 reg2 = cpu->decoded_code.type6.reg2;
@@ -494,7 +494,7 @@ int op_exec_movhi(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_mulhi(CpuManagerType *cpu)
+int op_exec_mulhi(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type6.reg1;
 	uint32 reg2 = cpu->decoded_code.type6.reg2;
@@ -519,7 +519,7 @@ int op_exec_mulhi(CpuManagerType *cpu)
 /*
  * Format9
  */
-static int setf_chk_cond(CpuManagerType *cpu, uint16 cond)
+static int setf_chk_cond(CoreType *cpu, uint16 cond)
 {
 	int ret = FALSE;
 	uint16 flg_s = CPU_ISSET_S(&cpu->cpu);
@@ -613,7 +613,7 @@ static int setf_chk_cond(CpuManagerType *cpu, uint16 cond)
 
 	return ret;
 }
-int op_exec_setf(CpuManagerType *cpu)
+int op_exec_setf(CoreType *cpu)
 {
 	uint32 reg2 = cpu->decoded_code.type9.reg2;
 	uint16 cond = cpu->decoded_code.type9.gen;
@@ -640,7 +640,7 @@ int op_exec_setf(CpuManagerType *cpu)
 /*
  * Format 11
  */
-int op_exec_divu(CpuManagerType *cpu)
+int op_exec_divu(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
 	uint32 reg2 = cpu->decoded_code.type11.reg2;
@@ -694,7 +694,7 @@ int op_exec_divu(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
-int op_exec_divhu(CpuManagerType *cpu)
+int op_exec_divhu(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
 	uint32 reg2 = cpu->decoded_code.type11.reg2;
@@ -748,7 +748,7 @@ int op_exec_divhu(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
-int op_exec_divh_11(CpuManagerType *cpu)
+int op_exec_divh_11(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
 	uint32 reg2 = cpu->decoded_code.type11.reg2;
@@ -802,7 +802,7 @@ int op_exec_divh_11(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
-int op_exec_div(CpuManagerType *cpu)
+int op_exec_div(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
 	uint32 reg2 = cpu->decoded_code.type11.reg2;
@@ -865,7 +865,7 @@ int op_exec_div(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_mul(CpuManagerType *cpu)
+int op_exec_mul(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
 	uint32 reg2 = cpu->decoded_code.type11.reg2;
@@ -906,7 +906,7 @@ int op_exec_mul(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_mulu(CpuManagerType *cpu)
+int op_exec_mulu(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
 	uint32 reg2 = cpu->decoded_code.type11.reg2;
@@ -947,7 +947,7 @@ int op_exec_mulu(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_cmov_11(CpuManagerType *cpu)
+int op_exec_cmov_11(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type11.reg1;
 	uint32 reg2 = cpu->decoded_code.type11.reg2;
@@ -995,7 +995,7 @@ int op_exec_cmov_11(CpuManagerType *cpu)
 /*
  * Format 12
  */
-int op_exec_mulu_12(CpuManagerType *cpu)
+int op_exec_mulu_12(CoreType *cpu)
 {
 	uint64 imm9;
 	uint32 imm9_low;
@@ -1034,7 +1034,7 @@ int op_exec_mulu_12(CpuManagerType *cpu)
 	cpu->cpu.pc += 4;
 	return 0;
 }
-int op_exec_mul_12(CpuManagerType *cpu)
+int op_exec_mul_12(CoreType *cpu)
 {
 	sint64 imm9;
 	uint32 imm9_32bit;
@@ -1076,7 +1076,7 @@ int op_exec_mul_12(CpuManagerType *cpu)
 	return 0;
 }
 
-int op_exec_cmov_12(CpuManagerType *cpu)
+int op_exec_cmov_12(CoreType *cpu)
 {
 	sint32 imm_data = op_sign_extend(4, cpu->decoded_code.type12.imml);
 	uint32 reg2 = cpu->decoded_code.type12.reg2;

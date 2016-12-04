@@ -139,7 +139,7 @@ static void clr_wait_intno(int intno)
 		intc_control.waiting_int_num--;
 	}
 }
-int is_masked(CpuManagerType *cpu, uint32 intno)
+int is_masked(CoreType *cpu, uint32 intno)
 {
 	uint32 regaddr;
 	uint32 *pregaddr;
@@ -155,7 +155,7 @@ int is_masked(CpuManagerType *cpu, uint32 intno)
 	return INTC_ICN_ISSET_MK(wdata);
 }
 
-static int get_maxpri_itno(CpuManagerType *cpu)
+static int get_maxpri_itno(CoreType *cpu)
 {
 	int i;
 	int next_intno = -1;
@@ -215,7 +215,7 @@ static int get_maxpri_itno(CpuManagerType *cpu)
 	return next_intno;
 }
 
-static void intc_raise(CpuManagerType *cpu, uint32 intno)
+static void intc_raise(CoreType *cpu, uint32 intno)
 {
 	uint16 wdata16;
 	uint8 *ispr;
@@ -271,7 +271,7 @@ static void intc_raise(CpuManagerType *cpu, uint32 intno)
 	return;
 }
 
-int intc_raise_intr(CpuManagerType *cpu, uint32 intno)
+int intc_raise_intr(CoreType *cpu, uint32 intno)
 {
 	uint32 regaddr;
 	uint32 *pregaddr;
@@ -301,7 +301,7 @@ int intc_raise_intr(CpuManagerType *cpu, uint32 intno)
 
 	return 0;
 }
-void intc_clr_currlvl_ispr(CpuManagerType *cpu)
+void intc_clr_currlvl_ispr(CoreType *cpu)
 {
 	uint32 regaddr;
 	uint32 *pregaddr;
@@ -351,11 +351,11 @@ void intc_clr_currlvl_ispr(CpuManagerType *cpu)
 	return;
 }
 
-static bool can_raise_inwtdt2(CpuManagerType *cpu)
+static bool can_raise_inwtdt2(CoreType *cpu)
 {
 	return CPU_ISSET_NP(&cpu->cpu);
 }
-static void raise_intwdt2(CpuManagerType *cpu)
+static void raise_intwdt2(CoreType *cpu)
 {
 	cpu->is_halt = FALSE;
 
@@ -373,7 +373,7 @@ static void raise_intwdt2(CpuManagerType *cpu)
 	//printf("RAISED INTWDT2\n");
 	return;
 }
-static void raise_nmi(CpuManagerType *cpu)
+static void raise_nmi(CoreType *cpu)
 {
 	if (CPU_ISSET_NP(&cpu->cpu) == TRUE) {
 		return;
@@ -401,7 +401,7 @@ static void raise_nmi(CpuManagerType *cpu)
  * 現在実行中およびペンディング中の割込みを全てチェックして，
  * 最高優先度のものを実行する．
  */
-int intc_raise_pending_intr(CpuManagerType *cpu)
+int intc_raise_pending_intr(CoreType *cpu)
 {
 	/*
 	 * INTWDT2割込みチェック
@@ -444,7 +444,7 @@ int intc_raise_pending_intr(CpuManagerType *cpu)
 	intc_raise(cpu, maxlvl_intno);
 	return 0;
 }
-bool intc_has_pending_intr(CpuManagerType *cpu)
+bool intc_has_pending_intr(CoreType *cpu)
 {
 	int maxlvl_intno;
 
@@ -456,7 +456,7 @@ bool intc_has_pending_intr(CpuManagerType *cpu)
 	return TRUE;
 }
 
-int intc_raise_nmi(CpuManagerType *cpu, uint32 nmino)
+int intc_raise_nmi(CoreType *cpu, uint32 nmino)
 {
 	if (nmino == INTC_NMINO_INTWDT2) {
 		intc_control.nmi.intwdt2_hasreq = TRUE;
@@ -467,7 +467,7 @@ int intc_raise_nmi(CpuManagerType *cpu, uint32 nmino)
 	return 0;
 }
 
-void intc_clr_nmi(CpuManagerType *cpu)
+void intc_clr_nmi(CoreType *cpu)
 {
 	if (intc_control.nmi.intwdt2_hasreq == TRUE) {
 		cpu_reset(cpu->core_id);

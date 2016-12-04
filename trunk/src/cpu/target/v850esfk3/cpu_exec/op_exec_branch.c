@@ -4,7 +4,7 @@
 /*
  * Format1
  */
-int op_exec_jmp(CpuManagerType *cpu)
+int op_exec_jmp(CoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	if (reg1 >= CPU_GREG_NUM) {
@@ -19,7 +19,7 @@ int op_exec_jmp(CpuManagerType *cpu)
 /*
  * Format3
  */
-int op_exec_bcond(CpuManagerType *cpu)
+int op_exec_bcond(CoreType *cpu)
 {
 	uint16 cond = cpu->decoded_code.type3.cond;
 	uint16 is_br = FALSE;
@@ -151,7 +151,7 @@ int op_exec_bcond(CpuManagerType *cpu)
 /*
  * Format5
  */
-int op_exec_jr(CpuManagerType *cpu)
+int op_exec_jr(CoreType *cpu)
 {
 	uint32 reg2 = cpu->decoded_code.type5.reg2;
 	sint32 pc = (sint32)cpu->cpu.pc;

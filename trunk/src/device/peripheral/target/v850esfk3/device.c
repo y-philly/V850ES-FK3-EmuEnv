@@ -51,7 +51,7 @@ static int device_get_iomem(DeviceType *device, uint32 addr, uint32 **addrp)
 {
 	Std_ReturnType err;
 
-	err = bus_get_pointer(CPU_CONFIG_CORE_ID_NONE, addr, (uint8**)addrp);
+	err = bus_get_pointer(CPU_CONFIG_CORE_ID_0, addr, (uint8**)addrp);
 	if (err != STD_E_OK) {
 		return -1;
 	}

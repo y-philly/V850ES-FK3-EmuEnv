@@ -33,7 +33,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= GLOBAL_MEMORY,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x00000000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_ROM,
 						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
@@ -45,7 +45,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= GLOBAL_MEMORY,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FF0000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_RAM,
 						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
@@ -57,7 +57,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFF100,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_INTC,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
@@ -69,7 +69,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFFA00,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_SERIAL,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
@@ -81,7 +81,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFF560,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_COMM,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
@@ -93,7 +93,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FEC000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_CAN,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
@@ -106,7 +106,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFF000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_PH0,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
@@ -118,7 +118,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
-						.core_id	= CPU_CONFIG_CORE_ID_NONE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FEC000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_PH1,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,

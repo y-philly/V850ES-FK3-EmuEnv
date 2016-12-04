@@ -86,7 +86,7 @@ void device_do_serial(DeviceType *device, SerialDeviceType *serial)
 		if (ret) {
 			serial_set_str_ssf();
 			//受信データをセットする．
-			(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_NONE, (UDnRX(serial->id) & serial_region->mask), data);
+			(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
 			//受信割込みを上げる
 			device_raise_int(device, INTNO_INTUD0R);
 		}
@@ -130,28 +130,28 @@ void device_serial_register_ops(void *serial, uint8 ch, DeviceSerialOpType *ops)
 static void serial_set_str(bool enable)
 {
 	uint8 str;
-	(void)serial_get_data8(serial_region, CPU_CONFIG_CORE_ID_NONE, (UDnSTR(UDnCH0) & serial_region->mask), &str);
+	(void)serial_get_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnSTR(UDnCH0) & serial_region->mask), &str);
 	if (enable) {
 		str |= 0x80;
 	}
 	else {
 		str &= ~0x80;
 	}
-	(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_NONE, (UDnSTR(UDnCH0) & serial_region->mask), str);
+	(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnSTR(UDnCH0) & serial_region->mask), str);
 	return;
 }
 static bool serial_isset_str_ssf(void)
 {
 	uint8 str;
-	(void)serial_get_data8(serial_region, CPU_CONFIG_CORE_ID_NONE, (UDnSTR(UDnCH0) & serial_region->mask), &str);
+	(void)serial_get_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnSTR(UDnCH0) & serial_region->mask), &str);
 	return ((str & 0x10) == 0x10);
 }
 static void serial_set_str_ssf(void)
 {
 	uint8 str;
-	(void)serial_get_data8(serial_region, CPU_CONFIG_CORE_ID_NONE, (UDnSTR(UDnCH0) & serial_region->mask), &str);
+	(void)serial_get_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnSTR(UDnCH0) & serial_region->mask), &str);
 	str |= 0x10;
-	(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_NONE, (UDnSTR(UDnCH0) & serial_region->mask), str);
+	(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnSTR(UDnCH0) & serial_region->mask), str);
 	return;
 }
 

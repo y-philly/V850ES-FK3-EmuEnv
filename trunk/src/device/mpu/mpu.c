@@ -24,7 +24,8 @@ MpuAddressRegionOperationType	default_memory_operation = {
 
 static inline bool has_permission(MpuAddressRegionType *region, CoreIdType core_id)
 {
-	if ((region->core_id != CPU_CONFIG_CORE_ID_NONE) && (region->core_id != core_id)) {
+	if (	(region->permission != MPU_ADDRESS_REGION_PERM_ALL) &&
+			((region->permission & (1U << core_id)) == FALSE) ) {
 		return FALSE;
 	}
 	return TRUE;

@@ -39,7 +39,7 @@ static int get_sysreg(CpuRegisterType *cpu, uint32 regid, uint32 **regp)
 /*
  * Format9
  */
-int op_exec_ldsr(CoreType *cpu)
+int op_exec_ldsr(TargetCoreType *cpu)
 {
 	int ret;
 	uint32 *sysreg;
@@ -72,7 +72,7 @@ int op_exec_ldsr(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_stsr(CoreType *cpu)
+int op_exec_stsr(TargetCoreType *cpu)
 {
 	int ret;
 	uint32 *sysreg;
@@ -101,7 +101,7 @@ int op_exec_stsr(CoreType *cpu)
  */
 
 
-int op_exec_diei(CoreType *cpu)
+int op_exec_diei(TargetCoreType *cpu)
 {
 	if (cpu->decoded_code.type10.gen1 == 0x04) {
 		/* EI */
@@ -119,7 +119,7 @@ int op_exec_diei(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_nop(CoreType *cpu)
+int op_exec_nop(TargetCoreType *cpu)
 {
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: NOP\n", cpu->reg.pc));
 
@@ -127,7 +127,7 @@ int op_exec_nop(CoreType *cpu)
 
 	return 0;
 }
-int op_exec_reti(CoreType *cpu)
+int op_exec_reti(TargetCoreType *cpu)
 {
 	if (CPU_ISSET_EP(&cpu->reg)) {
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: RETI:0x%x\n", cpu->reg.pc, cpu->reg.eipc));
@@ -152,7 +152,7 @@ int op_exec_reti(CoreType *cpu)
 	}
 	return 0;
 }
-int op_exec_halt(CoreType *cpu)
+int op_exec_halt(TargetCoreType *cpu)
 {
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: HALT:0x%x\n", cpu->reg.pc, cpu->reg.pc + 4));
 	//printf("0x%x: HALT:0x%x\n", cpu->cpu.pc, cpu->cpu.pc + 4);
@@ -163,7 +163,7 @@ int op_exec_halt(CoreType *cpu)
 }
 
 
-int op_exec_trap(CoreType *cpu)
+int op_exec_trap(TargetCoreType *cpu)
 {
 	int ret = -1;
 	uint32 pc;
@@ -198,7 +198,7 @@ int op_exec_trap(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_switch(CoreType *cpu)
+int op_exec_switch(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type1.reg1;
 	uint32 reg1_data;
@@ -248,7 +248,7 @@ int op_exec_switch(CoreType *cpu)
 /*
  * Format13
  */
-int op_exec_prepare(CoreType *cpu)
+int op_exec_prepare(TargetCoreType *cpu)
 {
 	uint16 subop = cpu->decoded_code.type13.gen & 0x0007;
 	uint16 ff = cpu->decoded_code.type13.gen >> 3U;
@@ -322,7 +322,7 @@ int op_exec_prepare(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_dispose(CoreType *cpu)
+int op_exec_dispose(TargetCoreType *cpu)
 {
 	uint16 reg1 = cpu->decoded_code.type13.gen;
 	uint16 start_reg = 20U;

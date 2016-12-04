@@ -6,7 +6,7 @@
 /*
  * Format8
  */
-int op_exec_tst1_8(CoreType *cpu)
+int op_exec_tst1_8(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type8.reg1;
 	sint32 disp16 = cpu->decoded_code.type8.disp;
@@ -40,7 +40,7 @@ int op_exec_tst1_8(CoreType *cpu)
 
 	return 0;
 }
-int op_exec_set1_8(CoreType *cpu)
+int op_exec_set1_8(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type8.reg1;
 	sint32 disp16 = cpu->decoded_code.type8.disp;
@@ -84,7 +84,7 @@ int op_exec_set1_8(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_clr1_8(CoreType *cpu)
+int op_exec_clr1_8(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type8.reg1;
 	sint32 disp16 = cpu->decoded_code.type8.disp;
@@ -126,7 +126,7 @@ int op_exec_clr1_8(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_not1_8(CoreType *cpu)
+int op_exec_not1_8(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type8.reg1;
 	sint32 disp16 = cpu->decoded_code.type8.disp;
@@ -175,7 +175,7 @@ int op_exec_not1_8(CoreType *cpu)
 /*
  * Format9
  */
-int op_exec_set1_9(CoreType *cpu)
+int op_exec_set1_9(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;
@@ -228,7 +228,7 @@ int op_exec_set1_9(CoreType *cpu)
 
 	return 0;
 }
-int op_exec_clr1_9(CoreType *cpu)
+int op_exec_clr1_9(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;
@@ -280,7 +280,7 @@ int op_exec_clr1_9(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_tst1_9(CoreType *cpu)
+int op_exec_tst1_9(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;
@@ -320,7 +320,7 @@ int op_exec_tst1_9(CoreType *cpu)
 
 	return 0;
 }
-int op_exec_not1_9(CoreType *cpu)
+int op_exec_not1_9(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code.type9.gen;
 	sint32 reg2 = cpu->decoded_code.type9.reg2;

@@ -4,21 +4,21 @@
 #include "cpu.h"
 #include <stdio.h>
 
-static int OpExec1(CoreType *cpu);
-static int OpExec2(CoreType *cpu);
-static int OpExec3(CoreType *cpu);
-static int OpExec4(CoreType *cpu);
-static int OpExec5(CoreType *cpu);
-static int OpExec6(CoreType *cpu);
-static int OpExec7(CoreType *cpu);
-static int OpExec8(CoreType *cpu);
-static int OpExec9(CoreType *cpu);
-static int OpExec10(CoreType *cpu);
-static int OpExec11(CoreType *cpu);
-static int OpExec12(CoreType *cpu);
-static int OpExec13(CoreType *cpu);
+static int OpExec1(TargetCoreType *cpu);
+static int OpExec2(TargetCoreType *cpu);
+static int OpExec3(TargetCoreType *cpu);
+static int OpExec4(TargetCoreType *cpu);
+static int OpExec5(TargetCoreType *cpu);
+static int OpExec6(TargetCoreType *cpu);
+static int OpExec7(TargetCoreType *cpu);
+static int OpExec8(TargetCoreType *cpu);
+static int OpExec9(TargetCoreType *cpu);
+static int OpExec10(TargetCoreType *cpu);
+static int OpExec11(TargetCoreType *cpu);
+static int OpExec12(TargetCoreType *cpu);
+static int OpExec13(TargetCoreType *cpu);
 
-int OpExec(CoreType *cpu)
+int OpExec(TargetCoreType *cpu)
 {
 	int ret = -1;
 	switch (cpu->decoded_code.type_id) {
@@ -68,7 +68,7 @@ int OpExec(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec1(CoreType *cpu)
+static int OpExec1(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -169,7 +169,7 @@ static int OpExec1(CoreType *cpu)
 	}
 	return ret;
 }
-static int OpExec2(CoreType *cpu)
+static int OpExec2(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -209,7 +209,7 @@ static int OpExec2(CoreType *cpu)
 	}
 	return ret;
 }
-static int OpExec3(CoreType *cpu)
+static int OpExec3(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -224,7 +224,7 @@ static int OpExec3(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec4(CoreType *cpu)
+static int OpExec4(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -268,7 +268,7 @@ static int OpExec4(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec5(CoreType *cpu)
+static int OpExec5(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -284,7 +284,7 @@ static int OpExec5(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec6(CoreType *cpu)
+static int OpExec6(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -326,7 +326,7 @@ static int OpExec6(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec7(CoreType *cpu)
+static int OpExec7(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -360,7 +360,7 @@ static int OpExec7(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec8(CoreType *cpu)
+static int OpExec8(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -384,7 +384,7 @@ static int OpExec8(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec9(CoreType *cpu)
+static int OpExec9(TargetCoreType *cpu)
 {
 	int ret = -1;
 	uint16 subopbits = (cpu->decoded_code.type9.rfu1 & 0x0003);
@@ -432,7 +432,7 @@ static int OpExec9(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec10(CoreType *cpu)
+static int OpExec10(TargetCoreType *cpu)
 {
 	int ret = -1;
 	uint16 retibits = (cpu->decoded_code.type10.rfu2 & 0x0003);
@@ -470,7 +470,7 @@ static int OpExec10(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec11(CoreType *cpu)
+static int OpExec11(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -511,7 +511,7 @@ static int OpExec11(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec12(CoreType *cpu)
+static int OpExec12(TargetCoreType *cpu)
 {
 	int ret = -1;
 
@@ -537,7 +537,7 @@ static int OpExec12(CoreType *cpu)
 	return ret;
 }
 
-static int OpExec13(CoreType *cpu)
+static int OpExec13(TargetCoreType *cpu)
 {
 	int ret = -1;
 	switch (cpu->decoded_code.type13.opcode) {

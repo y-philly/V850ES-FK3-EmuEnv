@@ -6,7 +6,7 @@
 #include "cpu_config.h"
 
 typedef struct {
-	CoreType		core;
+	TargetCoreType		core;
 } CpuCoreType;
 
 typedef struct {

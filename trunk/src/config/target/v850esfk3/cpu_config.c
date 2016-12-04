@@ -23,7 +23,7 @@ void cpu_init(void)
 	return;
 }
 
-static void private_cpu_reset(CoreType *cpu)
+static void private_cpu_reset(TargetCoreType *cpu)
 {
 	cpu->reg.pc = 0x00;
 	cpu->reg.r[0] = 0;

@@ -1,10 +1,10 @@
 #ifndef _INTC_OPS_H_
 #define _INTC_OPS_H_
 
-extern int intc_raise_intr(CoreType *cpu, uint32 intno);
-extern bool intc_has_pending_intr(CoreType *cpu);
-extern int intc_raise_pending_intr(CoreType *cpu);
-extern void intc_clr_nmi(CoreType *cpu);
-extern void intc_clr_currlvl_ispr(CoreType *cpu);
+extern int intc_raise_intr(TargetCoreType *cpu, uint32 intno);
+extern bool intc_has_pending_intr(TargetCoreType *cpu);
+extern int intc_raise_pending_intr(TargetCoreType *cpu);
+extern void intc_clr_nmi(TargetCoreType *cpu);
+extern void intc_clr_currlvl_ispr(TargetCoreType *cpu);
 
 #endif /* _INTC_OPS_H_ */

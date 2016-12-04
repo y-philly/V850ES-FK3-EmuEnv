@@ -7,7 +7,7 @@
 /*
  * Format4
  */
-int op_exec_sstb(CoreType *cpu)
+int op_exec_sstb(TargetCoreType *cpu)
 {
 	uint32 addr;
 	uint32 disp;
@@ -36,7 +36,7 @@ int op_exec_sstb(CoreType *cpu)
 	cpu->reg.pc += 2;
 	return 0;
 }
-int op_exec_ssth(CoreType *cpu)
+int op_exec_ssth(TargetCoreType *cpu)
 {
 	uint32 addr;
 	uint32 disp;
@@ -69,7 +69,7 @@ int op_exec_ssth(CoreType *cpu)
 	return 0;
 }
 
-int op_exec_sstw(CoreType *cpu)
+int op_exec_sstw(TargetCoreType *cpu)
 {
 	uint32 addr;
 	uint32 disp;
@@ -104,7 +104,7 @@ int op_exec_sstw(CoreType *cpu)
  * Format7
  */
 
-int op_exec_sthw(CoreType *cpu)
+int op_exec_sthw(TargetCoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;
@@ -150,7 +150,7 @@ int op_exec_sthw(CoreType *cpu)
 }
 
 
-int op_exec_stb(CoreType *cpu)
+int op_exec_stb(TargetCoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;

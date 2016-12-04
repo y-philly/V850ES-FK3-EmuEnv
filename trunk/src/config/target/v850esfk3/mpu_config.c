@@ -5,7 +5,7 @@
 
 #define MPU_ADDRESS_REGION_SIZE_INX_ROM		(1024U * 512U)
 #define MPU_ADDRESS_REGION_SIZE_INX_RAM		(1024U * 60U)
-#define MPU_ADDRESS_REGION_SIZE_INX_INTC	((6U * 2U) + 1U)
+#define MPU_ADDRESS_REGION_SIZE_INX_INTC	(0xFFFFF1FB - 0xFFFFF100)
 #define MPU_ADDRESS_REGION_SIZE_INX_SERIAL	(0xFFFFFA78 - 0xFFFFFA00)
 #define MPU_ADDRESS_REGION_SIZE_INX_COMM	(0xFFFFF590 - 0xFFFFF560)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH0		(1024U * 4U)
@@ -21,6 +21,7 @@ static uint8 memory_data_PH1[MPU_ADDRESS_REGION_SIZE_INX_PH1];
 
 extern MpuAddressRegionOperationType	serial_memory_operation;
 extern MpuAddressRegionOperationType	comm_memory_operation;
+extern MpuAddressRegionOperationType	intc_memory_operation;
 
 MpuAddressMapType mpu_address_map = {
 		.map = {
@@ -49,7 +50,7 @@ MpuAddressMapType mpu_address_map = {
 						.ops		= &default_memory_operation
 				},
 				/*
-				 * INDEX 2:DEVICE(割込みコントローラ：IMR0～IMR7)
+				 * INDEX 2:DEVICE(割込みコントローラ)
 				 */
 				{
 						.type		= DEVICE,
@@ -58,7 +59,7 @@ MpuAddressMapType mpu_address_map = {
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_INTC,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
 						.data		= memory_data_INTC,
-						.ops		= NULL	//TODO
+						.ops		= &intc_memory_operation
 				},
 				/*
 				 * SERIAL

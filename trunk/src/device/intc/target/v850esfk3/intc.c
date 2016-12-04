@@ -1,14 +1,36 @@
 #include <stdio.h>
 
 #include "intc.h"
-#include "bus.h"
+#include "inc/device.h"
 #include "std_cpu_ops.h"
 #include "cpu_common/cpu_ops.h"
+#include "mpu.h"
 
 IntcControlType intc_control;
+static MpuAddressRegionType *intc_region;
+
+static Std_ReturnType intc_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
+static Std_ReturnType intc_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
+static Std_ReturnType intc_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data);
+static Std_ReturnType intc_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data);
+static Std_ReturnType intc_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data);
+static Std_ReturnType intc_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data);
+static Std_ReturnType intc_get_pointer(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 **data);
+
+MpuAddressRegionOperationType	intc_memory_operation = {
+		.get_data8 		= 	intc_get_data8,
+		.get_data16		=	intc_get_data16,
+		.get_data32		=	intc_get_data32,
+
+		.put_data8 		= 	intc_put_data8,
+		.put_data16		=	intc_put_data16,
+		.put_data32		=	intc_put_data32,
+
+		.get_pointer	= 	intc_get_pointer,
+};
 
 
-void intc_init(CpuManagerType *cpu)
+void device_init_intc(DeviceType *device, MpuAddressRegionType *region)
 {
 	int i;
 	uint32 regaddr;
@@ -18,6 +40,7 @@ void intc_init(CpuManagerType *cpu)
 	uint8 *imr7;
 	uint8 *ispr;
 
+	intc_region = region;
 	/*
 	 * intc_controlの初期化
 	 */
@@ -47,7 +70,7 @@ void intc_init(CpuManagerType *cpu)
 	 */
 	for (i = 0; i < INTC_NUM; i++) {
 		regaddr = intc_regaddr_icn(i);
-		(void)bus_get_pointer(cpu->core_id, regaddr, (uint8**)&pregaddr);
+		(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (regaddr & intc_region->mask), (uint8**)&pregaddr);
 		xxIcn = (uint8*)pregaddr;
 
 		*xxIcn = 0x47;
@@ -56,42 +79,42 @@ void intc_init(CpuManagerType *cpu)
 	/*
 	 * IMR0-IMR7の初期化
 	 */
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR0, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR0 & intc_region->mask), (uint8**)&pregaddr);
 	imr0_6 = (uint16*)pregaddr;
 	*imr0_6 = 0xFFFF;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR1, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR1 & intc_region->mask), (uint8**)&pregaddr);
 	imr0_6 = (uint16*)pregaddr;
 	*imr0_6 = 0xFFFF;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR2, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR2 & intc_region->mask), (uint8**)&pregaddr);
 	imr0_6 = (uint16*)pregaddr;
 	*imr0_6 = 0xFFFF;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR3, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR3 & intc_region->mask), (uint8**)&pregaddr);
 	imr0_6 = (uint16*)pregaddr;
 	*imr0_6 = 0xFFFF;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR4, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR4 & intc_region->mask), (uint8**)&pregaddr);
 	imr0_6 = (uint16*)pregaddr;
 	*imr0_6 = 0xFFFF;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR5, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR5 & intc_region->mask), (uint8**)&pregaddr);
 	imr0_6 = (uint16*)pregaddr;
 	*imr0_6 = 0xFFFF;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR6, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR6 & intc_region->mask), (uint8**)&pregaddr);
 	imr0_6 = (uint16*)pregaddr;
 	*imr0_6 = 0xFFFF;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_IMR7, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_IMR7 & intc_region->mask), (uint8**)&pregaddr);
 	imr7 = (uint8*)pregaddr;
 	*imr7 = 0x1F;
 
 	/*
 	 * ISPRの初期化
 	 */
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_ISPR, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_ISPR & intc_region->mask), (uint8**)&pregaddr);
 	ispr = (uint8*)pregaddr;
 	*ispr = 0x00;
 
@@ -124,7 +147,8 @@ int is_masked(CpuManagerType *cpu, uint32 intno)
 	uint8 wdata;
 
 	regaddr = intc_regaddr_icn(intno);
-	(void)bus_get_pointer(cpu->core_id, regaddr, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (regaddr & intc_region->mask), (uint8**)&pregaddr);
+
 	xxIcn = (uint8*)pregaddr;
 
 	wdata = *xxIcn;
@@ -198,7 +222,8 @@ static void intc_raise(CpuManagerType *cpu, uint32 intno)
 	uint32 *pregaddr;
 	uint8 lvl;
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_ISPR, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_ISPR & intc_region->mask), (uint8**)&pregaddr);
+
 	ispr = (uint8*)pregaddr;
 
 	lvl = intc_control.is_waiting_lvl[intno];
@@ -255,7 +280,8 @@ int intc_raise_intr(CpuManagerType *cpu, uint32 intno)
 	uint8 lvl;
 
 	regaddr = intc_regaddr_icn(intno);
-	(void)bus_get_pointer(cpu->core_id, regaddr, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (regaddr & intc_region->mask), (uint8**)&pregaddr);
+
 	xxIcn = (uint8*)pregaddr;
 
 	/*
@@ -288,11 +314,13 @@ void intc_clr_currlvl_ispr(CpuManagerType *cpu)
 		return;
 	}
 
-	(void)bus_get_pointer(cpu->core_id, INTC_REG_ISPR, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (INTC_REG_ISPR & intc_region->mask), (uint8**)&pregaddr);
+
 	ispr = (uint8*)pregaddr;
 
 	regaddr = intc_regaddr_icn(intc_control.current_intno);
-	(void)bus_get_pointer(cpu->core_id, regaddr, (uint8**)&pregaddr);
+	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (regaddr & intc_region->mask), (uint8**)&pregaddr);
+
 	xxIcn = (uint8*)pregaddr;
 
 
@@ -485,7 +513,7 @@ static int get_imrno(uint32 regaddr, uint32**imraddr)
 	return imrno;
 }
 
-void intc_hook_update_reg8(CpuManagerType *cpu, uint32 regaddr, uint8 data)
+static void intc_hook_update_reg8(uint32 regaddr, uint8 data)
 {
 	int imrno;
 	uint32 *imraddr;
@@ -510,7 +538,8 @@ void intc_hook_update_reg8(CpuManagerType *cpu, uint32 regaddr, uint8 data)
 			continue;
 		}
 		regaddr32 = intc_regaddr_icn(intno);
-		(void)bus_get_pointer(cpu->core_id, regaddr32, (uint8**)&pregaddr32);
+		(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (regaddr32 & intc_region->mask), (uint8**)&pregaddr32);
+
 		xxICn = (uint8*)pregaddr32;
 		if (data & 1 << i) {
 			*xxICn |= (1 << 6);
@@ -524,7 +553,7 @@ void intc_hook_update_reg8(CpuManagerType *cpu, uint32 regaddr, uint8 data)
 	}
 	return;
 }
-void intc_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data)
+static void intc_hook_update_reg16(uint32 regaddr, uint16 data)
 {
 	int imrno;
 	uint32 *imraddr;
@@ -549,7 +578,8 @@ void intc_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data)
 			continue;
 		}
 		regaddr32 = intc_regaddr_icn(intno);
-		(void)bus_get_pointer(cpu->core_id, regaddr32, (uint8**)&pregaddr32);
+		(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_NONE, (regaddr32 & intc_region->mask), (uint8**)&pregaddr32);
+
 		xxICn = (uint8*)pregaddr32;
 		if (data & 1 << i) {
 			*xxICn |= (1 << 6);
@@ -561,5 +591,52 @@ void intc_hook_update_reg16(CpuManagerType *cpu, uint32 regaddr, uint16 data)
 		}
 	}
 	return;
+}
+
+
+static Std_ReturnType intc_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint8*)(&region->data[off]));
+	return STD_E_OK;
+}
+static Std_ReturnType intc_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint16*)(&region->data[off]));
+	return STD_E_OK;
+}
+static Std_ReturnType intc_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
+{
+	uint32 off = (addr - region->start);
+	*data = *((uint32*)(&region->data[off]));
+	return STD_E_OK;
+}
+static Std_ReturnType intc_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data)
+{
+	uint32 off = (addr - region->start);
+	intc_hook_update_reg8(addr, data);
+	*((uint8*)(&region->data[off])) = data;
+
+	return STD_E_OK;
+}
+static Std_ReturnType intc_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data)
+{
+	uint32 off = (addr - region->start);
+	intc_hook_update_reg16(addr, data);
+	*((uint16*)(&region->data[off])) = data;
+	return STD_E_OK;
+}
+static Std_ReturnType intc_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data)
+{
+	uint32 off = (addr - region->start);
+	*((uint32*)(&region->data[off])) = data;
+	return STD_E_OK;
+}
+static Std_ReturnType intc_get_pointer(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 **data)
+{
+	uint32 off = (addr - region->start);
+	*data = &(region->data[off]);
+	return STD_E_OK;
 }
 

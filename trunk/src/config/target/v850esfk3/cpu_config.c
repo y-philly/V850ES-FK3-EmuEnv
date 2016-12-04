@@ -12,7 +12,7 @@ CpuType virtual_cpu = {
 				 * INDEX 0
 				 */
 				{
-						.core.core_id	=	CPU_CONFIG_CORE_ID_NONE,
+						.core.core_id	=	CPU_CONFIG_CORE_ID_0,
 				}
 		},
 };

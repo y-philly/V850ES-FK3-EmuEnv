@@ -18,7 +18,7 @@ typedef struct {
 static TimerMDeviceType TimerMDevice;
 static MpuAddressRegionType *timer_m_region;
 
-void device_init_timer_m(DeviceType *device, MpuAddressRegionType *region)
+void device_init_timer_m(MpuAddressRegionType *region)
 {
 	timer_m_region = region;
 
@@ -29,11 +29,10 @@ void device_init_timer_m(DeviceType *device, MpuAddressRegionType *region)
 	TimerMDevice.intno = 30;
 	TimerMDevice.fd = 4;
 
-	device->dev.timer_m = &TimerMDevice;
 	return;
 }
 
-static int device_timer_do_update(DeviceType *device)
+static int device_timer_do_update(void)
 {
 	TimerMDeviceType *timer = &TimerMDevice;
 	uint8 data8;
@@ -80,13 +79,13 @@ static int device_timer_do_update(DeviceType *device)
 }
 
 
-void device_supply_clock_timer_m(DeviceType *device)
+void device_supply_clock_timer_m(DeviceClockType *dev_clock)
 {
-	if ((device->clock % TimerMDevice.fd) != 0) {
+	if ((dev_clock->clock % TimerMDevice.fd) != 0) {
 			return;
 	}
 
-	if (device_timer_do_update(device) == TRUE) {
+	if (device_timer_do_update() == TRUE) {
 		device_raise_int(TimerMDevice.intno);
 	}
 	return;

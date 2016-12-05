@@ -5,40 +5,40 @@
 
 #include <stdio.h>
 
-void device_init(CpuType *cpu, DeviceType *device)
+void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 {
-	device->clock = 0;
-	device->intclock = 0;
+	dev_clock->clock = 0;
+	dev_clock->intclock = 0;
 	device_init_intc(cpu, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
-	device_init_timer(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
-	device_init_timer_m(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
-	device_init_serial(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
-	device_init_can(device,  &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);
-	device_init_adc(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
-	//device_init_wdg(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
-	device_init_comm(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	device_init_timer(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	device_init_timer_m(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	device_init_serial(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
+	device_init_can( &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);
+	device_init_adc(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	//device_init_wdg(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	device_init_comm(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 
 	return;
 }
 
-void device_supply_clock(DeviceType *device)
+void device_supply_clock(DeviceClockType *dev_clock)
 {
-	device->clock++;
+	dev_clock->clock++;
 	if (intc_control.current_intno != -1) {
-		device->intclock++;
+		dev_clock->intclock++;
 	}
 
-	device_supply_clock_timer(device);
-	device_supply_clock_timer_m(device);
-	device_supply_clock_serial(device);
-	device_supply_clock_can(device);
-	device_supply_clock_adc(device);
-	//device_supply_clock_wdg(device);
-	device_supply_clock_comm(device);
+	device_supply_clock_timer(dev_clock);
+	device_supply_clock_timer_m(dev_clock);
+	device_supply_clock_serial(dev_clock);
+	device_supply_clock_can(dev_clock);
+	device_supply_clock_adc(dev_clock);
+	//device_supply_clock_wdg(dev_clock);
+	device_supply_clock_comm(dev_clock);
 	return;
 }
 
-void device_print_clock(DeviceType *device)
+void device_print_clock(DeviceClockType *device)
 {
 	printf("clock = cpu:%I64u intc:%I64u\n", device->clock, device->intclock);
 	return;

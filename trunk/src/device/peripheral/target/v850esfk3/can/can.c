@@ -240,13 +240,12 @@ typedef struct {
 typedef struct {
 	CanDeviceModuleType module;
 	DeviceCanOpType *ops;
-	DeviceType *device;
 } CanDeviceType;
 
 static CanDeviceType CanDevice;
 static MpuAddressRegionType *can_region;
 
-void device_init_can(DeviceType *device, MpuAddressRegionType *region)
+void device_init_can(MpuAddressRegionType *region)
 {
 	uint32 msg_id;
 	uint32* addr;
@@ -469,7 +468,7 @@ static bool get_highest_prio_snd_msg(uint32 channel, uint32 *msg_idp)
 	return TRUE;
 }
 
-static void send_can_data(DeviceType *device, uint32 channel,  uint32 msg_id)
+static void send_can_data(uint32 channel,  uint32 msg_id)
 {
 	uint8 dlc = *CanDevice.module.channel[channel].msg[msg_id].dlc;
 	uint32 canid = CanDevice.module.channel[channel].msg[msg_id].canid;
@@ -482,7 +481,7 @@ static void send_can_data(DeviceType *device, uint32 channel,  uint32 msg_id)
 	return;
 }
 
-static void device_supply_clock_can_snd(DeviceType *device)
+static void device_supply_clock_can_snd(DeviceClockType *dev_clock)
 {
 	uint32 msg_id;
 
@@ -492,7 +491,7 @@ static void device_supply_clock_can_snd(DeviceType *device)
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].snd_cnt++;
 
 		if (CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].snd_cnt >= CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_wait_time) {
-			send_can_data(device, CAN_CHANNEL_ID_1, msg_id);
+			send_can_data(CAN_CHANNEL_ID_1, msg_id);
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].snd_cnt = 0U;
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_state = CAN_DEVICE_CHANNEL_STATE_NONE;
 		}
@@ -513,7 +512,7 @@ static void device_supply_clock_can_snd(DeviceType *device)
 	CanDevice.module.channel[CAN_CHANNEL_ID_1].snd_state = CAN_DEVICE_CHANNEL_STATE_DOING;
 	return;
 }
-static void recv_can_data_start(DeviceType *device, uint32 channel,  uint32 msg_id)
+static void recv_can_data_start(uint32 channel,  uint32 msg_id)
 {
 	//printf("recv_can_data_start:ch=%u msg_id=%u\n", channel, msg_id);
 	//set DN
@@ -523,7 +522,7 @@ static void recv_can_data_start(DeviceType *device, uint32 channel,  uint32 msg_
 
 	return;
 }
-static void recv_can_data_end(DeviceType *device, uint32 channel,  uint32 msg_id)
+static void recv_can_data_end(uint32 channel,  uint32 msg_id)
 {
 	uint8 i;
 	//printf("recv_can_data_end\n");
@@ -544,7 +543,7 @@ static void recv_can_data_end(DeviceType *device, uint32 channel,  uint32 msg_id
 	return;
 }
 
-static void recv_can_data_intr(DeviceType *device, uint32 channel,  uint32 msg_id)
+static void recv_can_data_intr(uint32 channel,  uint32 msg_id)
 {
 	uint16 data;
 	//printf("recv_can_data_intr:enter\n");
@@ -638,7 +637,7 @@ static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_can
 /*
  * 複数のメッセージ同時受信は未サポート
  */
-static void device_supply_clock_can_rcv(DeviceType *device)
+static void device_supply_clock_can_rcv(DeviceClockType *dev_clock)
 {
 	uint32 msg_id;
 	bool has_recv = FALSE;
@@ -656,7 +655,7 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 		CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].rcv_cnt++;
 
 		if (CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].rcv_cnt >= CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_wait_time) {
-			recv_can_data_end(device, CAN_CHANNEL_ID_1, msg_id);
+			recv_can_data_end(CAN_CHANNEL_ID_1, msg_id);
 
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].msg[msg_id].rcv_cnt = 0U;
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state = CAN_DEVICE_CHANNEL_STATE_INTR_WAITING;
@@ -673,7 +672,7 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state = CAN_DEVICE_CHANNEL_STATE_NONE;
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_wait_time = 0U;
 
-			recv_can_data_intr(device, CAN_CHANNEL_ID_1, msg_id);
+			recv_can_data_intr(CAN_CHANNEL_ID_1, msg_id);
 		}
 		return;
 	}
@@ -705,21 +704,21 @@ static void device_supply_clock_can_rcv(DeviceType *device)
 	CanDevice.module.channel[channel].rcv_wait_time = (CAN_DATA_RCV_CLOCKS_PER_BYTE_512KBPS * dlc);
 	CanDevice.module.channel[channel].rcv_state = CAN_DEVICE_CHANNEL_STATE_DOING;
 
-	recv_can_data_start(device, channel, msg_id);
+	recv_can_data_start(channel, msg_id);
 	return;
 }
 
-void device_supply_clock_can(DeviceType *device)
+void device_supply_clock_can(DeviceClockType *dev_clock)
 {
 	/*
 	 * 送信処理
 	 */
-	device_supply_clock_can_snd(device);
+	device_supply_clock_can_snd(dev_clock);
 
 	/*
 	 * 受信処理
 	 */
-	device_supply_clock_can_rcv(device);
+	device_supply_clock_can_rcv(dev_clock);
 
 	return;
 }

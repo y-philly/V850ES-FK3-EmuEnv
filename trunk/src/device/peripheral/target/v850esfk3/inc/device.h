@@ -7,73 +7,43 @@
 #include "mpu.h"
 
 typedef struct {
-	void *cpu;
 	uint64 clock;
 	uint64 intclock;//割込み処理で消費している時間
-
-	struct {
-		/*
-		 * timer object
-		 */
-		void *timer;
-
-		/*
-		 * timer_m object
-		 */
-		void *timer_m;
-
-		/*
-		 * serial object
-		 */
-		void *serial;
-		/*
-		 * can object
-		 */
-		void *can;
-		/*
-		 * adc object
-		 */
-		void *adc;
-		/*
-		 * wdg object
-		 */
-		void *wdg;
-	} dev;
-} DeviceType;
+} DeviceClockType;
 
 
 
 /*
  * デバイス初期化関数
  */
-extern void device_init(CpuType *cpu, DeviceType *device);
+extern void device_init(CpuType *cpu, DeviceClockType *dev_clock);
 extern void device_init_intc(CpuType *cpu, MpuAddressRegionType *region);
-extern void device_init_timer(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_timer_m(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_serial(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_can(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_adc(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_wdg(DeviceType *device, MpuAddressRegionType *region);
-extern void device_init_comm(DeviceType *device, MpuAddressRegionType *region);
+extern void device_init_timer(MpuAddressRegionType *region);
+extern void device_init_timer_m(MpuAddressRegionType *region);
+extern void device_init_serial(MpuAddressRegionType *region);
+extern void device_init_can(MpuAddressRegionType *region);
+extern void device_init_adc(MpuAddressRegionType *region);
+extern void device_init_wdg(MpuAddressRegionType *region);
+extern void device_init_comm(MpuAddressRegionType *region);
 
 /*
  * デバイスクロック共有
  */
-extern void device_supply_clock(DeviceType *device);
-extern void device_supply_clock_timer(DeviceType *device);
-extern void device_supply_clock_timer_m(DeviceType *device);
-extern void device_supply_clock_serial(DeviceType *device);
-extern void device_supply_clock_can(DeviceType *device);
-extern void device_supply_clock_adc(DeviceType *device);
-extern void device_supply_clock_wdg(DeviceType *device);
-extern void device_supply_clock_comm(DeviceType *device);
+extern void device_supply_clock(DeviceClockType *device);
+extern void device_supply_clock_timer(DeviceClockType *device);
+extern void device_supply_clock_timer_m(DeviceClockType *device);
+extern void device_supply_clock_serial(DeviceClockType *device);
+extern void device_supply_clock_can(DeviceClockType *device);
+extern void device_supply_clock_adc(DeviceClockType *device);
+extern void device_supply_clock_wdg(DeviceClockType *device);
+extern void device_supply_clock_comm(DeviceClockType *device);
 
 extern int CpuEmuCommDevisProc1;
 
 /*
  * デバイスクロック参照
  */
-extern void device_print_clock(DeviceType *device);
+extern void device_print_clock(DeviceClockType *device);
 
 /*
  * 割込み関数

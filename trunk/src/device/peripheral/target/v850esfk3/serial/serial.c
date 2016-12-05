@@ -14,7 +14,6 @@ typedef struct {
 	bool   is_send_data;
 	uint8 send_data;
 	DeviceSerialOpType *ops;
-	DeviceType *device;
 } SerialDeviceType;
 
 static SerialDeviceType SerialDevice[UDnChannelNum];
@@ -45,7 +44,7 @@ MpuAddressRegionOperationType	serial_memory_operation = {
 #define CLOCK_PER_SEC	10000000U	/* 10MHz */
 static MpuAddressRegionType *serial_region;
 
-void device_init_serial(DeviceType *device, MpuAddressRegionType *region)
+void device_init_serial(MpuAddressRegionType *region)
 {
 	int i = 0;
 
@@ -59,14 +58,12 @@ void device_init_serial(DeviceType *device, MpuAddressRegionType *region)
 //		SerialDevice[i].count_base = CLOCK_PER_SEC / (SerialDevice[i].bitrate / 8);
 		SerialDevice[i].count_base = 1;
 		SerialDevice[i].ops = NULL;
-		SerialDevice[i].device = device;
 	}
-	device->dev.serial = &SerialDevice;
 	serial_region = region;
 
 	return;
 }
-void device_do_serial(DeviceType *device, SerialDeviceType *serial)
+void device_do_serial(SerialDeviceType *serial)
 {
 	uint8 data;
 	bool ret;
@@ -107,15 +104,15 @@ void device_do_serial(DeviceType *device, SerialDeviceType *serial)
 	return;
 }
 
-void device_supply_clock_serial(DeviceType *device)
+void device_supply_clock_serial(DeviceClockType *dev_clock)
 {
 	int i = 0;
 
 	for (i = 0; i < UDnChannelNum; i++) {
-		if ((device->clock % SerialDevice[i].fd) != 0) {
+		if ((dev_clock->clock % SerialDevice[i].fd) != 0) {
 			continue;
 		}
-		device_do_serial(device, &SerialDevice[i]);
+		device_do_serial(&SerialDevice[i]);
 	}
 	return;
 }

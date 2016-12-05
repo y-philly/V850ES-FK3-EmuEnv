@@ -10,7 +10,7 @@ typedef struct {
 static WdgDeviceType WdgDevice;
 static MpuAddressRegionType *wdg_region;
 
-void device_init_wdg(DeviceType *device, MpuAddressRegionType *region)
+void device_init_wdg(DeviceClockType *device, MpuAddressRegionType *region)
 {
 	wdg_region = region;
 
@@ -20,7 +20,7 @@ void device_init_wdg(DeviceType *device, MpuAddressRegionType *region)
 	return;
 }
 
-void device_supply_clock_wdg(DeviceType *device)
+void device_supply_clock_wdg(DeviceClockType *device)
 {
 	uint16 reg16;
 	/*

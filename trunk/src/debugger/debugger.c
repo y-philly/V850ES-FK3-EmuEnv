@@ -39,7 +39,7 @@ typedef struct {
 	uint32 				break_points[SOFTWARE_BREAK_POINTS_NUM];
 	DbgModeType 		cmd_mode;
 	DbgCmdType 			last_cmd;
-	DeviceType		 	*device;
+	DeviceClockType		 	*device;
 } DebugInfoType;
 
 static DebugInfoType dbg_info;
@@ -100,7 +100,7 @@ typedef struct {
 
 static CpuProfileType *CpuProfile;
 
-void debug_init(TargetCoreType *cpu, DeviceType *device)
+void debug_init(TargetCoreType *cpu, DeviceClockType *device)
 {
 	dbg_info.reg = cpu;
 	dbg_info.break_cnt = 1;

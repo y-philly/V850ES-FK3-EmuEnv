@@ -48,7 +48,6 @@ typedef struct {
 	CpuEmuCommFileType tx_fifo;
 	uint32 count;
 	uint32 sync_count;
-	DeviceType *device;
 } CpuEmuCommDevType;
 
 static CpuEmuCommDevType CpuEmuCommDev;
@@ -62,7 +61,7 @@ static void rx_fifo_read_status(MpuAddressRegionType *region, uint32 *data);
 int CpuEmuCommDevisProc1;
 static MpuAddressRegionType *comm_region;
 
-void device_init_comm(DeviceType *device, MpuAddressRegionType *region)
+void device_init_comm(MpuAddressRegionType *region)
 {
 	comm_region = region;
 
@@ -80,14 +79,12 @@ void device_init_comm(DeviceType *device, MpuAddressRegionType *region)
 
 	CpuEmuCommDev.sync_count = SYNC_COUNT;
 
-	CpuEmuCommDev.device = device;
-
 	tx_fifo_init();
 	return;
 }
 
 
-void device_supply_clock_comm(DeviceType *device)
+void device_supply_clock_comm(DeviceClockType *device)
 {
 	CpuEmuCommDev.count++;
 	if (CpuEmuCommDev.count >= CpuEmuCommDev.sync_count) {

@@ -23,7 +23,7 @@ typedef struct {
 static TimerDeviceType TimerDevice[TAAnChannelNum];
 static MpuAddressRegionType *timer_region;
 
-void device_init_timer(DeviceType *device, MpuAddressRegionType *region)
+void device_init_timer(MpuAddressRegionType *region)
 {
 	int i = 0;
 	uint16 base;
@@ -51,14 +51,13 @@ void device_init_timer(DeviceType *device, MpuAddressRegionType *region)
 		TimerDevice[i].compare1_intno = base + 2;
 	}
 
-	device->dev.timer = &TimerDevice;
 	return;
 }
 
-static void device_timer_do_mode(DeviceType *device, int ch)
+static void device_timer_do_mode(DeviceClockType *device, int ch)
 {
 	TimerModeType org;
-	TimerDeviceType *timer = &((TimerDeviceType*)device->dev.timer)[ch];
+	TimerDeviceType *timer = &(TimerDevice[ch]);
 	uint8 data;
 	uint16 data16;
 
@@ -102,9 +101,9 @@ static void device_timer_do_mode(DeviceType *device, int ch)
 	 */
 	return;
 }
-static void device_timer_do_update(DeviceType *device, int ch)
+static void device_timer_do_update(DeviceClockType *device, int ch)
 {
-	TimerDeviceType *timer = &((TimerDeviceType*)device->dev.timer)[ch];
+	TimerDeviceType *timer = &(TimerDevice[ch]);
 
 	if (timer->mode == TIMER_MODE_STOP) {
 		return;
@@ -129,9 +128,9 @@ static void device_timer_do_update(DeviceType *device, int ch)
 
 	return;
 }
-static void device_timer_do_interrupt(DeviceType *device, int ch)
+static void device_timer_do_interrupt(DeviceClockType *device, int ch)
 {
-	TimerDeviceType *timer = &((TimerDeviceType*)device->dev.timer)[ch];
+	TimerDeviceType *timer = &(TimerDevice[ch]);
 
 	if (ch != 2) {
 		return;
@@ -153,7 +152,7 @@ static void device_timer_do_interrupt(DeviceType *device, int ch)
 	return;
 }
 
-void device_supply_clock_timer(DeviceType *device)
+void device_supply_clock_timer(DeviceClockType *device)
 {
 	int ch;
 

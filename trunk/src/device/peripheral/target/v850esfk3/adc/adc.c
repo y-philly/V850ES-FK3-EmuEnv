@@ -48,7 +48,7 @@ static uint16 adc_ada0_data[ADC_ADA0_CHANNEL_NUM];
 static uint16 adc_ada1_data[ADC_ADA1_CHANNEL_NUM];
 static MpuAddressRegionType *adc_region;
 
-void device_init_adc(DeviceType *device, MpuAddressRegionType *region)
+void device_init_adc(MpuAddressRegionType *region)
 {
 	int i;
 	int cntl;
@@ -57,7 +57,6 @@ void device_init_adc(DeviceType *device, MpuAddressRegionType *region)
 
 	//printf("AD init\n");
 
-	device->dev.adc = &AdcDevice;
 	AdcDevice[MPU_ADC_ADA0].adc_data = adc_ada0_data;
 	AdcDevice[MPU_ADC_ADA1].adc_data = adc_ada1_data;
 	AdcDevice[MPU_ADC_ADA0].adc_data_num = ADC_ADA0_CHANNEL_NUM;
@@ -88,7 +87,7 @@ void device_adc_register_ops(void *adc, DeviceAdcOpType *ops)
 	return;
 }
 
-void device_supply_clock_adc(DeviceType *device)
+void device_supply_clock_adc(DeviceClockType *device)
 {
 	int i;
 	uint8 data;

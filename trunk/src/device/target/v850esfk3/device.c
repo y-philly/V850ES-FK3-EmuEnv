@@ -1,14 +1,30 @@
 #include "device.h"
 #include "intc.h"
 #include "intc_ops.h"
-#include "bus.h"
 
 #include <stdio.h>
+
+static void device_init_clock(MpuAddressRegionType *region)
+{
+	/*
+	 * OSTC
+	 */
+	(void)device_io_write8(region, 0xFFFFF6C2, 0x01);
+
+	/*
+	 * ロック・レジスタ（ LOCKR）
+	 */
+	(void)device_io_write8(region, 0xFFFFF824, 0x00);
+
+	return;
+}
 
 void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 {
 	dev_clock->clock = 0;
 	dev_clock->intclock = 0;
+
+	device_init_clock(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_intc(cpu, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
 	device_init_timer(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_timer_m(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);

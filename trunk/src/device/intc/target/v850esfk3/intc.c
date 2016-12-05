@@ -9,6 +9,8 @@
 IntcControlType intc_control;
 static MpuAddressRegionType *intc_region;
 
+static void intc_raise_pending_intr(TargetCoreType *cpu);
+
 static Std_ReturnType intc_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
 static Std_ReturnType intc_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
 static Std_ReturnType intc_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data);
@@ -127,6 +129,7 @@ void device_supply_clock_intc(DeviceClockType *dev_clock)
 	if (intc_control.current_intno != -1) {
 		dev_clock->intclock++;
 	}
+	intc_raise_pending_intr(&intc_control.cpu->cores[CPU_CONFIG_CORE_ID_0].core);
 
 	return;
 }
@@ -411,7 +414,7 @@ static void raise_nmi(TargetCoreType *cpu)
  * 現在実行中およびペンディング中の割込みを全てチェックして，
  * 最高優先度のものを実行する．
  */
-int intc_raise_pending_intr(TargetCoreType *cpu)
+static void intc_raise_pending_intr(TargetCoreType *cpu)
 {
 	/*
 	 * INTWDT2割込みチェック
@@ -421,10 +424,10 @@ int intc_raise_pending_intr(TargetCoreType *cpu)
 			/*
 			 * 新たな要求受付は禁止するため処理終了．
 			 */
-			return 0;
+			return;
 		}
 		raise_intwdt2(cpu);
-		return 0;
+		return;
 	}
 	/*
 	 * NMI割込みチェック
@@ -434,7 +437,7 @@ int intc_raise_pending_intr(TargetCoreType *cpu)
 		/*
 		 * NMI割込みありの場合は，マスカブル割り込み受付は禁止するため処理終了．
 		 */
-		return 0;
+		return;
 	}
 
 	/*
@@ -445,15 +448,16 @@ int intc_raise_pending_intr(TargetCoreType *cpu)
 	maxlvl_intno = get_maxpri_itno(cpu);
 
 	if (maxlvl_intno < 0) {
-		return 0;
+		return;
 	}
 	if (maxlvl_intno == intc_control.current_intno) {
-		return 0;
+		return;
 	}
 
 	intc_raise(cpu, maxlvl_intno);
-	return 0;
+	return;
 }
+#if 0
 bool intc_has_pending_intr(TargetCoreType *cpu)
 {
 	int maxlvl_intno;
@@ -465,6 +469,7 @@ bool intc_has_pending_intr(TargetCoreType *cpu)
 	}
 	return TRUE;
 }
+#endif
 
 int intc_raise_nmi(TargetCoreType *cpu, uint32 nmino)
 {

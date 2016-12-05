@@ -1,5 +1,4 @@
 #include "inc/can.h"
-#include "intc.h"
 #include "intc_ops.h"
 #include <stdio.h>
 #include <stdlib.h>

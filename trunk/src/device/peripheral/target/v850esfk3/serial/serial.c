@@ -1,5 +1,4 @@
 #include "inc/serial.h"
-#include "intc.h"
 #include "intc_ops.h"
 #include "std_errno.h"
 #include "mpu_types.h"

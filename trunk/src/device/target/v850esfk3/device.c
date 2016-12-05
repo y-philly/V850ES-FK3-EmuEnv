@@ -1,5 +1,5 @@
 #include "device.h"
-#include "intc.h"
+#include "intc_ops.h"
 #include "intc_ops.h"
 
 #include <stdio.h>
@@ -85,9 +85,6 @@ int device_io_read32(MpuAddressRegionType *region, uint32 addr, uint32 *data)
 {
 	return region->ops->get_data32(region, CPU_CONFIG_CORE_ID_0, (addr & region->mask), data);
 }
-
-
-#include "intc.h"
 
 void device_raise_int(uint16 intno)
 {

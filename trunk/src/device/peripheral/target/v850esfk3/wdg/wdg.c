@@ -1,5 +1,5 @@
 #include "device/inc/wdg.h"
-#include "intc.h"
+#include "intc_ops.h"
 #include <stdio.h>
 
 typedef struct {

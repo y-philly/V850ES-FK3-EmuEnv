@@ -121,6 +121,15 @@ void device_init_intc(CpuType *cpu, MpuAddressRegionType *region)
 
 	return;
 }
+void device_supply_clock_intc(DeviceClockType *dev_clock)
+{
+	dev_clock->clock++;
+	if (intc_control.current_intno != -1) {
+		dev_clock->intclock++;
+	}
+
+	return;
+}
 static void set_wait_intno(int intno, uint32 lvl)
 {
 	if (intc_control.is_waiting_lvl[intno] == INTC_NUM_INTLVL) {

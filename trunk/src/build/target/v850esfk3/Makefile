@@ -15,6 +15,7 @@ VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/timer_m
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/serial
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/comm
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/can
+VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
 
 CFLAGS	:=
 

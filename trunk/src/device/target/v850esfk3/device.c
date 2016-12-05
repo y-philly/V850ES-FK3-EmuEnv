@@ -23,11 +23,8 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 
 void device_supply_clock(DeviceClockType *dev_clock)
 {
-	dev_clock->clock++;
-	if (intc_control.current_intno != -1) {
-		dev_clock->intclock++;
-	}
 
+	device_supply_clock_intc(dev_clock);
 	device_supply_clock_timer(dev_clock);
 	device_supply_clock_timer_m(dev_clock);
 	device_supply_clock_serial(dev_clock);

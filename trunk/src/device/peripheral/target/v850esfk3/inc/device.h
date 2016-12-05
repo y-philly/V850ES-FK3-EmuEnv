@@ -5,18 +5,11 @@
 #include "cpu.h"
 #include "mpu_config.h"
 #include "mpu.h"
-
-typedef struct {
-	uint64 clock;
-	uint64 intclock;//割込み処理で消費している時間
-} DeviceClockType;
-
-
+#include "std_device_ops.h"
 
 /*
  * デバイス初期化関数
  */
-extern void device_init(CpuType *cpu, DeviceClockType *dev_clock);
 extern void device_init_intc(CpuType *cpu, MpuAddressRegionType *region);
 extern void device_init_timer(MpuAddressRegionType *region);
 extern void device_init_timer_m(MpuAddressRegionType *region);
@@ -27,9 +20,9 @@ extern void device_init_wdg(MpuAddressRegionType *region);
 extern void device_init_comm(MpuAddressRegionType *region);
 
 /*
- * デバイスクロック共有
+ * デバイスクロック供給
  */
-extern void device_supply_clock(DeviceClockType *dev_clock);
+extern void device_supply_clock_intc(DeviceClockType *dev_clock);
 extern void device_supply_clock_timer(DeviceClockType *dev_clock);
 extern void device_supply_clock_timer_m(DeviceClockType *dev_clock);
 extern void device_supply_clock_serial(DeviceClockType *dev_clock);
@@ -40,10 +33,6 @@ extern void device_supply_clock_comm(DeviceClockType *dev_clock);
 
 extern int CpuEmuCommDevisProc1;
 
-/*
- * デバイスクロック参照
- */
-extern void device_print_clock(DeviceClockType *dev_clock);
 
 /*
  * 割込み関数

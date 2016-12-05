@@ -137,7 +137,7 @@ void device_supply_clock_adc(DeviceType *device)
 		(void)device_io_write8(adc_region, MPU_ADC_ADDR_AdAnM0(cntl), data);
 		AdcDevice[cntl].cnt = 0;
 
-		device_raise_int(device, AdcDevice[cntl].intno);
+		device_raise_int(AdcDevice[cntl].intno);
 	}
 	return;
 }

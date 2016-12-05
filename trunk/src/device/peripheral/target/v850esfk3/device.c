@@ -5,11 +5,11 @@
 
 #include <stdio.h>
 
-void device_init(DeviceType *device)
+void device_init(CpuType *cpu, DeviceType *device)
 {
 	device->clock = 0;
 	device->intclock = 0;
-	device_init_intc(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
+	device_init_intc(cpu, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
 	device_init_timer(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_timer_m(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_serial(device, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
@@ -76,9 +76,9 @@ int device_io_read32(MpuAddressRegionType *region, uint32 addr, uint32 *data)
 
 #include "intc.h"
 
-void device_raise_int(DeviceType *device, uint16 intno)
+void device_raise_int(uint16 intno)
 {
-	intc_raise_intr(device->cpu, intno);
+	intc_raise_intr(intno);
 }
 
 

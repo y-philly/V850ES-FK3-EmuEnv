@@ -139,6 +139,7 @@ typedef struct {
 } NmiIntcStatusType;
 
 typedef struct {
+	CpuType					*cpu;
 	NmiIntcStatusType 		nmi;
 	/*
 	 * 現在実行中の割り込み番号

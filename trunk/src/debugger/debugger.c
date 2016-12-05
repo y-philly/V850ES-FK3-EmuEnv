@@ -178,7 +178,7 @@ static int set_break(DebugInfoType *dbg, uint32 break_addr)
 static int set_intr(DebugInfoType *dbg, uint32 intno)
 {
 	printf("INT:%d\n", intno);
-	return intc_raise_intr(dbg->reg, intno);
+	return intc_raise_intr(intno);
 }
 
 

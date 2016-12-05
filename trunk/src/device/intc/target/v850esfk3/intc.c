@@ -30,7 +30,7 @@ MpuAddressRegionOperationType	intc_memory_operation = {
 };
 
 
-void device_init_intc(DeviceType *device, MpuAddressRegionType *region)
+void device_init_intc(CpuType *cpu, MpuAddressRegionType *region)
 {
 	int i;
 	uint32 regaddr;
@@ -40,6 +40,7 @@ void device_init_intc(DeviceType *device, MpuAddressRegionType *region)
 	uint8 *imr7;
 	uint8 *ispr;
 
+	intc_control.cpu = cpu;
 	intc_region = region;
 	/*
 	 * intc_controlの初期化
@@ -271,7 +272,7 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 	return;
 }
 
-int intc_raise_intr(TargetCoreType *cpu, uint32 intno)
+int intc_raise_intr(uint32 intno)
 {
 	uint32 regaddr;
 	uint32 *pregaddr;
@@ -297,7 +298,7 @@ int intc_raise_intr(TargetCoreType *cpu, uint32 intno)
 	 */
 	set_wait_intno(intno, lvl);
 
-	cpu->is_halt = FALSE;
+	intc_control.cpu->cores[CPU_CONFIG_CORE_ID_0].core.is_halt = FALSE;
 
 	return 0;
 }

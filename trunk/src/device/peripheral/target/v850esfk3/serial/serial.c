@@ -88,7 +88,7 @@ void device_do_serial(DeviceType *device, SerialDeviceType *serial)
 			//受信データをセットする．
 			(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
 			//受信割込みを上げる
-			device_raise_int(device, INTNO_INTUD0R);
+			device_raise_int(INTNO_INTUD0R);
 		}
 	}
 
@@ -99,7 +99,7 @@ void device_do_serial(DeviceType *device, SerialDeviceType *serial)
 		ret = serial->ops->send(serial->id, serial->send_data);
 		//送信割込みを上げる
 		serial_set_str(FALSE);
-		device_raise_int(device, INTNO_INTUD0T);
+		device_raise_int(INTNO_INTUD0T);
 		serial->is_send_data = FALSE;
 	}
 

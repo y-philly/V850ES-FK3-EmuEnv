@@ -568,7 +568,7 @@ static void recv_can_data_intr(DeviceType *device, uint32 channel,  uint32 msg_i
 	*(CanDevice.module.channel[channel].ints) |= (1U << CAN_READ_C1INTS_CINTS1);
 
 	//受信割込みを上げる
-	device_raise_int(device, INTNO_INTC1REC);
+	device_raise_int(INTNO_INTC1REC);
 
 	return;
 }

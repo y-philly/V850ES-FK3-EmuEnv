@@ -87,7 +87,7 @@ void device_supply_clock_timer_m(DeviceType *device)
 	}
 
 	if (device_timer_do_update(device) == TRUE) {
-		device_raise_int(device, TimerMDevice.intno);
+		device_raise_int(TimerMDevice.intno);
 	}
 	return;
 }

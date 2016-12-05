@@ -140,7 +140,7 @@ static void device_timer_do_interrupt(DeviceType *device, int ch)
 	if (timer->raise_int_compare0 == TRUE) {
 		//printf("%d:device_timer_do_interrupt(%d):compare0=%d intno=%d cnt=%d\n", device->clock, ch, timer->compare0, timer->compare0_intno, timer->cnt);
 		//fflush(stdout);
-		device_raise_int(device, timer->compare0_intno);
+		device_raise_int(timer->compare0_intno);
 		timer->raise_int_compare0 = FALSE;
 	}
 	if (timer->raise_int_compare1 == TRUE) {

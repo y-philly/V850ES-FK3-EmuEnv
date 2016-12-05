@@ -2,6 +2,7 @@
 #define _DEVICE_H_
 
 #include "std_types.h"
+#include "cpu.h"
 #include "mpu_config.h"
 #include "mpu.h"
 
@@ -45,8 +46,8 @@ typedef struct {
 /*
  * デバイス初期化関数
  */
-extern void device_init(DeviceType *device);
-extern void device_init_intc(DeviceType *device, MpuAddressRegionType *region);
+extern void device_init(CpuType *cpu, DeviceType *device);
+extern void device_init_intc(CpuType *cpu, MpuAddressRegionType *region);
 extern void device_init_timer(DeviceType *device, MpuAddressRegionType *region);
 extern void device_init_timer_m(DeviceType *device, MpuAddressRegionType *region);
 extern void device_init_serial(DeviceType *device, MpuAddressRegionType *region);
@@ -77,7 +78,7 @@ extern void device_print_clock(DeviceType *device);
 /*
  * 割込み関数
  */
-extern void device_raise_int(DeviceType *device, uint16 intno);
+extern void device_raise_int(uint16 intno);
 
 /*
  * メモリアクセス関数

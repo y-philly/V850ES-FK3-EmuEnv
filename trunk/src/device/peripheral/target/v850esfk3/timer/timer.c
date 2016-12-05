@@ -63,7 +63,7 @@ static void device_timer_do_mode(DeviceType *device, int ch)
 	uint16 data16;
 
 	org = timer->mode;
-	(void)device_io_read8(device, TAAnCTL0(ch), &data);
+	(void)device_io_read8(timer_region, TAAnCTL0(ch), &data);
 	if ((data & (1 << 7)) == (1 << 7)) {
 		timer->cnt = 0;
 		timer->mode = TIMER_MODE_RUN;
@@ -71,14 +71,14 @@ static void device_timer_do_mode(DeviceType *device, int ch)
 	else {
 		timer->mode = TIMER_MODE_STOP;
 		timer->cnt = 0;
-		(void)device_io_write16(device, TAAnCNT(ch), 0);
+		(void)device_io_write16(timer_region, TAAnCNT(ch), 0);
 	}
 
 	/*
 	 * コンペア値の取得
 	 */
-	(void)device_io_read16(device, TAAnCCR0(ch), &timer->compare0);
-	(void)device_io_read16(device, TAAnCCR1(ch), &timer->compare1);
+	(void)device_io_read16(timer_region, TAAnCCR0(ch), &timer->compare0);
+	(void)device_io_read16(timer_region, TAAnCCR1(ch), &timer->compare1);
 
 #if 0
 	if (ch == 6) {
@@ -91,7 +91,7 @@ static void device_timer_do_mode(DeviceType *device, int ch)
 	/*
 	 * カウンタ値の取得
 	 */
-	(void)device_io_read16(device, TAAnCNT(ch), &data16);
+	(void)device_io_read16(timer_region, TAAnCNT(ch), &data16);
 	timer->cnt = data16;
 	if (org != timer->mode) {
 		//printf("%d:timer(%d) mode:%d => %d: counter=%d/%d\n", device->clock, ch, org, timer->mode, timer->cnt, timer->compare0);
@@ -125,7 +125,7 @@ static void device_timer_do_update(DeviceType *device, int ch)
 		timer->cnt++;
 	}
 
-	(void)device_io_write16(device, TAAnCNT(ch), timer->cnt);
+	(void)device_io_write16(timer_region, TAAnCNT(ch), timer->cnt);
 
 	return;
 }

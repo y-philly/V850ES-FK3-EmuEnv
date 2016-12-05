@@ -44,109 +44,33 @@ void device_print_clock(DeviceType *device)
 	return;
 }
 
-/*
- * TODO　デバイスがバスに依存するのはおかしいので，どこかのタイミングで削除したい．
- */
-static int device_get_iomem(DeviceType *device, uint32 addr, uint32 **addrp)
+int device_io_write8(MpuAddressRegionType *region,  uint32 addr, uint8 data)
 {
-	Std_ReturnType err;
-
-	err = bus_get_pointer(CPU_CONFIG_CORE_ID_0, addr, (uint8**)addrp);
-	if (err != STD_E_OK) {
-		return -1;
-	}
-
-	return 0;
+	return region->ops->put_data8(region, CPU_CONFIG_CORE_ID_0, (addr & region->mask), data);
+}
+int device_io_write16(MpuAddressRegionType *region, uint32 addr, uint16 data)
+{
+	return region->ops->put_data16(region, CPU_CONFIG_CORE_ID_0, (addr & region->mask), data);
 }
 
-
-int device_io_write8(DeviceType *device,  uint32 addr, uint8 data)
+int device_io_write32(MpuAddressRegionType *region, uint32 addr, uint32 data)
 {
-	int ret;
-	uint32 *addrp;
-	uint8* datap;
-
-	ret = device_get_iomem(device, addr, &addrp);
-	if (ret < 0) {
-		return -1;
-	}
-	datap = (uint8*)addrp;
-	*datap = data;
-	return 0;
-}
-int device_io_write16(DeviceType *device, uint32 addr, uint16 data)
-{
-	int ret;
-	uint32 *addrp;
-	uint16* datap;
-
-	ret = device_get_iomem(device, addr, &addrp);
-	if (ret < 0) {
-		return -1;
-	}
-	datap = (uint16*)addrp;
-	*datap = data;
-	return 0;
+	return region->ops->put_data32(region, CPU_CONFIG_CORE_ID_0, (addr & region->mask), data);
 }
 
-int device_io_write32(DeviceType *device, uint32 addr, uint32 data)
+int device_io_read8(MpuAddressRegionType *region, uint32 addr, uint8 *data)
 {
-	int ret;
-	uint32 *addrp;
-	uint32* datap;
-
-	ret = device_get_iomem(device, addr, &addrp);
-	if (ret < 0) {
-		return -1;
-	}
-	datap = (uint32*)addrp;
-	*datap = data;
-	return 0;
+	return region->ops->get_data8(region, CPU_CONFIG_CORE_ID_0, (addr & region->mask), data);
 }
 
-int device_io_read8(DeviceType *device, uint32 addr, uint8 *data)
+int device_io_read16(MpuAddressRegionType *region, uint32 addr, uint16 *data)
 {
-	int ret;
-	uint32 *addrp;
-	uint8* datap;
-
-	ret = device_get_iomem(device, addr, &addrp);
-	if (ret < 0) {
-		return -1;
-	}
-	datap = (uint8*)addrp;
-	*data = *datap;
-	return 0;
+	return region->ops->get_data16(region, CPU_CONFIG_CORE_ID_0, (addr & region->mask), data);
 }
 
-int device_io_read16(DeviceType *device, uint32 addr, uint16 *data)
+int device_io_read32(MpuAddressRegionType *region, uint32 addr, uint32 *data)
 {
-	int ret;
-	uint32 *addrp;
-	uint16* datap;
-
-	ret = device_get_iomem(device, addr, &addrp);
-	if (ret < 0) {
-		return -1;
-	}
-	datap = (uint16*)addrp;
-	*data = *datap;
-	return 0;
-}
-
-int device_io_read32(DeviceType *device, uint32 addr, uint32 *data)
-{
-	int ret;
-	uint32 *addrp;
-	uint32* datap;
-
-	ret = device_get_iomem(device, addr, &addrp);
-	if (ret < 0) {
-		return -1;
-	}
-	datap = (uint32*)addrp;
-	*data = *datap;
-	return 0;
+	return region->ops->get_data32(region, CPU_CONFIG_CORE_ID_0, (addr & region->mask), data);
 }
 
 

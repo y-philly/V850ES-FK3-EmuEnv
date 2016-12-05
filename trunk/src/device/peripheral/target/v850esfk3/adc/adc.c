@@ -95,7 +95,7 @@ void device_supply_clock_adc(DeviceType *device)
 	uint8 cntl;
 
 	for (cntl = 0; cntl < MPU_ADC_ADA_NUM; cntl++) {
-		(void)device_io_read8(device, MPU_ADC_ADDR_AdAnM0(cntl), &data);
+		(void)device_io_read8(adc_region, MPU_ADC_ADDR_AdAnM0(cntl), &data);
 		if ((data & (1U << MPU_ADC_ADDR_AdAnM0_ADAnCE)) == 0U) {
 			/*
 			 * AD変換動作停止
@@ -114,7 +114,7 @@ void device_supply_clock_adc(DeviceType *device)
 		if (AdcDevice[cntl].mode == ADC_MODE_STOP) {
 			//printf("AD%d RUN START\n", cntl);
 			AdcDevice[cntl].mode = ADC_MODE_RUN;
-			(void)device_io_write8(device, MPU_ADC_ADDR_AdAnM0(cntl), (data | MPU_ADC_ADDR_AdAnM0_ADAnEF));
+			(void)device_io_write8(adc_region, MPU_ADC_ADDR_AdAnM0(cntl), (data | MPU_ADC_ADDR_AdAnM0_ADAnEF));
 		}
 		if (AdcDevice[cntl].cnt < AdcDevice[cntl].conv_interval_clock) {
 			//printf("AD%d cut %d\n", cntl, AdcDevice[cntl].cnt);
@@ -126,7 +126,7 @@ void device_supply_clock_adc(DeviceType *device)
 		if (AdcDevice[cntl].ops != NULL) {
 			for (i = 0; i < AdcDevice[cntl].adc_data_num; i++) {
 				AdcDevice[cntl].ops[cntl].recv(i, &(AdcDevice[cntl].adc_data[i]));
-				(void)device_io_write16(device, MPU_ADC_ADDR_ADAnCRm(cntl,i), (AdcDevice[cntl].adc_data[i] << 6));
+				(void)device_io_write16(adc_region, MPU_ADC_ADDR_ADAnCRm(cntl,i), (AdcDevice[cntl].adc_data[i] << 6));
 				//printf("AD%d RUN DATA WRITE %d\n", cntl, AdcDevice[cntl].adc_data[i]);
 			}
 		}
@@ -134,7 +134,7 @@ void device_supply_clock_adc(DeviceType *device)
 		//printf("AD%d STOP\n", cntl);
 		data &= ~(1U << MPU_ADC_ADDR_AdAnM0_ADAnEF);
 		data &= ~(1U << MPU_ADC_ADDR_AdAnM0_ADAnCE);
-		(void)device_io_write8(device, MPU_ADC_ADDR_AdAnM0(cntl), data);
+		(void)device_io_write8(adc_region, MPU_ADC_ADDR_AdAnM0(cntl), data);
 		AdcDevice[cntl].cnt = 0;
 
 		device_raise_int(device, AdcDevice[cntl].intno);

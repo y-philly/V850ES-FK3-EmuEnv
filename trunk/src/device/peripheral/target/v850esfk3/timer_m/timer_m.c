@@ -41,12 +41,12 @@ static int device_timer_do_update(DeviceType *device)
 	/*
 	 * コンペア値の取得
 	 */
-	(void)device_io_read16(device, MPU_TMM_ADDR_TM0CMP0, &timer->compare);
+	(void)device_io_read16(timer_m_region, MPU_TMM_ADDR_TM0CMP0, &timer->compare);
 
 	/*
 	 * 動作判定
 	 */
-	(void)device_io_read8(device, MPU_TMM_ADDR_TM0CTL0, &data8);
+	(void)device_io_read8(timer_m_region, MPU_TMM_ADDR_TM0CTL0, &data8);
 	if (timer->mode == TIMER_MODE_STOP) {
 		if ((data8 & (1 << MPU_TMM_ADDR_TM0CTL0_TM0CE)) == (1 << MPU_TMM_ADDR_TM0CTL0_TM0CE)) {
 			timer->cnt = 0;

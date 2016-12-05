@@ -31,15 +31,15 @@ typedef struct {
 } MpuAddressRegionType;
 
 typedef struct mpu_address_region_operation_type {
-	Std_ReturnType (*get_data8) (MpuAddressRegionType *region, CoreIdType permission, uint32 addr, uint8 *data);
-	Std_ReturnType (*get_data16) (MpuAddressRegionType *region, CoreIdType permission, uint32 addr, uint16 *data);
-	Std_ReturnType (*get_data32) (MpuAddressRegionType *region, CoreIdType permission, uint32 addr, uint32 *data);
+	Std_ReturnType (*get_data8) (MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
+	Std_ReturnType (*get_data16) (MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
+	Std_ReturnType (*get_data32) (MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data);
 
-	Std_ReturnType (*put_data8) (MpuAddressRegionType *region, CoreIdType permission, uint32 addr, uint8 data);
-	Std_ReturnType (*put_data16) (MpuAddressRegionType *region, CoreIdType permission, uint32 addr, uint16 data);
-	Std_ReturnType (*put_data32) (MpuAddressRegionType *region, CoreIdType permission, uint32 addr, uint32 data);
+	Std_ReturnType (*put_data8) (MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data);
+	Std_ReturnType (*put_data16) (MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data);
+	Std_ReturnType (*put_data32) (MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data);
 
-	Std_ReturnType (*get_pointer) (MpuAddressRegionType *region, CoreIdType permission, uint32 addr, uint8 **data);
+	Std_ReturnType (*get_pointer) (MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 **data);
 } MpuAddressRegionOperationType;
 
 extern MpuAddressRegionOperationType	default_memory_operation;

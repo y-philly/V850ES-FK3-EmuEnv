@@ -1,7 +1,7 @@
 ﻿#ifndef _DBG_CAN_H_
 #define _DBG_CAN_H_
 
-#include "inc/device.h"
+#include "device.h"
 #include "dbg.h"
 
 typedef struct {

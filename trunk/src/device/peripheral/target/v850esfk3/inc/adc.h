@@ -1,7 +1,7 @@
 ﻿#ifndef _ADC_H_
 #define _ADC_H_
 
-#include "inc/device.h"
+#include "device.h"
 
 /*
  * A/Dコンバータ

@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "intc.h"
-#include "inc/device.h"
+#include "device.h"
 #include "std_cpu_ops.h"
 #include "cpu_common/cpu_ops.h"
 #include "mpu.h"

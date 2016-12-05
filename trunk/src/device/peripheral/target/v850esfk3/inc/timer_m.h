@@ -1,7 +1,7 @@
 ﻿#ifndef _TIMER_M_H_
 #define _TIMER_M_H_
 
-#include "inc/device.h"
+#include "device.h"
 
 /*
  * TMM0コンペア・レジスタ 0（ TM0CMP0）

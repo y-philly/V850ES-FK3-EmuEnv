@@ -1,7 +1,7 @@
 ﻿#ifndef _CAN_H_
 #define _CAN_H_
 
-#include "inc/device.h"
+#include "device.h"
 #include "dbg_can.h"
 
 #define DEVICE_CAN_RCV_EX_CANID_NONE	(0xFFFFFFFFU)

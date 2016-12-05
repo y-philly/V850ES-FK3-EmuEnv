@@ -1,4 +1,4 @@
-#include "inc/device.h"
+#include "device.h"
 #include "intc.h"
 #include "intc_ops.h"
 #include "bus.h"

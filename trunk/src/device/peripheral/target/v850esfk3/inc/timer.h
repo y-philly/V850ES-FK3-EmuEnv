@@ -1,7 +1,7 @@
 ﻿#ifndef _TIMER_H_
 #define _TIMER_H_
 
-#include "inc/device.h"
+#include "device.h"
 
 /*************************************************
  * 16ビットタイマ／イベントカウンタAA(TAA)

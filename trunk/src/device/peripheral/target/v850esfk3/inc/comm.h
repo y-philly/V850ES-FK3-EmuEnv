@@ -1,7 +1,7 @@
 #ifndef _COMM_H_
 #define _COMM_H_
 
-#include "inc/device.h"
+#include "device.h"
 
 #define CPU_EMU_COMM_FIFO1_PATH	"../proc1/fifo"
 #define CPU_EMU_COMM_FIFO2_PATH	"../proc2/fifo"

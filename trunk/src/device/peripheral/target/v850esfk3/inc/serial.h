@@ -1,7 +1,7 @@
 ﻿#ifndef _SERIAL_H_
 #define _SERIAL_H_
 
-#include "inc/device.h"
+#include "device.h"
 
 
 /*

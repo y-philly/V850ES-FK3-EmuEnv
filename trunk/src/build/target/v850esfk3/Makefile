@@ -3,6 +3,7 @@ ARCH	:=v850esfk3
 
 IFLAGS	:=	-I$(ROOTDIR)/device/intc/target/$(ARCH)
 IFLAGS	+=	-I$(ROOTDIR)/device/peripheral/target/$(ARCH)
+IFLAGS	+=	-I$(ROOTDIR)/device/target/$(ARCH)
 
 VPATH	:=	$(ROOTDIR)/cpu/target/$(ARCH)/cpu_common
 VPATH	+=	$(ROOTDIR)/cpu/target/$(ARCH)/cpu_dec

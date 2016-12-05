@@ -87,7 +87,7 @@ void device_adc_register_ops(void *adc, DeviceAdcOpType *ops)
 	return;
 }
 
-void device_supply_clock_adc(DeviceClockType *device)
+void device_supply_clock_adc(DeviceClockType *dev_clock)
 {
 	int i;
 	uint8 data;

@@ -84,7 +84,7 @@ void device_init_comm(MpuAddressRegionType *region)
 }
 
 
-void device_supply_clock_comm(DeviceClockType *device)
+void device_supply_clock_comm(DeviceClockType *dev_clock)
 {
 	CpuEmuCommDev.count++;
 	if (CpuEmuCommDev.count >= CpuEmuCommDev.sync_count) {

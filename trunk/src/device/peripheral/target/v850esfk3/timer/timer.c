@@ -152,23 +152,23 @@ static void device_timer_do_interrupt(DeviceClockType *device, int ch)
 	return;
 }
 
-void device_supply_clock_timer(DeviceClockType *device)
+void device_supply_clock_timer(DeviceClockType *dev_clock)
 {
 	int ch;
 
 
 	for (ch = 0; ch < TAAnChannelNum; ch++) {
-		if ((device->clock % TimerDevice[ch].fd) != 0) {
+		if ((dev_clock->clock % TimerDevice[ch].fd) != 0) {
 			continue;
 		}
 		//モード設定
-		device_timer_do_mode(device, ch);
+		device_timer_do_mode(dev_clock, ch);
 
 		//カウンタ更新
-		device_timer_do_update(device, ch);
+		device_timer_do_update(dev_clock, ch);
 
 		//割込み生成
-		device_timer_do_interrupt(device, ch);
+		device_timer_do_interrupt(dev_clock, ch);
 	}
 	return;
 }

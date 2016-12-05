@@ -20,7 +20,7 @@ void device_init_wdg(DeviceClockType *device, MpuAddressRegionType *region)
 	return;
 }
 
-void device_supply_clock_wdg(DeviceClockType *device)
+void device_supply_clock_wdg(DeviceClockType *dev_clock)
 {
 	uint16 reg16;
 	/*
@@ -38,7 +38,7 @@ void device_supply_clock_wdg(DeviceClockType *device)
 	/*
 	 * パルス有無確認
 	 */
-	(void)device_io_read16(device, 0xFFFFF404, &reg16);
+	(void)device_io_read16(dev_clock, 0xFFFFF404, &reg16);
 	reg16 = reg16 & DVICE_WDG_PORT_BIT;
 	if (WdgDevice.state != reg16) {
 		WdgDevice.cnt = 0;

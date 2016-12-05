@@ -38,9 +38,9 @@ void device_supply_clock(DeviceClockType *dev_clock)
 	return;
 }
 
-void device_print_clock(DeviceClockType *device)
+void device_print_clock(DeviceClockType *dev_clock)
 {
-	printf("clock = cpu:%I64u intc:%I64u\n", device->clock, device->intclock);
+	printf("clock = cpu:%I64u intc:%I64u\n", dev_clock->clock, dev_clock->intclock);
 	return;
 }
 

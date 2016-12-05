@@ -29,21 +29,21 @@ extern void device_init_comm(MpuAddressRegionType *region);
 /*
  * デバイスクロック共有
  */
-extern void device_supply_clock(DeviceClockType *device);
-extern void device_supply_clock_timer(DeviceClockType *device);
-extern void device_supply_clock_timer_m(DeviceClockType *device);
-extern void device_supply_clock_serial(DeviceClockType *device);
-extern void device_supply_clock_can(DeviceClockType *device);
-extern void device_supply_clock_adc(DeviceClockType *device);
-extern void device_supply_clock_wdg(DeviceClockType *device);
-extern void device_supply_clock_comm(DeviceClockType *device);
+extern void device_supply_clock(DeviceClockType *dev_clock);
+extern void device_supply_clock_timer(DeviceClockType *dev_clock);
+extern void device_supply_clock_timer_m(DeviceClockType *dev_clock);
+extern void device_supply_clock_serial(DeviceClockType *dev_clock);
+extern void device_supply_clock_can(DeviceClockType *dev_clock);
+extern void device_supply_clock_adc(DeviceClockType *dev_clock);
+extern void device_supply_clock_wdg(DeviceClockType *dev_clock);
+extern void device_supply_clock_comm(DeviceClockType *dev_clock);
 
 extern int CpuEmuCommDevisProc1;
 
 /*
  * デバイスクロック参照
  */
-extern void device_print_clock(DeviceClockType *device);
+extern void device_print_clock(DeviceClockType *dev_clock);
 
 /*
  * 割込み関数

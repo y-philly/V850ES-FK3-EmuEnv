@@ -35,9 +35,10 @@ extern DbgCmdExecutorType *dbg_parse_break(DbgCmdExecutorType *arg, const TokenC
 typedef enum {
 	DBG_CMD_DELETE_ALL,
 	DBG_CMD_DELETE_ONE
-} DbgCmdBreakType;
+} DbgCmdDeleteType;
 typedef struct {
-	uint32 delete_break_no;
+	DbgCmdDeleteType 	type;
+	uint32 				delete_break_no;
 } DbgCmdExecutorDeleteType;
 extern DbgCmdExecutorType *dbg_parse_delete(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 

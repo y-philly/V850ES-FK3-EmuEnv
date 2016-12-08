@@ -76,12 +76,14 @@ static void set_token(TokenContainerType *token_container, TokenStringType *buff
 	/*
 	 * 16進数チェック
 	 */
-	errno = 0;
-	ret64 = strtoull((const char*)buffer->str, &endptr, 16);
-	if ((errno == 0) && (*endptr == '\0')) {
-		token_container->array[inx].type = TOKEN_TYPE_VALUE_HEX;
-		token_container->array[inx].body.hex.value = (uint32)ret64;
-		return;
+	if ((buffer->len > 2) && buffer->str[0] == '0' && buffer->str[1] == 'x') {
+		errno = 0;
+		ret64 = strtoull((const char*)buffer->str, &endptr, 16);
+		if ((errno == 0) && (*endptr == '\0')) {
+			token_container->array[inx].type = TOKEN_TYPE_VALUE_HEX;
+			token_container->array[inx].body.hex.value = (uint32)ret64;
+			return;
+		}
 	}
 	token_container->array[inx].type = TOKEN_TYPE_STRING;
 	token_container->array[inx].body.str = *buffer;
@@ -108,6 +110,9 @@ Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint
 		case TOKEN_CHECK_STATE_DEMILITER:
 			if (is_delimiter(str[i]) == TRUE) {
 				break;
+			}
+			if (token_container->num > TOKEN_CONTAINER_MAX_SIZE) {
+				return STD_E_INVALID;
 			}
 			token_container->num++;
 			buffer.str[buffer.len] = str[i];

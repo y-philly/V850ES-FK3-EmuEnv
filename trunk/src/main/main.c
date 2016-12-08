@@ -1,4 +1,5 @@
 #include "front/parser/dbg_parser.h"
+#include "front/parser/lib/dbg_parser_lib.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -10,10 +11,9 @@ int main(int argc, const char *argv[])
 
 	res = dbg_parse((uint8*)str, (uint32)len);
 
-	printf("res=0x%x\n", res);
 	if (res != NULL) {
-		printf("org_str=%s\n", res->original_str);
-		printf("std_id=%d\n", res->std_id);
+		res->run(res);
+		free_dbg_cmd_executor(res);
 	}
 
 	return 0;

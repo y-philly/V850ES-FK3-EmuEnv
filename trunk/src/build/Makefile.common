@@ -28,6 +28,8 @@ VPATH	+= $(ROOTDIR)/config/target/$(ARCH)
 VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser
 VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/concrete_parser
 VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/lib
+VPATH	+= $(ROOTDIR)/debugger/executor
+VPATH	+= $(ROOTDIR)/debugger/executor/concrete_executor
 
 CFLAGS	+= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
@@ -48,6 +50,7 @@ OBJS	+= dbg_parser_config.o
 OBJS	+= dbg_parser_lib.o
 OBJS	+= dbg_std_parser.o
 OBJS	+= dbg_parser.o
+OBJS	+= dbg_std_executor.o
 
 
 .SUFFIXES:	.c .o

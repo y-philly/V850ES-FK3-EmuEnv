@@ -19,7 +19,7 @@ DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
 	memcpy(arg->original_str, str, len);
 	arg->original_str[len] = '\0';
 	arg->std_id = DBG_CMD_STD_ID_PARSE_ERROR;
-	//TODO arg->run = dbg_std_executor_parse_error;
+	arg->run = dbg_std_executor_parse_error;
 
 	/*
 	 * 文字列をトークン分割する

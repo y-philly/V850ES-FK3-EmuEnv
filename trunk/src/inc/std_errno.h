@@ -5,5 +5,6 @@
 #define STD_E_DECODE	1U
 #define STD_E_EXEC		2U
 #define STD_E_SEGV		3U
+#define STD_E_INVALID	4U
 
 #endif /* _STD_ERRNO_H_ */

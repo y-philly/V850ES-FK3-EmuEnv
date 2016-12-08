@@ -11,12 +11,23 @@ IFLAGS	+= -I$(ROOTDIR)/device/mpu
 IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction
+IFLAGS	+= -I$(ROOTDIR)/debugger/executor
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc/target/$(ARCH)
+
+
 VPATH	+= $(ROOTDIR)/main
 VPATH	+= $(ROOTDIR)/cpu
 VPATH	+= $(ROOTDIR)/lib
 VPATH	+= $(ROOTDIR)/device/mpu
 VPATH	+= $(ROOTDIR)/cpu/target/$(ARCH)
 VPATH	+= $(ROOTDIR)/config/target/$(ARCH)
+
+
+VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser
+VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/concrete_parser
+VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/lib
 
 CFLAGS	+= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
@@ -33,6 +44,10 @@ OBJS	+= mpu_config.o
 OBJS	+= cpu_config.o
 OBJS	+= intc.o
 OBJS	+= hash.o
+OBJS	+= dbg_parser_config.o
+OBJS	+= dbg_parser_lib.o
+OBJS	+= dbg_std_parser.o
+OBJS	+= dbg_parser.o
 
 
 .SUFFIXES:	.c .o

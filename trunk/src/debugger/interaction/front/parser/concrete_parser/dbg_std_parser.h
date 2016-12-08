@@ -42,5 +42,14 @@ typedef struct {
 } DbgCmdExecutorDeleteType;
 extern DbgCmdExecutorType *dbg_parse_delete(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
+/*
+ * ブレーク中のプログラムの再開
+ *
+ * cont
+ *	ブレーク中のプログラムを再開する
+ *
+ */
+extern DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
 
 #endif /* _DBG_STD_PARSER_H_ */

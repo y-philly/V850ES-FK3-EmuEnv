@@ -81,6 +81,7 @@ static int dbg_loader_test(int argc, const char *argv[])
 	err = elf_load(buf);
 
     fclose(fp);
+    return 0;
 }
 #endif
 

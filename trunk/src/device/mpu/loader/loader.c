@@ -63,7 +63,7 @@ static Std_ReturnType Elf_Check(const Elf32_Ehdr *elf_image)
 	if (elf_image->e_type != ET_EXEC) {
 		return STD_E_INVALID;
 	}
-	if (elf_image->e_machine != EM_V800) {
+	if (elf_image->e_machine != ELF_MACHINE_TYPE) {
 		return STD_E_INVALID;
 	}
 	if (elf_image->e_version != EV_CURRENT) {

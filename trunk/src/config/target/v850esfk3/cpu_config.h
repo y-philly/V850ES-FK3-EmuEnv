@@ -3,6 +3,8 @@
 
 #include "std_types.h"
 
+
+
 /*
  * CPUコアの数
  */

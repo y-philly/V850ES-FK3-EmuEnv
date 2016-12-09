@@ -4,6 +4,7 @@ WFLAGS	:= -g -Wall
 GCC		:= gcc
 
 IFLAGS	+= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/main
 IFLAGS	+= -I$(ROOTDIR)/lib
 IFLAGS	+= -I$(ROOTDIR)/cpu
 IFLAGS	+= -I$(ROOTDIR)/bus
@@ -24,6 +25,7 @@ VPATH	+= $(ROOTDIR)/device/mpu
 VPATH	+= $(ROOTDIR)/device/mpu/loader
 VPATH	+= $(ROOTDIR)/cpu/target/$(ARCH)
 VPATH	+= $(ROOTDIR)/config/target/$(ARCH)
+VPATH	+= $(ROOTDIR)/main/option
 
 
 VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser
@@ -41,6 +43,7 @@ LFLAGS	+= -Wl,--enable-stdcall-fixup
 LIBS	+= -lpthread
 
 OBJS	+= main.o
+OBJS	+= option.o
 OBJS	+= mpu.o
 OBJS	+= dbg_print.o
 OBJS	+= mpu_config.o

@@ -1,6 +1,7 @@
 #include "front/parser/dbg_parser.h"
 #include "front/parser/lib/dbg_parser_lib.h"
 #include "loader/loader.h"
+#include "option/option.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -53,19 +54,23 @@ static void dbg_parser_test(void)
 #ifdef DBG_LOADER_TEST
 static int dbg_loader_test(int argc, const char *argv[])
 {
-    int len = 0;
-    int ret = 0;
     int fd;
     FILE *fp;
     struct stat st;
-	Std_ReturnType err;
+	CmdOptionType *opt;
 
-    if (argc != 2) {
+    if (argc < 2) {
 		fprintf(stderr, "argc=%d\n", argc);
 		fprintf(stderr, "Usage: elf\n");
 		return 1;
     }
-    fp = fopen(argv[1], "rb");
+
+	opt = parse_args(argc, argv);
+	if (opt == NULL) {
+		return 1;
+	}
+
+    fp = fopen(opt->filepath, "rb");
     if (fp == NULL) {
 		fprintf(stderr, "ERROR %s\n", argv[1]);
 		fprintf(stderr, "Usage: elf\n");
@@ -74,17 +79,32 @@ static int dbg_loader_test(int argc, const char *argv[])
     fd = fileno(fp);
 
     fstat(fd, &st);
-    printf("st.st_size=%d\n", st.st_size);
-    len = fread(buf, st.st_size, 1, fp);
-    printf("len=%d\n", len);
+    //printf("st.st_size=%d\n", st.st_size);
+    fread(buf, st.st_size, 1, fp);
+    //printf("len=%d\n", len);
 
-	err = elf_load(buf);
+	elf_load(buf);
 
     fclose(fp);
     return 0;
 }
 #endif
 
+/*
+ * コマンドオプション仕様
+ * -i		インタラクションモード
+ * 	・あり：インタラクションモード
+ * 	・なし：バックグラウンド実行モード
+ * -t<time>	終了時間(単位：clock)
+ * 	・あり：終了時間
+ * 	・なし：無制限
+ * -b	入力ファイル形式
+ * 	・あり：バイナリデータ
+ * 	・なし：ELFファイル
+ * -p<fifofile path>	対抗ECU通信経路指定
+ * 	・あり：対抗ECUとの通信あり(FIFO)
+ * 	・なし：シングルECU構成
+ */
 int main(int argc, const char *argv[])
 {
 #ifdef DBG_PARSER_TEST
@@ -92,6 +112,10 @@ int main(int argc, const char *argv[])
 	return 0;
 #endif
 #ifdef DBG_LOADER_TEST
-	return dbg_loader_test(argc, argv);
+	{
+		return dbg_loader_test(argc, argv);
+	}
 #endif
+	parse_args(argc, argv);
+	return 0;
 }

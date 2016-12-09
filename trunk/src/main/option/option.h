@@ -11,6 +11,8 @@ typedef struct {
 	char	*filepath;
 	char	buffer_fifopath[4096];
 	char	buffer_filepath[4096];
+	uint32	filedata_len;
+	char	filedata[1024*1024*10];
 } CmdOptionType;
 
 extern CmdOptionType *parse_args(int argc, const char* argv[]);

@@ -1,11 +1,13 @@
 #include "option/option.h"
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/stat.h>
 static CmdOptionType cmd_option;
 
-int cmd_atoi(char *arg, uint64 *out)
+static int cmd_atoi(char *arg, uint64 *out)
 {
 	char *endptr;
 	long long ret64;
@@ -21,6 +23,37 @@ int cmd_atoi(char *arg, uint64 *out)
 	return -1;
 }
 
+static int file_load(CmdOptionType *opt)
+{
+	size_t ret;
+	FILE *fp;
+	int fd;
+    struct stat st;
+    int err;
+
+    fp = fopen(opt->filepath, "rb");
+    if (fp == NULL) {
+		fprintf(stderr, "ERROR can not open %s\n", opt->filepath);
+		return -1;
+    }
+    fd = fileno(fp);
+
+    err = fstat(fd, &st);
+    if (err < 0) {
+		fprintf(stderr, "ERROR can not fstat %s\n", opt->filepath);
+	    fclose(fp);
+    	return -1;
+    }
+    opt->filedata_len = st.st_size;
+    ret = fread(opt->filedata, st.st_size, 1, fp);
+    if (ret == 0) {
+		fprintf(stderr, "ERROR can not fread %s\n", opt->filepath);
+	    fclose(fp);
+    	return -1;
+    }
+    fclose(fp);
+    return 0;
+}
 
 CmdOptionType *parse_args(int argc, const char* argv[])
 {
@@ -67,5 +100,9 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  memcpy(cmd_option.buffer_filepath, argv[optind], strlen(argv[optind]));
 	  cmd_option.buffer_filepath[strlen(argv[optind])] = '\0';
       cmd_option.filepath = cmd_option.buffer_filepath;
+
+      if (file_load(&cmd_option) < 0) {
+    	  return NULL;
+      }
 	  return &cmd_option;
 }

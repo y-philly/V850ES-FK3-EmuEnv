@@ -132,3 +132,205 @@ DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainer
 	}
 	return NULL;
 }
+
+
+
+
+/************************************************************************************
+ * elaps コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType elaps_string = {
+		.len = 5,
+		.str = { 'e', 'l', 'a', 'p', 's', '\0' },
+};
+static const TokenStringType elaps_string_short = {
+		.len = 1,
+		.str = { 'e', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_elaps(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &elaps_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &elaps_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_ELAPS;
+		arg->run = dbg_std_executor_elaps;
+		return arg;
+	}
+	return NULL;
+}
+
+
+/************************************************************************************
+ * next コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType next_string = {
+		.len = 4,
+		.str = { 'n', 'e', 'x', 't', '\0' },
+};
+static const TokenStringType next_string_short = {
+		.len = 1,
+		.str = { 'n', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_next(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &next_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &next_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_NEXT;
+		arg->run = dbg_std_executor_next;
+		return arg;
+	}
+	return NULL;
+}
+
+
+/************************************************************************************
+ * return コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType return_string = {
+		.len = 6,
+		.str = { 'r', 'e', 't', 'u', 'r', 'n', '\0' },
+};
+static const TokenStringType return_string_short = {
+		.len = 1,
+		.str = { 'r', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_return(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &return_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &return_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_RETURN;
+		arg->run = dbg_std_executor_return;
+		return arg;
+	}
+	return NULL;
+}
+
+
+/************************************************************************************
+ * view コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType view_string = {
+		.len = 4,
+		.str = { 'v', 'i', 'e', 'w', '\0' },
+};
+static const TokenStringType view_string_short = {
+		.len = 1,
+		.str = { 'v', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_view(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &view_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &view_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_VIEW;
+		arg->run = dbg_std_executor_view;
+		return arg;
+	}
+	return NULL;
+}
+
+
+/************************************************************************************
+ * print コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType print_string = {
+		.len = 5,
+		.str = { 'p', 'r', 'i', 'n', 't', '\0' },
+};
+static const TokenStringType print_string_short = {
+		.len = 1,
+		.str = { 'p', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &print_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &print_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_PRINT;
+		arg->run = dbg_std_executor_print;
+		return arg;
+	}
+	return NULL;
+}
+
+
+/************************************************************************************
+ * quit コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType quit_string = {
+		.len = 4,
+		.str = { 'q', 'u', 'i', 't', '\0' },
+};
+static const TokenStringType quit_string_short = {
+		.len = 1,
+		.str = { 'q', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_quit(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &quit_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &quit_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_QUIT;
+		arg->run = dbg_std_executor_quit;
+		return arg;
+	}
+	return NULL;
+}
+
+

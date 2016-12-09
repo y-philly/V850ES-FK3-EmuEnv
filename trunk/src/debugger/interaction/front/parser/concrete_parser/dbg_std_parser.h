@@ -4,14 +4,6 @@
 #include "dbg_executor.h"
 #include "front/parser/lib/dbg_parser_lib.h"
 
-/*
- * ブレーク設定
- *
- * break <address:16進数表記>
- *  ブレークポイントを設定する
- * info break
- * 	ブレークポイントを表示
- */
 typedef enum {
 	DBG_CMD_BBREAK_SET,
 	DBG_CMD_BREAK_INFO
@@ -22,16 +14,6 @@ typedef struct {
 } DbgCmdExecutorBreakType;
 extern DbgCmdExecutorType *dbg_parse_break(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
-
-/*
- * ブレーク解除
- *
- * delete
- *	全てのブレークポイントを削除する
- * delete <ブレークポイント番号：10進数表記>
- * 	ブレークポイントを削除する
- *
- */
 typedef enum {
 	DBG_CMD_DELETE_ALL,
 	DBG_CMD_DELETE_ONE
@@ -41,15 +23,17 @@ typedef struct {
 	uint32 				delete_break_no;
 } DbgCmdExecutorDeleteType;
 extern DbgCmdExecutorType *dbg_parse_delete(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
-
-/*
- * ブレーク中のプログラムの再開
- *
- * cont
- *	ブレーク中のプログラムを再開する
- *
- */
 extern DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+extern DbgCmdExecutorType *dbg_parse_elaps(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+extern DbgCmdExecutorType *dbg_parse_next(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+extern DbgCmdExecutorType *dbg_parse_return(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+extern DbgCmdExecutorType *dbg_parse_view(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+typedef struct {
+	uint32 				addr;
+	uint32 				size;
+} DbgCmdExecutorPrintType;
+extern DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+extern DbgCmdExecutorType *dbg_parse_quit(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
 
 #endif /* _DBG_STD_PARSER_H_ */

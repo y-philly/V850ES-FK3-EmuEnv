@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <errno.h>
 
+#if 0 //TODO 削除予定
 DbgCmdExecutorType *alloc_dbg_cmd_executor(void)
 {
 	DbgCmdExecutorType *entry;
@@ -22,6 +23,7 @@ void free_dbg_cmd_executor(DbgCmdExecutorType *entry)
 	}
 	return;
 }
+#endif
 
 bool token_strcmp(const TokenStringType *str1, const TokenStringType *str2)
 {

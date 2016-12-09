@@ -94,6 +94,7 @@ DbgCmdExecutorType *dbg_parse_delete(DbgCmdExecutorType *arg, const TokenContain
 			parsed_args->type = DBG_CMD_DELETE_ONE;
 			parsed_args->delete_break_no = token_container->array[1].body.dec.value;
 			arg->run = dbg_std_executor_delete;
+			return arg;
 		}
 	}
 	return NULL;
@@ -303,12 +304,14 @@ DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContaine
 			parsed_args->type = DBG_CMD_PRINT_SYMBOL;
 			parsed_args->symbol = token_container->array[1].body.str;
 			arg->run = dbg_std_executor_print;
+			return arg;
 		}
 		else if (token_container->array[1].type == TOKEN_TYPE_VALUE_HEX) {
 			arg->std_id = DBG_CMD_STD_ID_PRINT;
 			parsed_args->type = DBG_CMD_PRINT_ADDR;
 			parsed_args->addr = token_container->array[1].body.dec.value;
 			arg->run = dbg_std_executor_print;
+			return arg;
 		}
 	}
 	else {
@@ -319,6 +322,7 @@ DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContaine
 			parsed_args->addr = token_container->array[1].body.dec.value;
 			parsed_args->size = token_container->array[2].body.dec.value;
 			arg->run = dbg_std_executor_print;
+			return arg;
 		}
 	}
 

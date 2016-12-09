@@ -34,7 +34,6 @@ int main(int argc, const char *argv[])
 
 		if (res != NULL) {
 			res->run(res);
-			free_dbg_cmd_executor(res);
 		}
 	}
 

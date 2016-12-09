@@ -3,11 +3,13 @@
 
 #include "dbg_executor.h"
 
+#if 0 //TODO 削除予定
 /*
  * メモリ獲得失敗したらexitする．
  */
 extern DbgCmdExecutorType *alloc_dbg_cmd_executor(void);
 extern void free_dbg_cmd_executor(DbgCmdExecutorType *entry);
+#endif
 
 typedef enum {
 	TOKEN_TYPE_VALUE_HEX,

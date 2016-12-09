@@ -28,7 +28,14 @@ extern DbgCmdExecutorType *dbg_parse_elaps(DbgCmdExecutorType *arg, const TokenC
 extern DbgCmdExecutorType *dbg_parse_next(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_return(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_view(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+typedef enum {
+	DBG_CMD_PRINT_SYMBOL,
+	DBG_CMD_PRINT_ADDR,
+	DBG_CMD_PRINT_ADDR_SIZE,
+} DbgCmdDPrintType;
 typedef struct {
+	DbgCmdDPrintType	type;
+	TokenStringType		symbol;
 	uint32 				addr;
 	uint32 				size;
 } DbgCmdExecutorPrintType;

@@ -3,17 +3,39 @@
 #include <stdio.h>
 #include <string.h>
 
+static int debugger_getline(char *line, int size)
+{
+	int n = 0;
+	char c;
+	while (TRUE) {
+		c = fgetc(stdin);
+		if (c < 0 || c == '\n') {
+			break;
+		}
+		line[n] = c;
+		n++;
+	}
+	return n;
+}
+
 int main(int argc, const char *argv[])
 {
 	DbgCmdExecutorType *res;
-	char *str = (char*)argv[1];
-	int len = strlen(str) + 1;
+	char buffer[1024];
+	int len;
 
-	res = dbg_parse((uint8*)str, (uint32)len);
 
-	if (res != NULL) {
-		res->run(res);
-		free_dbg_cmd_executor(res);
+	while (TRUE) {
+		printf(">");
+		fflush(stdout);
+		len = debugger_getline(buffer, 1024);
+		buffer[len] = '\0';
+		res = dbg_parse((uint8*)buffer, (uint32)len);
+
+		if (res != NULL) {
+			res->run(res);
+			free_dbg_cmd_executor(res);
+		}
 	}
 
 	return 0;

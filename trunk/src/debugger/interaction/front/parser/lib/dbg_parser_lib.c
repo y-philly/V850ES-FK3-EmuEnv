@@ -117,6 +117,12 @@ Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint
 			token_container->num++;
 			buffer.str[buffer.len] = str[i];
 			buffer.len++;
+			if (i == (len - 1)) { //終端
+				set_token(token_container, &buffer);
+				buffer.len = 0;
+				state = TOKEN_CHECK_STATE_DEMILITER;
+				break;
+			}
 			state = TOKEN_CHECK_STATE_CODE;
 			break;
 		case TOKEN_CHECK_STATE_CODE:

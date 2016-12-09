@@ -67,6 +67,7 @@ void dbg_std_executor_quit(void *executor)
 	 //TODO
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	 printf("quit\n");
+	 exit(1);
 }
 
 void dbg_std_executor_elaps(void *executor)
@@ -85,5 +86,16 @@ void dbg_std_executor_print(void *executor)
 {
 	 //TODO
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
-	 printf("print\n");
+	 DbgCmdExecutorPrintType *parsed_args = (DbgCmdExecutorPrintType *)(arg->parsed_args);
+
+	 if (parsed_args->type == DBG_CMD_PRINT_SYMBOL) {
+		 printf("ERROR: not supported:print symbol(%s)\n", parsed_args->symbol.str);
+	 }
+	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR) {
+		 printf("ERROR: not supported:print addr(0x%x)\n", parsed_args->addr);
+	 }
+	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR_SIZE) {
+		 printf("print 0x%x %u\n", parsed_args->addr, parsed_args->size);
+	 }
+	 return;
 }

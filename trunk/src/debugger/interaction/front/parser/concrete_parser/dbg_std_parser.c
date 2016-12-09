@@ -283,20 +283,45 @@ static const TokenStringType print_string_short = {
 };
 DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
 {
-	if (token_container->num != 1) {
+	DbgCmdExecutorPrintType *parsed_args = (DbgCmdExecutorPrintType *)arg->parsed_args;
+
+	if ((token_container->num != 2) && (token_container->num != 3)) {
 		return NULL;
 	}
 
 	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
 		return NULL;
 	}
-
-	if ((token_strcmp(&token_container->array[0].body.str, &print_string) == TRUE) ||
-			(token_strcmp(&token_container->array[0].body.str, &print_string_short) == TRUE)) {
-		arg->std_id = DBG_CMD_STD_ID_PRINT;
-		arg->run = dbg_std_executor_print;
-		return arg;
+	if ((token_strcmp(&token_container->array[0].body.str, &print_string) == FALSE) &&
+			(token_strcmp(&token_container->array[0].body.str, &print_string_short) == FALSE)) {
+		return NULL;
 	}
+
+	if (token_container->num == 2) {
+		if (token_container->array[1].type == TOKEN_TYPE_STRING) {
+			arg->std_id = DBG_CMD_STD_ID_PRINT;
+			parsed_args->type = DBG_CMD_PRINT_SYMBOL;
+			parsed_args->symbol = token_container->array[1].body.str;
+			arg->run = dbg_std_executor_print;
+		}
+		else if (token_container->array[1].type == TOKEN_TYPE_VALUE_HEX) {
+			arg->std_id = DBG_CMD_STD_ID_PRINT;
+			parsed_args->type = DBG_CMD_PRINT_ADDR;
+			parsed_args->addr = token_container->array[1].body.dec.value;
+			arg->run = dbg_std_executor_print;
+		}
+	}
+	else {
+		if ((token_container->array[1].type == TOKEN_TYPE_VALUE_HEX) &&
+				(token_container->array[2].type == TOKEN_TYPE_VALUE_DEC)) {
+			arg->std_id = DBG_CMD_STD_ID_PRINT;
+			parsed_args->type = DBG_CMD_PRINT_ADDR_SIZE;
+			parsed_args->addr = token_container->array[1].body.dec.value;
+			parsed_args->size = token_container->array[2].body.dec.value;
+			arg->run = dbg_std_executor_print;
+		}
+	}
+
 	return NULL;
 }
 

@@ -122,7 +122,7 @@ Std_ReturnType mpu_get_pointer(CoreIdType core_id, uint32 addr, uint8 **data)
 		return STD_E_SEGV;
 	}
 	if (region->ops->get_pointer == NULL) {
-		return STD_E_SEGV;
+		return STD_E_INVALID;
 	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->get_pointer(region, core_id, paddr, data);

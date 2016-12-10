@@ -22,6 +22,10 @@ uint32 cpu_get_pc(const TargetCoreType *core)
 {
 	return core->reg.pc;
 }
+uint32 cpu_get_return_addr(const TargetCoreType *core)
+{
+	return core->reg.r[31];
+}
 CoreIdType cpu_get_core_id(const TargetCoreType *core)
 {
 	return core->core_id;

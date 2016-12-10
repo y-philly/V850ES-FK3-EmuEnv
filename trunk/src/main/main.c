@@ -2,6 +2,7 @@
 #include "front/parser/lib/dbg_parser_lib.h"
 #include "loader/loader.h"
 #include "option/option.h"
+#include "cpu_control/dbg_cpu_control.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -31,15 +32,18 @@ static int debugger_getline(char *line, int size)
 static void dbg_parser_test(void)
 {
 	DbgCmdExecutorType *res;
+	bool is_dbgmode;
 	char buffer[1024];
 	int len;
 
 	while (TRUE) {
-		printf(">");
+		is_dbgmode = cpuctrl_is_debug_mode();
+		printf("%s", (is_dbgmode == TRUE) ? "[DBG>" : "[CPU>");
 		fflush(stdout);
 		len = debugger_getline(buffer, 1024);
 		buffer[len] = '\0';
-		res = dbg_parse((uint8*)buffer, (uint32)len);
+		res = dbg_parse((is_dbgmode == TRUE) ? DBG_MODE_DEBUG : DBG_MODE_CPU,
+				(uint8*)buffer, (uint32)len);
 
 		if (res != NULL) {
 			res->run(res);

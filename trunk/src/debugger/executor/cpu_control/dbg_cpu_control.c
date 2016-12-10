@@ -9,7 +9,7 @@ typedef struct {
 DbgCpuCtrlBreakPointType dbg_cpuctrl_break_points[DBG_CPU_CONTROL_BREAK_SETSIZE] = {
 		{ TRUE, 0x00 },
 };
-bool dbg_cpuctrl_dbg_mode = FALSE;
+bool dbg_cpuctrl_dbg_mode = TRUE;
 
 static DbgCpuCtrlBreakPointType *search_free_break_point_space(void)
 {

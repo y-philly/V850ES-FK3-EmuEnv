@@ -7,7 +7,22 @@
 static DbgCmdExecutorType *last_command = NULL;
 static DbgCmdExecutorType parse_command;
 
-DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
+static bool can_execute(DbgModeType mode, DbgCmdExecutorType *res)
+{
+	if (mode == DBG_MODE_DEBUG) {
+		if (res->std_id != DBG_CMD_STD_ID_QUIT) {
+			return TRUE;
+		}
+	}
+	else { //DBG_MODE_CPU
+		if (res->std_id == DBG_CMD_STD_ID_QUIT) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+DbgCmdExecutorType *dbg_parse(DbgModeType mode, uint8 *str, uint32 len)
 {
 	Std_ReturnType err;
 	uint32 i;
@@ -53,6 +68,11 @@ DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
 	}
 	if (res == NULL) {
 		goto errdone;
+	}
+
+	if (can_execute(mode, res) == FALSE) {
+		printf("ERROR:can not execute command on %s\n", (mode == DBG_MODE_DEBUG) ? "DEBUG_MODE" : "CPU_MODE");
+		return NULL;
 	}
 	/*
 	 * 成功の場合は，最後のコマンドを記録する．

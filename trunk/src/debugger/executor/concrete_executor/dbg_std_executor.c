@@ -2,6 +2,7 @@
 #include "concrete_executor/dbg_std_executor.h"
 #include "front/parser/concrete_parser/dbg_std_parser.h"
 #include "cpu_control/dbg_cpu_control.h"
+#include "cpu_control/dbg_cpu_thread_control.h"
 #include <stdio.h>
 
 void dbg_std_executor_parse_error(void *executor)
@@ -49,51 +50,46 @@ void dbg_std_executor_delete(void *executor)
 	 }
 	 else if (parsed_args->type == DBG_CMD_DELETE_ALL) {
 		 uint32 i;
-		 uint32 addr;
 		 for (i = 0; i < DBG_CPU_CONTROL_BREAK_SETSIZE; i++) {
 			(void)cpuctrl_del_break(i);
 		 }
 	 }
 	 return;
-
 }
 
 void dbg_std_executor_cont(void *executor)
 {
-	 //TODO
-	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
-	 printf("cont\n");
+	cpuctrl_set_debug_mode(FALSE);
+	cputhr_control_dbg_wakeup_cpu();
+	return;
 }
+
 void dbg_std_executor_next(void *executor)
 {
-	 //TODO
-	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
-	 printf("next\n");
+	cpuctrl_set_debug_mode(TRUE);
+	return;
 }
+
 void dbg_std_executor_return(void *executor)
 {
 	 //TODO
-	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	 printf("return\n");
 }
+
 void dbg_std_executor_quit(void *executor)
 {
-	 //TODO
-	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
-	 printf("quit\n");
-	 exit(1);
+	cpuctrl_set_debug_mode(TRUE);
+	cputhr_control_dbg_waitfor_cpu_stopped();
 }
 
 void dbg_std_executor_elaps(void *executor)
 {
 	 //TODO
-	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	 printf("elaps\n");
 }
 void dbg_std_executor_view(void *executor)
 {
 	 //TODO
-	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	 printf("view\n");
 }
 void dbg_std_executor_print(void *executor)

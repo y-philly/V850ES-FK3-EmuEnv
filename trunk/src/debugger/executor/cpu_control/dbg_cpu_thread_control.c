@@ -30,11 +30,44 @@ void cputhr_control_init(void)
 	return;
 
 }
+#if 1 /* for test */
+#include "cpu.h"
+#include "cpu_control/dbg_cpu_callback.h"
+#include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
 
+static void *cpu_run(void* arg)
+{
+	uint32 i = 0;
+	TargetCoreType core;
+	 struct timespec abstime;
+
+	core.core_id = 0;
+	core.reg.pc = 0;
+	while (TRUE) {
+		printf("pc=0x%x\n", core.reg.pc);
+		fflush(stdout);
+
+		dbg_notify_cpu_clock_supply_start(&core);
+
+		abstime.tv_nsec = 0;
+		abstime.tv_sec = time(NULL) + 1;
+		abstime.tv_sec += 1;
+		pthread_mutex_lock(&dbg_mutex);
+		pthread_cond_timedwait(&dbg_cv, &dbg_mutex, &abstime);
+		pthread_mutex_unlock(&dbg_mutex);
+
+		core.reg.pc++;
+	}
+	return NULL;
+}
+#endif
 void cputhr_control_start(void)
 {
+	pthread_t thread;
 	cputhr_state = THREAD_STATE_RUNNING;
-	//pthread_create(&thread , NULL , cpu_run , NULL);
+	pthread_create(&thread , NULL , cpu_run , NULL);
 }
 
 
@@ -59,13 +92,17 @@ void cputhr_control_dbg_wait(void)
 
 void cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped(void)
 {
+	 struct timespec abstime;
+
 	pthread_mutex_lock(&dbg_mutex);
 	if (cputhr_state == THREAD_STATE_WAIT) {
 		cputhr_state = THREAD_STATE_RUNNING;
 		pthread_cond_signal(&cpu_cv);
 	}
 	while (cputhr_state == THREAD_STATE_RUNNING) {
-		pthread_cond_wait(&dbg_cv, &dbg_mutex);
+		abstime.tv_nsec = 0;
+		abstime.tv_sec = time(NULL) + 1;
+		pthread_cond_timedwait(&dbg_cv, &dbg_mutex, &abstime);
 	}
 	pthread_mutex_unlock(&dbg_mutex);
 	return;
@@ -73,9 +110,13 @@ void cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped(void)
 
 void cputhr_control_dbg_waitfor_cpu_stopped(void)
 {
+	 struct timespec abstime;
+
 	pthread_mutex_lock(&dbg_mutex);
 	while (cputhr_state == THREAD_STATE_RUNNING) {
-		pthread_cond_wait(&dbg_cv, &dbg_mutex);
+		abstime.tv_nsec = 0;
+		abstime.tv_sec = time(NULL) + 1;
+		pthread_cond_timedwait(&dbg_cv, &dbg_mutex, &abstime);
 	}
 	pthread_mutex_unlock(&dbg_mutex);
 	return;

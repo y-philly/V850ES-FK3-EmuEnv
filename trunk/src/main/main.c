@@ -3,6 +3,7 @@
 #include "loader/loader.h"
 #include "option/option.h"
 #include "cpu_control/dbg_cpu_control.h"
+#include "cpu_control/dbg_cpu_thread_control.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -42,8 +43,7 @@ static void dbg_parser_test(void)
 		fflush(stdout);
 		len = debugger_getline(buffer, 1024);
 		buffer[len] = '\0';
-		res = dbg_parse((is_dbgmode == TRUE) ? DBG_MODE_DEBUG : DBG_MODE_CPU,
-				(uint8*)buffer, (uint32)len);
+		res = dbg_parse((uint8*)buffer, (uint32)len);
 
 		if (res != NULL) {
 			res->run(res);
@@ -73,6 +73,8 @@ int main(int argc, const char *argv[])
 
 	opt = parse_args(argc, argv);
 #ifdef DBG_PARSER_TEST
+	cputhr_control_init();
+	cputhr_control_start();
 	dbg_parser_test();
 #endif
 #ifdef DBG_LOADER_TEST

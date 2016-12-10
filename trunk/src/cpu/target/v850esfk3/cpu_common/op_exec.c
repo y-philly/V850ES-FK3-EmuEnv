@@ -18,6 +18,15 @@ static int OpExec11(TargetCoreType *cpu);
 static int OpExec12(TargetCoreType *cpu);
 static int OpExec13(TargetCoreType *cpu);
 
+uint32 cpu_get_pc(const TargetCoreType *core)
+{
+	return core->reg.pc;
+}
+CoreIdType cpu_get_core_id(const TargetCoreType *core)
+{
+	return core->core_id;
+}
+
 int OpExec(TargetCoreType *cpu)
 {
 	int ret = -1;

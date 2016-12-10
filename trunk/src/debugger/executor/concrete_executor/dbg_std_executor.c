@@ -67,6 +67,7 @@ void dbg_std_executor_cont(void *executor)
 void dbg_std_executor_next(void *executor)
 {
 	cpuctrl_set_debug_mode(TRUE);
+	cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
 	return;
 }
 

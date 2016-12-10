@@ -15,5 +15,7 @@ typedef struct {
 
 extern CpuType	virtual_cpu;
 
+extern uint32 cpu_get_pc(const TargetCoreType *core);
+extern CoreIdType cpu_get_core_id(const TargetCoreType *core);
 
 #endif /* _CPU_H_ */

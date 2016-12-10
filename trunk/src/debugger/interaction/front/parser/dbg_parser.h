@@ -7,7 +7,7 @@ typedef enum {
 	DBG_MODE_DEBUG,
 	DBG_MODE_CPU,
 } DbgModeType;
-extern DbgCmdExecutorType *dbg_parse(DbgModeType mode, uint8 *str, uint32 len);
+extern DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len);
 
 
 #endif /* _DBG_PARSER_H_ */

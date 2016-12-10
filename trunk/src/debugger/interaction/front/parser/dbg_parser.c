@@ -2,19 +2,23 @@
 #include "front/parser/dbg_parser.h"
 #include "front/parser/dbg_parser_config.h"
 #include "concrete_executor/dbg_std_executor.h"
+#include "cpu_control/dbg_cpu_control.h"
 #include <string.h>
+#include <stdio.h>
 
 static DbgCmdExecutorType *last_command = NULL;
 static DbgCmdExecutorType parse_command;
 
-static bool can_execute(DbgModeType mode, DbgCmdExecutorType *res)
+static bool can_execute(DbgCmdExecutorType *res, DbgModeType *mode)
 {
-	if (mode == DBG_MODE_DEBUG) {
+	if (cpuctrl_is_debug_mode() == TRUE) {
+		*mode = DBG_MODE_DEBUG;
 		if (res->std_id != DBG_CMD_STD_ID_QUIT) {
 			return TRUE;
 		}
 	}
 	else { //DBG_MODE_CPU
+		*mode = DBG_MODE_CPU;
 		if (res->std_id == DBG_CMD_STD_ID_QUIT) {
 			return TRUE;
 		}
@@ -22,13 +26,14 @@ static bool can_execute(DbgModeType mode, DbgCmdExecutorType *res)
 	return FALSE;
 }
 
-DbgCmdExecutorType *dbg_parse(DbgModeType mode, uint8 *str, uint32 len)
+DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
 {
 	Std_ReturnType err;
 	uint32 i;
 	DbgCmdExecutorType *res = NULL;
 	DbgCmdExecutorType *arg = NULL;
 	TokenContainerType token_container;
+	DbgModeType mode;
 
 	if ((len == 0) && (last_command != NULL)) {
 		/*
@@ -70,7 +75,7 @@ DbgCmdExecutorType *dbg_parse(DbgModeType mode, uint8 *str, uint32 len)
 		goto errdone;
 	}
 
-	if (can_execute(mode, res) == FALSE) {
+	if (can_execute(res, &mode) == FALSE) {
 		printf("ERROR:can not execute command on %s\n", (mode == DBG_MODE_DEBUG) ? "DEBUG_MODE" : "CPU_MODE");
 		return NULL;
 	}

@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-//#define DBG_LOADER_TEST
+#define DBG_LOADER_TEST
 
 #define DBG_PARSER_TEST
 
@@ -73,12 +73,7 @@ int main(int argc, const char *argv[])
 	CmdOptionType *opt;
 
 	opt = parse_args(argc, argv);
-#ifdef DBG_PARSER_TEST
-	cpuemu_init();
-	cputhr_control_init();
-	cputhr_control_start();
-	dbg_parser_test();
-#endif
+
 #ifdef DBG_LOADER_TEST
 	if (opt == NULL) {
 		return -1;
@@ -91,6 +86,11 @@ int main(int argc, const char *argv[])
 		elf_load((uint8*)opt->filedata);
 	}
 #endif
-
+#ifdef DBG_PARSER_TEST
+	cpuemu_init();
+	cputhr_control_init();
+	cputhr_control_start();
+	dbg_parser_test();
+#endif
 	return 0;
 }

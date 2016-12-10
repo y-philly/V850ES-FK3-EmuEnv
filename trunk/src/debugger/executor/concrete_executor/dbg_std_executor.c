@@ -124,11 +124,21 @@ void dbg_std_executor_view(void *executor)
 	}
 	return;
 }
+
+static void print_memory(uint32 vaddr, uint8 *top_addr, uint32 size)
+{
+	uint32 i;
+	for (i = 0; i < size; i++) {
+		printf("0x%x 0x%x\n", (vaddr + i), *(top_addr + i));
+	}
+	return;
+}
+
 void dbg_std_executor_print(void *executor)
 {
-	 //TODO
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	 DbgCmdExecutorPrintType *parsed_args = (DbgCmdExecutorPrintType *)(arg->parsed_args);
+	 uint8 *data;
 
 	 if (parsed_args->type == DBG_CMD_PRINT_SYMBOL) {
 		 printf("ERROR: not supported:print symbol(%s)\n", parsed_args->symbol.str);
@@ -137,7 +147,8 @@ void dbg_std_executor_print(void *executor)
 		 printf("ERROR: not supported:print addr(0x%x)\n", parsed_args->addr);
 	 }
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR_SIZE) {
-		 printf("print 0x%x %u\n", parsed_args->addr, parsed_args->size);
+		 cpuemu_get_addr_pointer(parsed_args->addr, &data);
+		 print_memory(parsed_args->addr, data, parsed_args->size);
 	 }
 	 return;
 }

@@ -3,11 +3,13 @@
 #include "bus.h"
 #include "std_device_ops.h"
 #include "std_cpu_ops.h"
+#include "dbg_log.h"
 
 static DeviceClockType cpuemu_dev_clock;
 
 void cpuemu_init(void)
 {
+	dbg_log_init("./log.txt");
 	cpu_init();
 	device_init(&virtual_cpu, &cpuemu_dev_clock);
 	return;

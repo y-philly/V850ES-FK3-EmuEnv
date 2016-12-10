@@ -1,6 +1,6 @@
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "std_types.h"
-
+#include<windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
-
+#include <sys/time.h>
 
 
 typedef enum {
@@ -39,24 +39,18 @@ void cputhr_control_init(void)
 
 static void *cpu_run(void* arg)
 {
-	uint32 i = 0;
 	TargetCoreType core;
-	 struct timespec abstime;
+
 
 	core.core_id = 0;
 	core.reg.pc = 0;
 	while (TRUE) {
-		printf("pc=0x%x\n", core.reg.pc);
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "pc=0x%x\n", core.reg.pc));
 		fflush(stdout);
 
 		dbg_notify_cpu_clock_supply_start(&core);
 
-		abstime.tv_nsec = 0;
-		abstime.tv_sec = time(NULL) + 1;
-		abstime.tv_sec += 1;
-		pthread_mutex_lock(&dbg_mutex);
-		pthread_cond_timedwait(&dbg_cv, &dbg_mutex, &abstime);
-		pthread_mutex_unlock(&dbg_mutex);
+		Sleep(100);
 
 		core.reg.pc++;
 	}
@@ -92,17 +86,17 @@ void cputhr_control_dbg_wait(void)
 
 void cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped(void)
 {
-	 struct timespec abstime;
-
 	pthread_mutex_lock(&dbg_mutex);
 	if (cputhr_state == THREAD_STATE_WAIT) {
 		cputhr_state = THREAD_STATE_RUNNING;
 		pthread_cond_signal(&cpu_cv);
 	}
 	while (cputhr_state == THREAD_STATE_RUNNING) {
-		abstime.tv_nsec = 0;
-		abstime.tv_sec = time(NULL) + 1;
-		pthread_cond_timedwait(&dbg_cv, &dbg_mutex, &abstime);
+		pthread_mutex_unlock(&dbg_mutex);
+
+		Sleep(50);
+
+		pthread_mutex_lock(&dbg_mutex);
 	}
 	pthread_mutex_unlock(&dbg_mutex);
 	return;
@@ -110,13 +104,13 @@ void cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped(void)
 
 void cputhr_control_dbg_waitfor_cpu_stopped(void)
 {
-	 struct timespec abstime;
-
 	pthread_mutex_lock(&dbg_mutex);
 	while (cputhr_state == THREAD_STATE_RUNNING) {
-		abstime.tv_nsec = 0;
-		abstime.tv_sec = time(NULL) + 1;
-		pthread_cond_timedwait(&dbg_cv, &dbg_mutex, &abstime);
+		pthread_mutex_unlock(&dbg_mutex);
+
+		Sleep(50);
+
+		pthread_mutex_lock(&dbg_mutex);
 	}
 	pthread_mutex_unlock(&dbg_mutex);
 	return;

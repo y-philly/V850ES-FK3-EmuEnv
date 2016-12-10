@@ -4,6 +4,7 @@
 #include "option/option.h"
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
+#include "cpuemu_ops.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -73,6 +74,7 @@ int main(int argc, const char *argv[])
 
 	opt = parse_args(argc, argv);
 #ifdef DBG_PARSER_TEST
+	cpuemu_init();
 	cputhr_control_init();
 	cputhr_control_start();
 	dbg_parser_test();

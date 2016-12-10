@@ -2,6 +2,7 @@
 #define _ASSERT_H_
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define ASSERT(expr)	\
 do {	\

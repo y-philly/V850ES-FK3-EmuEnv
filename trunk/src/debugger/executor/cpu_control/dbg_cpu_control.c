@@ -11,6 +11,34 @@ DbgCpuCtrlBreakPointType dbg_cpuctrl_break_points[DBG_CPU_CONTROL_BREAK_SETSIZE]
 };
 bool dbg_cpuctrl_dbg_mode = TRUE;
 
+typedef struct {
+	bool is_stopped;
+	CoreIdType core_id;
+} DbgCpuStoppedCoreType;
+
+DbgCpuStoppedCoreType dbg_cpu_stopped_core;
+
+void cpuctrl_set_current_debugged_core(CoreIdType core_id)
+{
+	dbg_cpu_stopped_core.is_stopped = TRUE;
+	dbg_cpu_stopped_core.core_id = core_id;
+	return;
+}
+bool cpuctrl_get_current_debugged_core(CoreIdType *core_id)
+{
+	if (dbg_cpu_stopped_core.is_stopped == TRUE) {
+		*core_id = dbg_cpu_stopped_core.core_id;
+		return TRUE;
+	}
+	return FALSE;
+}
+void cpuctrl_clr_current_debugged_core(void)
+{
+	dbg_cpu_stopped_core.is_stopped = FALSE;
+	return;
+}
+
+
 static DbgCpuCtrlBreakPointType *search_free_break_point_space(void)
 {
 	uint32 i;

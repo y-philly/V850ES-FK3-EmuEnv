@@ -32,7 +32,7 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 	device_init_can( &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);
 	device_init_adc(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	//device_init_wdg(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
-	device_init_comm(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	//device_init_comm(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);//TODO
 
 	return;
 }
@@ -47,15 +47,10 @@ void device_supply_clock(DeviceClockType *dev_clock)
 	device_supply_clock_can(dev_clock);
 	device_supply_clock_adc(dev_clock);
 	//device_supply_clock_wdg(dev_clock);
-	device_supply_clock_comm(dev_clock);
+	//device_supply_clock_comm(dev_clock);//TODO
 	return;
 }
 
-void device_print_clock(DeviceClockType *dev_clock)
-{
-	printf("clock = cpu:%I64u intc:%I64u\n", dev_clock->clock, dev_clock->intclock);
-	return;
-}
 
 int device_io_write8(MpuAddressRegionType *region,  uint32 addr, uint8 data)
 {

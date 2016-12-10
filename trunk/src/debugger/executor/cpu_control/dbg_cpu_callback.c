@@ -27,6 +27,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	}
 
 	if (need_stop == TRUE) {
+		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
 		fflush(stdout);
 		cputhr_control_cpu_wait();

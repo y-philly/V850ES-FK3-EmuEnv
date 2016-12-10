@@ -3,6 +3,9 @@
 #include "front/parser/concrete_parser/dbg_std_parser.h"
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
+#include "cpuemu_ops.h"
+#include "dbg_log.h"
+#include "assert.h"
 #include <stdio.h>
 
 void dbg_std_executor_parse_error(void *executor)
@@ -73,8 +76,25 @@ void dbg_std_executor_next(void *executor)
 
 void dbg_std_executor_return(void *executor)
 {
-	 //TODO
-	 printf("return\n");
+	uint32 retaddr;
+	CoreIdType core_id;
+
+	if (cpuctrl_get_current_debugged_core(&core_id) == TRUE) {
+		retaddr = cpuemu_get_retaddr(core_id);
+		 if (cpuctrl_set_break(retaddr) == TRUE) {
+			 printf("break 0x%x\n", retaddr);
+		 }
+		 else {
+			 printf("ERROR: can not break 0x%x\n", retaddr);
+		 }
+		cpuctrl_set_debug_mode(FALSE);
+		cputhr_control_dbg_wakeup_cpu();
+	}
+	else {
+		ASSERT(0);
+	}
+
+	return;
 }
 
 void dbg_std_executor_quit(void *executor)
@@ -85,13 +105,24 @@ void dbg_std_executor_quit(void *executor)
 
 void dbg_std_executor_elaps(void *executor)
 {
-	 //TODO
-	 printf("elaps\n");
+	CpuEmuElapsType elaps;
+	cpuemu_get_elaps(&elaps);
+	printf("clock = cpu:%I64u intc:%I64u\n", elaps.total_clocks, elaps.intr_clocks);
+	return;
 }
 void dbg_std_executor_view(void *executor)
 {
-	 //TODO
-	 printf("view\n");
+	bool view_mode = dbg_log_is_view_mode();
+
+	if (view_mode == TRUE) {
+		dbg_log_set_view_mode(FALSE);
+		printf("VIEW_MODE=OFF\n");
+	}
+	else {
+		dbg_log_set_view_mode(TRUE);
+		printf("VIEW_MODE=ON\n");
+	}
+	return;
 }
 void dbg_std_executor_print(void *executor)
 {

@@ -1,4 +1,4 @@
-#include "dbg.h"
+#include "../lib/dbg_log.h"
 #include "string.h"
 
 int symbol_get_func(char *funcname, uint32 func_len, uint32 *addrp, uint32 *size)

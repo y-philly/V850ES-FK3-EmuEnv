@@ -2,7 +2,7 @@
 #define _DBG_CAN_H_
 
 #include "device.h"
-#include "dbg.h"
+#include "dbg_log.h"
 
 typedef struct {
 	bool (*init) (uint32 ch);

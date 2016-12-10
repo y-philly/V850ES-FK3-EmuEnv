@@ -8,7 +8,9 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-#define DBG_LOADER_TEST
+//#define DBG_LOADER_TEST
+
+#define DBG_PARSER_TEST
 
 #ifdef DBG_PARSER_TEST
 static int debugger_getline(char *line, int size)

@@ -33,6 +33,7 @@ VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/concrete_parser
 VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/lib
 VPATH	+= $(ROOTDIR)/debugger/executor
 VPATH	+= $(ROOTDIR)/debugger/executor/concrete_executor
+VPATH	+= $(ROOTDIR)/debugger/executor/cpu_control
 
 CFLAGS	+= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
@@ -45,7 +46,7 @@ LIBS	+= -lpthread
 OBJS	+= main.o
 OBJS	+= option.o
 OBJS	+= mpu.o
-OBJS	+= dbg_print.o
+OBJS	+= dbg_log.o
 OBJS	+= mpu_config.o
 OBJS	+= cpu_config.o
 OBJS	+= intc.o
@@ -56,6 +57,8 @@ OBJS	+= dbg_std_parser.o
 OBJS	+= dbg_parser.o
 OBJS	+= dbg_std_executor.o
 OBJS	+= loader.o
+OBJS	+= cpuemu.o
+OBJS	+= dbg_cpu_control.o
 
 
 .SUFFIXES:	.c .o

@@ -7,8 +7,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "../lib/dbg_log.h"
 
-#include "dbg.h"
 #include "cpu.h"
 #include "intc.h"
 #include "device/inc/device.h"

@@ -1,5 +1,5 @@
-#ifndef _DBG_H_
-#define _DBG_H_
+#ifndef _DBG_LOG_H_
+#define _DBG_LOG_H_
 
 #define DEBUG_EMU
 #ifdef DEBUG_EMU
@@ -23,14 +23,14 @@ typedef struct {
 extern DbgExecOpBufferType DbgExecOpBuffer;
 #define DBG_EXEC_OP_BUF()		((DbgExecOpBuffer.buf[DbgExecOpBuffer.count].p))
 #define DBG_EXEC_OP_BUF_LEN()	(DBG_BUFP_LEN)
-extern void dbg_print_init(char *filepath);
-extern void dbg_print_sync(void);
-static inline void dbg_print_set_view_mode(bool on)
+extern void dbg_log_init(char *filepath);
+extern void dbg_log_sync(void);
+static inline void dbg_log_set_view_mode(bool on)
 {
 	DbgExecOpBuffer.is_view_mode = on;
 }
 
-static inline bool dbg_print_is_view_mode(void)
+static inline bool dbg_log_is_view_mode(void)
 {
 	return DbgExecOpBuffer.is_view_mode;
 }
@@ -39,15 +39,19 @@ static inline bool dbg_print_is_view_mode(void)
 
 #define DBG_PRINT(arg)	\
 do { \
-	if (dbg_print_is_view_mode() == TRUE) {	\
+	if (dbg_log_is_view_mode() == TRUE) {	\
 		DbgExecOpBuffer.buf[DbgExecOpBuffer.count].write_len = snprintf	arg;	\
 		DbgExecOpBuffer.count++;	\
-		dbg_print_sync();	\
+		dbg_log_sync();	\
 	}	\
 } while (0)
+#define DBG_LOG_SET_VIEW(on)	dbg_log_set_view_mode(on)
+#define DBG_LOG_IS_VIEW_MODE()	dbg_log_is_view_mode()
 #else
 #define DBG_PRINT(arg)
+#define DBG_LOG_SET_VIEW(on)
+#define DBG_LOG_IS_VIEW_MODE()
 #endif
 
 
-#endif /* _DBG_H_ */
+#endif /* _DBG_LOG_H_ */

@@ -1,6 +1,7 @@
 #include "dbg_executor.h"
 #include "concrete_executor/dbg_std_executor.h"
 #include "front/parser/concrete_parser/dbg_std_parser.h"
+#include "cpu_control/dbg_cpu_control.h"
 #include <stdio.h>
 
 void dbg_std_executor_parse_error(void *executor)
@@ -17,12 +18,21 @@ void dbg_std_executor_break(void *executor)
 	 DbgCmdExecutorBreakType *parsed_args = (DbgCmdExecutorBreakType *)(arg->parsed_args);
 
 	 if (parsed_args->type == DBG_CMD_BBREAK_SET) {
-		 //TODO
-		 printf("break 0x%x\n", parsed_args->break_addr);
+		 if (cpuctrl_set_break(parsed_args->break_addr) == TRUE) {
+			 printf("break 0x%x\n", parsed_args->break_addr);
+		 }
+		 else {
+			 printf("ERROR: can not break 0x%x\n", parsed_args->break_addr);
+		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_BREAK_INFO) {
-		 //TODO
-		 printf("info break\n");
+		 uint32 i;
+		 uint32 addr;
+		 for (i = 0; i < DBG_CPU_CONTROL_BREAK_SETSIZE; i++) {
+			 if (cpuctrl_get_break(i, &addr) == TRUE) {
+				 printf("[%u] 0x%x\n", i, addr);
+			 }
+		 }
 	 }
 	 return;
 }
@@ -33,12 +43,16 @@ void dbg_std_executor_delete(void *executor)
 	 DbgCmdExecutorDeleteType *parsed_args = (DbgCmdExecutorDeleteType *)(arg->parsed_args);
 
 	 if (parsed_args->type == DBG_CMD_DELETE_ONE) {
-		 //TODO
-		 printf("delete %u\n", parsed_args->delete_break_no);
+		 if (cpuctrl_del_break(parsed_args->delete_break_no) == FALSE) {
+			 printf("ERROR: can not delete %u\n", parsed_args->delete_break_no);
+		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_DELETE_ALL) {
-		 //TODO
-		 printf("delete all\n");
+		 uint32 i;
+		 uint32 addr;
+		 for (i = 0; i < DBG_CPU_CONTROL_BREAK_SETSIZE; i++) {
+			(void)cpuctrl_del_break(i);
+		 }
 	 }
 	 return;
 

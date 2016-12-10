@@ -1,4 +1,5 @@
 ﻿
+
 #ifndef _OP_EXEC_OPS_H_
 #define _OP_EXEC_OPS_H_
 
@@ -141,7 +142,7 @@ extern int op_exec_dispose(TargetCoreType *cpu);
  * ディバッグ機能用命令
  */
 
-#include "dbg.h"
+#include "../../../../lib/dbg_log.h"
 
 
 #endif /* _OP_EXEC_OPS_H_ */

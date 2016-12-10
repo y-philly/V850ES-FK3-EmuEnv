@@ -1,4 +1,4 @@
-#include "dbg.h"
+#include "dbg_log.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/types.h>
@@ -8,7 +8,7 @@
 
 DbgExecOpBufferType DbgExecOpBuffer;
 
-void dbg_print_init(char *filepath)
+void dbg_log_init(char *filepath)
 {
 	int fd;
 	fd = open(filepath, O_CREAT | O_TRUNC |O_WRONLY | O_BINARY, 0777);
@@ -24,7 +24,7 @@ void dbg_print_init(char *filepath)
 	return;
 }
 
-void dbg_print_sync(void)
+void dbg_log_sync(void)
 {
 	int i;
 	int err;

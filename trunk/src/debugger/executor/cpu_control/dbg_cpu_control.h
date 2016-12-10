@@ -13,8 +13,15 @@ extern void cpuctrl_set_current_debugged_core(CoreIdType core_id);
 extern void cpuctrl_clr_current_debugged_core(void);
 extern bool cpuctrl_get_current_debugged_core(CoreIdType *core_id);
 
-extern bool cpuctrl_set_break(uint32 addr);
+
+typedef enum {
+	BREAK_POINT_TYPE_FOREVER,
+	BREAK_POINT_TYPE_ONLY_ONCE,
+} BreakPointEumType;
+extern bool cpuctrl_set_break(uint32 addr, BreakPointEumType type);
 extern bool cpuctrl_del_break(uint32 index);
+extern void cpuctrl_del_all_break(BreakPointEumType type);
 extern void cpuctrl_set_debug_mode(bool on);
+extern void cpuctrl_set_force_break(void);
 
 #endif /* _DBG_CPU_CONTROL_H_ */

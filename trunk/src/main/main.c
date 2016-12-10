@@ -88,8 +88,6 @@ int main(int argc, const char *argv[])
 #endif
 #ifdef DBG_PARSER_TEST
 	cpuemu_init();
-	cputhr_control_init();
-	cputhr_control_start();
 	dbg_parser_test();
 #endif
 	return 0;

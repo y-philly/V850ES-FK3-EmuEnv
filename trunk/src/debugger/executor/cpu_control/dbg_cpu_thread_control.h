@@ -19,5 +19,7 @@ extern void cputhr_control_cpu_wait(void);
 extern void cputhr_control_cpu_wakeup_dbg(void);
 
 
+extern void *cpuemu_thread_run(void *arg);
+
 
 #endif /* _DBG_CPU_THREAD_CONTROL_H_ */

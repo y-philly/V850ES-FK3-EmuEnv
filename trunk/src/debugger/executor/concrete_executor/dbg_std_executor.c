@@ -22,7 +22,7 @@ void dbg_std_executor_break(void *executor)
 	 DbgCmdExecutorBreakType *parsed_args = (DbgCmdExecutorBreakType *)(arg->parsed_args);
 
 	 if (parsed_args->type == DBG_CMD_BBREAK_SET) {
-		 if (cpuctrl_set_break(parsed_args->break_addr) == TRUE) {
+		 if (cpuctrl_set_break(parsed_args->break_addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
 			 printf("break 0x%x\n", parsed_args->break_addr);
 		 }
 		 else {
@@ -52,10 +52,7 @@ void dbg_std_executor_delete(void *executor)
 		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_DELETE_ALL) {
-		 uint32 i;
-		 for (i = 0; i < DBG_CPU_CONTROL_BREAK_SETSIZE; i++) {
-			(void)cpuctrl_del_break(i);
-		 }
+		 cpuctrl_del_all_break(BREAK_POINT_TYPE_FOREVER);
 	 }
 	 return;
 }
@@ -81,7 +78,7 @@ void dbg_std_executor_return(void *executor)
 
 	if (cpuctrl_get_current_debugged_core(&core_id) == TRUE) {
 		retaddr = cpuemu_get_retaddr(core_id);
-		 if (cpuctrl_set_break(retaddr) == TRUE) {
+		 if (cpuctrl_set_break(retaddr, BREAK_POINT_TYPE_ONLY_ONCE) == TRUE) {
 			 printf("break 0x%x\n", retaddr);
 		 }
 		 else {

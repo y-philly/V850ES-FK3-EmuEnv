@@ -30,6 +30,11 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
 		fflush(stdout);
+		dbg_log_sync();
+		/*
+		 * return コマンド実行時の一時的なブレークポイントを削除する．
+		 */
+		cpuctrl_del_all_break(BREAK_POINT_TYPE_ONLY_ONCE);
 		cputhr_control_cpu_wait();
 	}
 	return;

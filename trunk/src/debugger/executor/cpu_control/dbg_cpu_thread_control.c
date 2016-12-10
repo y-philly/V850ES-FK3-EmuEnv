@@ -30,14 +30,14 @@ void cputhr_control_init(void)
 	return;
 
 }
-#if 1 /* for test */
+#if 0 /* for test */
 #include "cpu.h"
 #include "cpu_control/dbg_cpu_callback.h"
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
 
-static void *cpu_run(void* arg)
+static void *cpuemu_thread_run(void* arg)
 {
 	TargetCoreType core;
 
@@ -61,7 +61,7 @@ void cputhr_control_start(void)
 {
 	pthread_t thread;
 	cputhr_state = THREAD_STATE_RUNNING;
-	pthread_create(&thread , NULL , cpu_run , NULL);
+	pthread_create(&thread , NULL , cpuemu_thread_run , NULL);
 }
 
 

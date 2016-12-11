@@ -42,7 +42,7 @@ void device_supply_clock(DeviceClockType *dev_clock)
 
 	device_supply_clock_timer(dev_clock);
 	device_supply_clock_timer_m(dev_clock);
-	//device_supply_clock_serial(dev_clock);
+	device_supply_clock_serial(dev_clock);
 	//device_supply_clock_can(dev_clock);
 	//device_supply_clock_adc(dev_clock);
 	//device_supply_clock_wdg(dev_clock);

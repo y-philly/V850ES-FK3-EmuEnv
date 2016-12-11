@@ -41,7 +41,6 @@ static inline bool dbg_log_is_view_mode(void)
 do { \
 	if (dbg_log_is_view_mode() == TRUE) {	\
 		DbgExecOpBuffer.buf[DbgExecOpBuffer.count].write_len = snprintf	arg;	\
-		printf("%s", DBG_EXEC_OP_BUF());	\
 		DbgExecOpBuffer.count++;	\
 		dbg_log_sync();	\
 	}	\

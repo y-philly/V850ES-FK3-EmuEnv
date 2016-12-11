@@ -82,7 +82,7 @@ void *cpuemu_thread_run(void* arg)
 		}
 
 
-		Sleep(100);
+		//Sleep(100);
 
 	}
 	return NULL;

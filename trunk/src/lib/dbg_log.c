@@ -28,7 +28,6 @@ void dbg_log_sync(void)
 {
 	int i;
 	int err;
-
 	for (i = 0; i < DbgExecOpBuffer.count; i++) {
 		err = write(DbgExecOpBuffer.fd, DbgExecOpBuffer.buf[i].p, DbgExecOpBuffer.buf[i].write_len);
 		if (err <= 0) {

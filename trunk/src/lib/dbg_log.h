@@ -42,7 +42,9 @@ do { \
 	if (dbg_log_is_view_mode() == TRUE) {	\
 		DbgExecOpBuffer.buf[DbgExecOpBuffer.count].write_len = snprintf	arg;	\
 		DbgExecOpBuffer.count++;	\
-		dbg_log_sync();	\
+		if (DbgExecOpBuffer.count >= DBG_BUFP_MAX_CNT) {	\
+			dbg_log_sync();	\
+		}	\
 	}	\
 } while (0)
 #define DBG_LOG_SET_VIEW(on)	dbg_log_set_view_mode(on)

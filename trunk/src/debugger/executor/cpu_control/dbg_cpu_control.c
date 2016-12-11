@@ -109,7 +109,7 @@ bool cpuctrl_is_debug_mode(void)
 bool cpuctrl_set_break(uint32 addr, BreakPointEumType type)
 {
 	DbgCpuCtrlBreakPointType *bp;
-	if (search_break_point_with_type(addr, type) == TRUE) {
+	if (search_break_point_with_type(addr, type) != NULL) {
 		return TRUE;
 	}
 	bp = search_free_break_point_space();

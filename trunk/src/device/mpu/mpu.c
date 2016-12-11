@@ -35,22 +35,31 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 {
 	uint32 i;
 
+	//printf("addr=0x%x\n", addr);
+
 	for (i = 0U; i < MPU_CONFIG_REGION_NUM; i++) {
 		uint32 start = mpu_address_map.map[i].start;
 		uint32 end = mpu_address_map.map[i].start  + mpu_address_map.map[i].size;
 		uint32 paddr_str = (addr & mpu_address_map.map[i].mask);
-		uint32 paddr_end = addr + search_size;
+		uint32 paddr_end = paddr_str + search_size;
 
+#if 0
+		printf("%u:start=0x%x end=0x%x mask=0x%x\n", i, start, end, mpu_address_map.map[i].mask);
+		printf("%u:pstart=0x%x pend=0x%x\n", i, paddr_str, paddr_end);
+#endif
 		if (	((start <= paddr_str) && (paddr_str < end)) &&
 				((start <  paddr_end) && (paddr_end <= end))
 			) {
-
+			//printf("1:passed1\n");
 			if (has_permission( &mpu_address_map.map[i], core_id) == FALSE) {
+				//printf("1:FAILED\n");
 				return NULL;
 			}
+			//printf("2:passed1:%u:0x%p\n", i,  &mpu_address_map.map[i]);
 			return &mpu_address_map.map[i];
 		}
 	}
+	//printf("2:FAILED\n");
 	return NULL;
 }
 

@@ -59,5 +59,6 @@ bool dbg_serial_getchar(uint8 channel, uint8 *data)
 bool dbg_serial_putchar(uint8 channel, uint8 data)
 {
 	printf("%c", data);
+	fflush(stdout);
 	return TRUE;
 }

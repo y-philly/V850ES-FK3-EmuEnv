@@ -55,8 +55,8 @@ void device_init_serial(MpuAddressRegionType *region)
 		SerialDevice[i].is_send_data = FALSE;
 		SerialDevice[i].count = 0;
 		SerialDevice[i].bitrate = 38400; /* bit/sec */
-//		SerialDevice[i].count_base = CLOCK_PER_SEC / (SerialDevice[i].bitrate / 8);
-		SerialDevice[i].count_base = 1;
+		SerialDevice[i].count_base = CLOCK_PER_SEC / (SerialDevice[i].bitrate / 8);
+//		SerialDevice[i].count_base = 64;
 		SerialDevice[i].ops = NULL;
 	}
 	serial_region = region;
@@ -93,10 +93,9 @@ void device_do_serial(SerialDeviceType *serial)
 	 * 送信データチェック：存在している場合は，データ転送する．
 	 */
 	if (serial->is_send_data) {
-		(void)serial->ops->putchar(serial->id, serial->send_data);
 		//送信割込みを上げる
 		//TODO 送信割り込みｋを上げるとサンプルプログラムがエラー終了してしまうため，一旦，コメントアウトした．
-		//serial_set_str(FALSE);
+		serial_set_str(FALSE);
 		//device_raise_int(INTNO_INTUD0T);
 		serial->is_send_data = FALSE;
 	}
@@ -177,11 +176,12 @@ static Std_ReturnType serial_put_data8(MpuAddressRegionType *region, CoreIdType 
 	*((uint8*)(&region->data[off])) = data;
 
 	if (addr == (UDnTX(UDnCH0) & region->mask)) {
+		(void)SerialDevice[UDnCH0].ops->putchar(SerialDevice[UDnCH0].id, data);
 		SerialDevice[UDnCH0].is_send_data = TRUE;
-		SerialDevice[UDnCH0].send_data = data;
+		//SerialDevice[UDnCH0].send_data = data;
 		serial_set_str(TRUE);
 		//printf("%c", data);
-		fflush(stdout);
+		//fflush(stdout);
 	}
 	return STD_E_OK;
 }

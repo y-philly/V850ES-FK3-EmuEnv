@@ -14,5 +14,7 @@ extern void dbg_std_executor_elaps(void *executor);
 extern void dbg_std_executor_view(void *executor);
 extern void dbg_std_executor_print(void *executor);
 
+extern void dbg_std_executor_serialin(void *executor);
+
 
 #endif /* _DBG_STD_EXECUTOR_H_ */

@@ -1,7 +1,8 @@
 #include "device.h"
 #include "intc_ops.h"
 #include "intc_ops.h"
-
+#include "device_ex_serial_ops.h"
+#include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
 
 static void device_init_clock(MpuAddressRegionType *region)
@@ -19,6 +20,11 @@ static void device_init_clock(MpuAddressRegionType *region)
 	return;
 }
 
+static DeviceExSerialOpType device_ex_serial_op = {
+		.putchar = dbg_serial_putchar,
+		.getchar = dbg_serial_getchar,
+};
+
 void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 {
 	dev_clock->clock = 0;
@@ -28,7 +34,11 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 	device_init_intc(cpu, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
 	device_init_timer(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_timer_m(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+
 	device_init_serial(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
+	device_ex_serial_register_ops(0U, &device_ex_serial_op);
+
+
 	device_init_can( &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);
 	device_init_adc(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	//device_init_wdg(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);

@@ -6,6 +6,7 @@
 #include "cpuemu_ops.h"
 #include "dbg_log.h"
 #include "assert.h"
+#include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
 
 void dbg_std_executor_parse_error(void *executor)
@@ -148,4 +149,21 @@ void dbg_std_executor_print(void *executor)
 		 print_memory(parsed_args->addr, data, parsed_args->size);
 	 }
 	 return;
+}
+
+void dbg_std_executor_serialin(void *executor)
+{
+	uint32 i;
+	Std_ReturnType err;
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorSerialInType *parsed_args = (DbgCmdExecutorSerialInType *)(arg->parsed_args);
+
+	for (i = 0; i < parsed_args->input.len; i++) {
+		err = dbg_serial_in(parsed_args->channel, parsed_args->input.str[i]);
+		if (err != STD_E_OK) {
+			printf("ERROR:can not put serial data:%c\n", parsed_args->input.str[i]);
+		}
+	}
+
+	return;
 }

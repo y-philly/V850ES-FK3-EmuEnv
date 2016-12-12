@@ -6,5 +6,7 @@
 #define STD_E_EXEC		2U
 #define STD_E_SEGV		3U
 #define STD_E_INVALID	4U
+#define STD_E_NOENT		5U
+#define STD_E_LIMIT		6U
 
 #endif /* _STD_ERRNO_H_ */

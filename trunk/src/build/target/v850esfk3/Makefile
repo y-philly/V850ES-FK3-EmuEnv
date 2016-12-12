@@ -17,6 +17,7 @@ VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/serial
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/comm
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/can
 VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/debugger/executor/concrete_executor/target/$(ARCH)
 
 CFLAGS	:=
 
@@ -44,6 +45,7 @@ OBJS	+=	timer_m.o
 OBJS	+=	serial.o
 OBJS	+=	comm.o
 OBJS	+=	can.o
+OBJS	+=	dbg_target_serial.o
 
 include ../../Makefile.common
 

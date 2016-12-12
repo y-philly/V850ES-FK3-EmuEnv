@@ -64,10 +64,6 @@
 #define UDnRX_BASE				UINT_C(0xFFFFFA06)
 #define UDnRX(CH)				(UDnRX_BASE + ((CH) * 16U))
 
-typedef struct {
-	bool (*recv) (uint8 ch, uint8 *data);
-	bool (*send) (uint8 ch, uint8 data);
-} DeviceSerialOpType;
 /*
  *  UARTD0受信完了割込み番号
  */
@@ -76,7 +72,6 @@ typedef struct {
  *  UARTD0送信完了割込み番号
  */
 #define INTNO_INTUD0T	UINT_C(37)
-extern void device_serial_register_ops(void *serial, uint8 ch, DeviceSerialOpType *ops);
 
 
 #endif /* _SERIAL_H_ */

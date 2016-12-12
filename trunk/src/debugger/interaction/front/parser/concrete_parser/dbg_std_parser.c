@@ -363,3 +363,45 @@ DbgCmdExecutorType *dbg_parse_quit(DbgCmdExecutorType *arg, const TokenContainer
 }
 
 
+/************************************************************************************
+ * serial コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType serial_string = {
+		.len = 6,
+		.str = { 's', 'e', 'r', 'i', 'a', 'l', '\0' },
+};
+static const TokenStringType serial_string_short = {
+		.len = 1,
+		.str = { 'S', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_serialin(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorSerialInType *parsed_args = (DbgCmdExecutorSerialInType *)arg->parsed_args;
+
+	if (token_container->num != 3) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+	if (token_container->array[1].type != TOKEN_TYPE_VALUE_DEC) {
+		return NULL;
+	}
+	if (token_container->array[2].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &serial_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &serial_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_SERIALIN;
+		arg->run = dbg_std_executor_serialin;
+		parsed_args->channel = token_container->array[1].body.dec.value;
+		parsed_args->input = token_container->array[2].body.str;
+		return arg;
+	}
+	return NULL;
+}
+

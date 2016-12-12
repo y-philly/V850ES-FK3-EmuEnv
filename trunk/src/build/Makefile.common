@@ -9,6 +9,7 @@ IFLAGS	+= -I$(ROOTDIR)/lib
 IFLAGS	+= -I$(ROOTDIR)/cpu
 IFLAGS	+= -I$(ROOTDIR)/bus
 IFLAGS	+= -I$(ROOTDIR)/device/mpu
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target
 IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 
@@ -16,6 +17,7 @@ IFLAGS	+= -I$(ROOTDIR)/debugger/interaction
 IFLAGS	+= -I$(ROOTDIR)/debugger/executor
 IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc
 IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc/target/$(ARCH)
+IFLAGS	+=	-I$(ROOTDIR)/debugger/executor/concrete_executor/target
 
 
 VPATH	+= $(ROOTDIR)/main

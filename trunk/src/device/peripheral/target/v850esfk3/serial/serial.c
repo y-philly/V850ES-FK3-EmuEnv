@@ -2,6 +2,7 @@
 #include "intc_ops.h"
 #include "std_errno.h"
 #include "mpu_types.h"
+#include "device_ex_serial_ops.h"
 #include <stdio.h>
 
 typedef struct {
@@ -12,7 +13,7 @@ typedef struct {
 	uint32 count_base;
 	bool   is_send_data;
 	uint8 send_data;
-	DeviceSerialOpType *ops;
+	DeviceExSerialOpType *ops;
 } SerialDeviceType;
 
 static SerialDeviceType SerialDevice[UDnChannelNum];
@@ -78,8 +79,8 @@ void device_do_serial(SerialDeviceType *serial)
 	 * 受信データチェック：存在している場合は，割り込みを上げる．
 	 */
 	if (serial_isset_str_ssf() == FALSE) {
-		ret = serial->ops->recv(serial->id, &data);
-		if (ret) {
+		ret = serial->ops->getchar(serial->id, &data);
+		if (ret == TRUE) {
 			serial_set_str_ssf();
 			//受信データをセットする．
 			(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
@@ -92,10 +93,11 @@ void device_do_serial(SerialDeviceType *serial)
 	 * 送信データチェック：存在している場合は，データ転送する．
 	 */
 	if (serial->is_send_data) {
-		ret = serial->ops->send(serial->id, serial->send_data);
+		(void)serial->ops->putchar(serial->id, serial->send_data);
 		//送信割込みを上げる
-		serial_set_str(FALSE);
-		device_raise_int(INTNO_INTUD0T);
+		//TODO 送信割り込みｋを上げるとサンプルプログラムがエラー終了してしまうため，一旦，コメントアウトした．
+		//serial_set_str(FALSE);
+		//device_raise_int(INTNO_INTUD0T);
 		serial->is_send_data = FALSE;
 	}
 
@@ -117,9 +119,9 @@ void device_supply_clock_serial(DeviceClockType *dev_clock)
 }
 
 
-void device_serial_register_ops(void *serial, uint8 ch, DeviceSerialOpType *ops)
+void device_ex_serial_register_ops(uint8 channel, DeviceExSerialOpType *ops)
 {
-	SerialDevice[ch].ops = ops;
+	SerialDevice[channel].ops = ops;
 	return;
 }
 
@@ -178,7 +180,7 @@ static Std_ReturnType serial_put_data8(MpuAddressRegionType *region, CoreIdType 
 		SerialDevice[UDnCH0].is_send_data = TRUE;
 		SerialDevice[UDnCH0].send_data = data;
 		serial_set_str(TRUE);
-		printf("%c", data);
+		//printf("%c", data);
 		fflush(stdout);
 	}
 	return STD_E_OK;

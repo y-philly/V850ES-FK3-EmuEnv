@@ -11,12 +11,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-#define DBG_LOADER_TEST
-
-#define DBG_PARSER_TEST
-
-#ifdef DBG_PARSER_TEST
-static int debugger_getline(char *line, int size)
+static int cui_getline(char *line, int size)
 {
 	int n = 0;
 	char c;
@@ -31,7 +26,7 @@ static int debugger_getline(char *line, int size)
 	return n;
 }
 
-static void dbg_parser_test(void)
+static void do_cui(void)
 {
 	DbgCmdExecutorType *res;
 	bool is_dbgmode;
@@ -42,7 +37,7 @@ static void dbg_parser_test(void)
 		is_dbgmode = cpuctrl_is_debug_mode();
 		printf("%s", (is_dbgmode == TRUE) ? "[DBG>" : "[CPU>");
 		fflush(stdout);
-		len = debugger_getline(buffer, 1024);
+		len = cui_getline(buffer, 1024);
 		buffer[len] = '\0';
 		res = dbg_parse((uint8*)buffer, (uint32)len);
 
@@ -51,7 +46,7 @@ static void dbg_parser_test(void)
 		}
 	}
 }
-#endif
+
 
 /*
  * コマンドオプション仕様
@@ -74,7 +69,6 @@ int main(int argc, const char *argv[])
 
 	opt = parse_args(argc, argv);
 
-#ifdef DBG_LOADER_TEST
 	if (opt == NULL) {
 		return -1;
 	}
@@ -85,10 +79,16 @@ int main(int argc, const char *argv[])
 	else {
 		elf_load((uint8*)opt->filedata);
 	}
-#endif
-#ifdef DBG_PARSER_TEST
-	cpuemu_init();
-	dbg_parser_test();
-#endif
+
+	if (opt->is_interaction == TRUE) {
+		cpuemu_init(cpuemu_thread_run);
+		do_cui();
+	}
+	else {
+		cpuemu_init(NULL);
+		cpuemu_set_cpu_end_clock(opt->timeout);
+		(void)cpuemu_thread_run(NULL);
+	}
+
 	return 0;
 }

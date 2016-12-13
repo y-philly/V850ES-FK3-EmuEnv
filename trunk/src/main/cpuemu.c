@@ -13,15 +13,37 @@
  #include <windows.h>
 
 static DeviceClockType cpuemu_dev_clock;
+static bool cpuemu_is_cui_mode = FALSE;
+static uint64 cpuemu_cpu_end_clock = -1LLU;
 
-void cpuemu_init(void)
+bool cpuemu_cui_mode(void)
+{
+	return cpuemu_is_cui_mode;
+}
+
+void cpuemu_init(void *(*cpu_run)(void *))
 {
 	dbg_log_init("./log.txt");
 	cpu_init();
 	device_init(&virtual_cpu, &cpuemu_dev_clock);
 	cputhr_control_init();
-	cputhr_control_start();
+	if (cpu_run != NULL) {
+		cpuemu_is_cui_mode = TRUE;
+		cputhr_control_start(cpu_run);
+	}
+	else {
+		cpuemu_is_cui_mode = FALSE;
+	}
+	return;
+}
 
+uint64 cpuemu_get_cpu_end_clock(void)
+{
+	return cpuemu_cpu_end_clock;
+}
+void cpuemu_set_cpu_end_clock(uint64 clock)
+{
+	cpuemu_cpu_end_clock = clock;
 	return;
 }
 
@@ -56,6 +78,13 @@ void *cpuemu_thread_run(void* arg)
 	Std_ReturnType err;
 
 	while (TRUE) {
+		if (cpuemu_dev_clock.clock >= cpuemu_get_cpu_end_clock()) {
+			dbg_log_sync();
+			printf("EXIT for timeout(%I64u).\n", cpuemu_dev_clock.clock);
+			exit(1);
+		}
+
+
 		/**
 		 * デバイス実行実行
 		 */

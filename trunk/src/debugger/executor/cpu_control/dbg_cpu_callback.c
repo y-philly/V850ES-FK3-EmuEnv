@@ -2,6 +2,7 @@
 #include "cpu_control/dbg_cpu_callback.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "cpu_control/dbg_cpu_control.h"
+#include "cpuemu_ops.h"
 
 void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 {
@@ -13,6 +14,9 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	//TODO
 
 
+	if (cpuemu_cui_mode() == FALSE) {
+		return;
+	}
 	/*
 	 * break point check
 	 * debug mode check

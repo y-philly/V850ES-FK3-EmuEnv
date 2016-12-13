@@ -57,11 +57,11 @@ static void *cpuemu_thread_run(void* arg)
 	return NULL;
 }
 #endif
-void cputhr_control_start(void)
+void cputhr_control_start(void *(*cpu_run) (void *))
 {
 	pthread_t thread;
 	cputhr_state = THREAD_STATE_RUNNING;
-	pthread_create(&thread , NULL , cpuemu_thread_run , NULL);
+	pthread_create(&thread , NULL , cpu_run , NULL);
 }
 
 

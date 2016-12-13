@@ -23,6 +23,18 @@ static int cmd_atoi(char *arg, uint64 *out)
 	return -1;
 }
 
+static bool file_exist(const char *path)
+{
+	struct stat st;
+	int err;
+
+	err = stat(path, &st);
+	if (err < 0) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
 static int file_load(CmdOptionType *opt)
 {
 	size_t ret;
@@ -57,7 +69,6 @@ static int file_load(CmdOptionType *opt)
 
 CmdOptionType *parse_args(int argc, const char* argv[])
 {
-	  int i;
 	  int opt;
 
 	  cmd_option.fifopath = NULL;
@@ -66,7 +77,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  cmd_option.is_interaction = FALSE;
 	  cmd_option.timeout = 0;
 
-	  while ((opt = getopt(argc, argv, "ibt:p:")) != -1) {
+	  while ((opt = getopt(argc, (char**)argv, "ibt:p:")) != -1) {
 		  switch (opt) {
 		  case 'i':
 	    	cmd_option.is_interaction = TRUE;
@@ -102,6 +113,11 @@ CmdOptionType *parse_args(int argc, const char* argv[])
       cmd_option.filepath = cmd_option.buffer_filepath;
 
       if (file_load(&cmd_option) < 0) {
+    	  return NULL;
+      }
+
+      if (file_exist(cmd_option.fifopath) == FALSE) {
+    	  printf("ERROR: not found fifo(%s)\n", cmd_option.fifopath);
     	  return NULL;
       }
 	  return &cmd_option;

@@ -59,8 +59,8 @@ static void do_cui(void)
  * -b	入力ファイル形式
  * 	・あり：バイナリデータ
  * 	・なし：ELFファイル
- * -p<fifofile path>	対抗ECU通信経路指定
- * 	・あり：対抗ECUとの通信あり(FIFO)
+ * -p<fifofile path>	対抗ECU通信経路指定(FIFOファイル配置フォルダパス)
+ * 	・あり：対抗ECUとの通信あり
  * 	・なし：シングルECU構成
  */
 int main(int argc, const char *argv[])

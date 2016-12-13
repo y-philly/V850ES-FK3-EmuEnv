@@ -105,7 +105,7 @@ void dbg_std_executor_elaps(void *executor)
 {
 	CpuEmuElapsType elaps;
 	cpuemu_get_elaps(&elaps);
-	printf("clock = cpu:%I64u intc:%I64u\n", elaps.total_clocks, elaps.intr_clocks);
+	printf("clock = cpu %I64u intc %I64u\n", elaps.total_clocks, elaps.intr_clocks);
 	return;
 }
 void dbg_std_executor_view(void *executor)

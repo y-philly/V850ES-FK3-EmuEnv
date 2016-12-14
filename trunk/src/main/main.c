@@ -1,5 +1,4 @@
 #include "front/parser/dbg_parser.h"
-#include "front/parser/lib/dbg_parser_lib.h"
 #include "loader/loader.h"
 #include "option/option.h"
 #include "cpu_control/dbg_cpu_control.h"
@@ -59,7 +58,7 @@ static void do_cui(void)
  * -b	入力ファイル形式
  * 	・あり：バイナリデータ
  * 	・なし：ELFファイル
- * -p<fifofile path>	対抗ECU通信経路指定(FIFOファイル配置フォルダパス)
+ * -p<fifo config file path>
  * 	・あり：対抗ECUとの通信あり
  * 	・なし：シングルECU構成
  */

@@ -2,7 +2,7 @@
 #define _DBG_STD_PARSER_H_
 
 #include "dbg_executor.h"
-#include "front/parser/lib/dbg_parser_lib.h"
+#include "token.h"
 
 typedef enum {
 	DBG_CMD_BBREAK_SET,

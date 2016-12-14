@@ -32,7 +32,6 @@ VPATH	+= $(ROOTDIR)/main/option
 
 VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser
 VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/concrete_parser
-VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/lib
 VPATH	+= $(ROOTDIR)/debugger/executor
 VPATH	+= $(ROOTDIR)/debugger/executor/concrete_executor
 VPATH	+= $(ROOTDIR)/debugger/executor/cpu_control
@@ -54,7 +53,7 @@ OBJS	+= cpu_config.o
 OBJS	+= intc.o
 OBJS	+= hash.o
 OBJS	+= dbg_parser_config.o
-OBJS	+= dbg_parser_lib.o
+OBJS	+= token.o
 OBJS	+= dbg_std_parser.o
 OBJS	+= dbg_parser.o
 OBJS	+= dbg_std_executor.o

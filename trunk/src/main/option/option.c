@@ -71,7 +71,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 {
 	  int opt;
 
-	  cmd_option.fifopath = NULL;
+	  cmd_option.fifocfgpath = NULL;
 	  cmd_option.filepath = NULL;
 	  cmd_option.is_binary_data = FALSE;
 	  cmd_option.is_interaction = FALSE;
@@ -94,7 +94,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	      case 'p':
 	    	memcpy(cmd_option.buffer_fifopath, optarg, strlen(optarg));
 	    	cmd_option.buffer_fifopath[strlen(optarg)] = '\0';
-	        cmd_option.fifopath = cmd_option.buffer_fifopath;
+	        cmd_option.fifocfgpath = cmd_option.buffer_fifopath;
 	        break;
 	      default:
 	        printf("error! \'%c\' \'%c\'\n", opt, optopt);
@@ -105,7 +105,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  printf("i = %d\n", cmd_option.is_interaction);
 	  printf("b = %d\n", cmd_option.is_binary_data);
 	  printf("t = %llu\n", cmd_option.timeout);
-	  printf("p = %s\n", (cmd_option.fifopath != NULL) ? cmd_option.fifopath : "NULL");
+	  printf("p = %s\n", (cmd_option.fifocfgpath != NULL) ? cmd_option.fifocfgpath : "NULL");
 #endif
 
 	  memcpy(cmd_option.buffer_filepath, argv[optind], strlen(argv[optind]));
@@ -116,8 +116,8 @@ CmdOptionType *parse_args(int argc, const char* argv[])
     	  return NULL;
       }
 
-      if (file_exist(cmd_option.fifopath) == FALSE) {
-    	  printf("ERROR: not found fifo(%s)\n", cmd_option.fifopath);
+      if (file_exist(cmd_option.fifocfgpath) == FALSE) {
+    	  printf("ERROR: not found fifo(%s)\n", cmd_option.fifocfgpath);
     	  return NULL;
       }
 	  return &cmd_option;

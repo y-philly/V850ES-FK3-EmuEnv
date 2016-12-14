@@ -1,4 +1,4 @@
-#include "front/parser/lib/dbg_parser_lib.h"
+#include "token.h"
 #include "std_errno.h"
 #include "std_types.h"
 #include "assert.h"
@@ -6,24 +6,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-
-#if 0 //TODO 削除予定
-DbgCmdExecutorType *alloc_dbg_cmd_executor(void)
-{
-	DbgCmdExecutorType *entry;
-	entry = malloc(sizeof(DbgCmdExecutorType));
-	ASSERT(entry != NULL);
-	return entry;
-}
-
-void free_dbg_cmd_executor(DbgCmdExecutorType *entry)
-{
-	if (entry != NULL) {
-		free(entry);
-	}
-	return;
-}
-#endif
 
 bool token_strcmp(const TokenStringType *str1, const TokenStringType *str2)
 {

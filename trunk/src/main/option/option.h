@@ -7,7 +7,7 @@ typedef struct {
 	bool	is_interaction;
 	uint64	timeout;
 	bool	is_binary_data;
-	char	*fifopath;
+	char	*fifocfgpath;
 	char	*filepath;
 	char	buffer_fifopath[4096];
 	char	buffer_filepath[4096];

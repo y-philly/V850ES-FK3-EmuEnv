@@ -52,7 +52,6 @@ typedef struct {
 } CpuEmuCommDevType;
 
 static CpuEmuCommDevType CpuEmuCommDev;
-static void tx_fifo_init(void);
 static void tx_fifo_sync(void);
 static void tx_fifo_write(uint32 data);
 static void rx_fifo_sync(void);
@@ -65,15 +64,14 @@ void device_init_comm(MpuAddressRegionType *region)
 {
 	comm_region = region;
 
-	CpuEmuCommDev.rx_fifo.path = cpuemu_get_comm_rx_fifo();
-	CpuEmuCommDev.tx_fifo.path = cpuemu_get_comm_tx_fifo();
+	CpuEmuCommDev.rx_fifo.path = (char*)cpuemu_get_comm_rx_fifo();
+	CpuEmuCommDev.tx_fifo.path = (char*)cpuemu_get_comm_tx_fifo();
 
 	CpuEmuCommDev.rx_fifo.max = MAX_BUFFER_SIZE;
 	CpuEmuCommDev.tx_fifo.max = MAX_BUFFER_SIZE;
 
 	CpuEmuCommDev.sync_count = SYNC_COUNT;
 
-	tx_fifo_init();
 	return;
 }
 
@@ -92,19 +90,6 @@ void device_supply_clock_comm(DeviceClockType *dev_clock)
 
 
 /*--------------------- static ---------------- */
-
-static void tx_fifo_init(void)
-{
-	int fd;
-	fd = open(CpuEmuCommDev.tx_fifo.path, O_CREAT | O_TRUNC |O_WRONLY|O_BINARY, 00777);
-	if (fd < 0) {
-		printf("file open error:%s\n", CpuEmuCommDev.tx_fifo.path);
-		exit(1);
-	}
-
-	close(fd);
-	return;
-}
 
 static void tx_fifo_sync(void)
 {

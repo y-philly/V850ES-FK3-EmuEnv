@@ -74,7 +74,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
     	  return NULL;
       }
 
-      if (file_exist(cmd_option.fifocfgpath) == FALSE) {
+      if ((cmd_option.fifocfgpath != NULL) &&(file_exist(cmd_option.fifocfgpath) == FALSE)) {
     	  printf("ERROR: not found fifo(%s)\n", cmd_option.fifocfgpath);
     	  return NULL;
       }

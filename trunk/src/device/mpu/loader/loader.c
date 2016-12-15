@@ -87,13 +87,10 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 		if (phdr->p_type != PT_LOAD) {
 			continue;
 		}
-		if (phdr->p_flags & PF_W) {
-			continue;
-		}
 		/*
 		 * ROM領域のみロードする．
 		 */
-		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_vaddr, &ptr);
+		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_paddr, &ptr);
 		if (err != STD_E_OK) {
 			printf("Invalid elf file: can not load addr=0x%x\n", phdr->p_vaddr);
 			return STD_E_INVALID;
@@ -102,7 +99,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 				( ((uint8_t*)elf_image) + phdr->p_offset ),
 				phdr->p_filesz);
 
-		printf("Elf loading was succeeded:vaddr=0x%x size=%uKB\n", phdr->p_vaddr, phdr->p_filesz/1024);
+		printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_paddr, phdr->p_paddr + phdr->p_filesz, phdr->p_filesz/1024, phdr->p_filesz % 1024);
 
 	}
 	return 0;

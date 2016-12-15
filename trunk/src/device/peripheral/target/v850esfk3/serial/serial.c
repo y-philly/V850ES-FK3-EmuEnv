@@ -55,8 +55,8 @@ void device_init_serial(MpuAddressRegionType *region)
 		SerialDevice[i].is_send_data = FALSE;
 		SerialDevice[i].count = 0;
 		SerialDevice[i].bitrate = 38400; /* bit/sec */
-		SerialDevice[i].count_base = CLOCK_PER_SEC / (SerialDevice[i].bitrate / 8);
-//		SerialDevice[i].count_base = 64;
+//		SerialDevice[i].count_base = CLOCK_PER_SEC / (SerialDevice[i].bitrate / 8);
+		SerialDevice[i].count_base = 1;
 		SerialDevice[i].ops = NULL;
 	}
 	serial_region = region;

@@ -261,16 +261,28 @@ Std_ReturnType cpuemu_set_comm_fifocfg(const char* fifocfg)
 	file_close(&cpuemu_fifocfg);
 	return STD_E_OK;
 errdone:
+	cpuemu_fifo_file.tx_path.len = 0;
+	cpuemu_fifo_file.rx_path.len = 0;
 	file_close(&cpuemu_fifocfg);
 	return err;
 }
 
 const char* cpuemu_get_comm_rx_fifo(void)
 {
-	return (const char*)cpuemu_fifo_file.rx_path.str;
+	if (cpuemu_fifo_file.rx_path.len > 0) {
+		return (const char*)cpuemu_fifo_file.rx_path.str;
+	}
+	else {
+		return NULL;
+	}
 }
 
 const char* cpuemu_get_comm_tx_fifo(void)
 {
-	return (const char*)cpuemu_fifo_file.tx_path.str;
+	if (cpuemu_fifo_file.tx_path.len > 0) {
+		return (const char*)cpuemu_fifo_file.tx_path.str;
+	}
+	else {
+		return NULL;
+	}
 }

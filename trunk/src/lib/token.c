@@ -135,3 +135,27 @@ Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint
 
 	return STD_E_OK;
 }
+
+bool token_merge(TokenStringType *dest, const TokenStringType *src)
+{
+	if ((dest->len + src->len) > (TOKEN_STRING_MAX_SIZE - 1)) {
+		return FALSE;
+	}
+	memcpy(&dest->str[dest->len], src->str,src->len);
+	dest->len += src->len;
+	dest->str[dest->len] = '\0';
+
+	return TRUE;
+}
+
+bool token_string_set(TokenStringType *dest, const char* src)
+{
+	uint32 len = strlen(src);
+	if (len > TOKEN_STRING_MAX_SIZE) {
+		return FALSE;
+	}
+	dest->len = strlen(src);
+	memcpy(dest->str, src, dest->len);
+	dest->str[dest->len] = '\0';
+	return TRUE;
+}

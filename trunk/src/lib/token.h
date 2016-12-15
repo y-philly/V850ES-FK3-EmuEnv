@@ -18,7 +18,7 @@ typedef struct {
 	uint32 value;
 } TokenValueDecType;
 
-#define TOKEN_STRING_MAX_SIZE	1024
+#define TOKEN_STRING_MAX_SIZE	4096
 typedef struct {
 	uint32 len;
 	uint8 str[TOKEN_STRING_MAX_SIZE];
@@ -41,6 +41,9 @@ typedef struct {
 
 extern Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint32 len);
 
+extern bool token_string_set(TokenStringType *dest, const char* src);
 extern bool token_strcmp(const TokenStringType *str1, const TokenStringType *str2);
+extern bool token_merge(TokenStringType *dest, const TokenStringType *src);
+
 
 #endif /* _TOKEN_H_ */

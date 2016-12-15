@@ -59,6 +59,7 @@ OBJS	+= dbg_parser.o
 OBJS	+= dbg_std_executor.o
 OBJS	+= loader.o
 OBJS	+= cpuemu.o
+OBJS	+= file.o
 OBJS	+= dbg_cpu_control.o
 OBJS	+= dbg_cpu_thread_control.o
 OBJS	+= dbg_cpu_callback.o

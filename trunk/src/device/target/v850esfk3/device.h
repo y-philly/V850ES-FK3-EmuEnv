@@ -31,9 +31,6 @@ extern void device_supply_clock_adc(DeviceClockType *dev_clock);
 extern void device_supply_clock_wdg(DeviceClockType *dev_clock);
 extern void device_supply_clock_comm(DeviceClockType *dev_clock);
 
-extern int CpuEmuCommDevisProc1;
-
-
 /*
  * 割込み関数
  */

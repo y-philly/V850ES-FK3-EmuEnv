@@ -67,16 +67,22 @@ int main(int argc, const char *argv[])
 	CmdOptionType *opt;
 
 	opt = parse_args(argc, argv);
-
 	if (opt == NULL) {
 		return -1;
 	}
+	if (opt->fifocfgpath != NULL) {
+		Std_ReturnType err;
+		err = cpuemu_set_comm_fifocfg(opt->fifocfgpath);
+		if (err != STD_E_OK) {
+			return -1;
+		}
+	}
 
 	if (opt->is_binary_data) {
-		binary_load((uint8*)opt->filedata, 0U, opt->filedata_len);
+		binary_load((uint8*)opt->load_file.buffer, 0U, opt->load_file.size);
 	}
 	else {
-		elf_load((uint8*)opt->filedata);
+		elf_load((uint8*)opt->load_file.buffer);
 	}
 
 	if (opt->is_interaction == TRUE) {

@@ -58,13 +58,13 @@ static void rx_fifo_sync(void);
 static void rx_fifo_read(MpuAddressRegionType *region, uint32 *data);
 static void rx_fifo_read_status(MpuAddressRegionType *region, uint32 *data);
 
-int CpuEmuCommDevisProc1;
 static MpuAddressRegionType *comm_region;
 
 void device_init_comm(MpuAddressRegionType *region)
 {
 	comm_region = region;
 
+#if 0
 	if (CpuEmuCommDevisProc1 == 1) {
 		CpuEmuCommDev.rx_fifo.path = CPU_EMU_COMM_FIFO1_PATH;
 		CpuEmuCommDev.tx_fifo.path = CPU_EMU_COMM_FIFO2_PATH;
@@ -73,6 +73,7 @@ void device_init_comm(MpuAddressRegionType *region)
 		CpuEmuCommDev.rx_fifo.path = CPU_EMU_COMM_FIFO2_PATH;
 		CpuEmuCommDev.tx_fifo.path = CPU_EMU_COMM_FIFO1_PATH;
 	}
+#endif
 
 	CpuEmuCommDev.rx_fifo.max = MAX_BUFFER_SIZE;
 	CpuEmuCommDev.tx_fifo.max = MAX_BUFFER_SIZE;

@@ -22,8 +22,8 @@ extern void cpuemu_set_cpu_end_clock(uint64 clock);
 
 
 extern Std_ReturnType cpuemu_set_comm_fifocfg(const char* fifocfg);
-extern const char* cpuemu_set_comm_rx_fifo(void);
-extern const char* cpuemu_set_comm_tx_fifo(void);
+extern const char* cpuemu_get_comm_rx_fifo(void);
+extern const char* cpuemu_get_comm_tx_fifo(void);
 
 
 #endif /* _CPUEMU_OPS_H_ */

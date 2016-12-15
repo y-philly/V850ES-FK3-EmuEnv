@@ -3,6 +3,7 @@
 #include "intc_ops.h"
 #include "mpu_types.h"
 #include "std_errno.h"
+#include "cpuemu_ops.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -64,16 +65,8 @@ void device_init_comm(MpuAddressRegionType *region)
 {
 	comm_region = region;
 
-#if 0
-	if (CpuEmuCommDevisProc1 == 1) {
-		CpuEmuCommDev.rx_fifo.path = CPU_EMU_COMM_FIFO1_PATH;
-		CpuEmuCommDev.tx_fifo.path = CPU_EMU_COMM_FIFO2_PATH;
-	}
-	else {
-		CpuEmuCommDev.rx_fifo.path = CPU_EMU_COMM_FIFO2_PATH;
-		CpuEmuCommDev.tx_fifo.path = CPU_EMU_COMM_FIFO1_PATH;
-	}
-#endif
+	CpuEmuCommDev.rx_fifo.path = cpuemu_get_comm_rx_fifo();
+	CpuEmuCommDev.tx_fifo.path = cpuemu_get_comm_tx_fifo();
 
 	CpuEmuCommDev.rx_fifo.max = MAX_BUFFER_SIZE;
 	CpuEmuCommDev.tx_fifo.max = MAX_BUFFER_SIZE;

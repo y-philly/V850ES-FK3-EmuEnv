@@ -245,8 +245,18 @@ Std_ReturnType cpuemu_set_comm_fifocfg(const char* fifocfg)
 		goto errdone;
 	}
 
-	printf("RX fifo:%s\n", cpuemu_set_comm_rx_fifo());
-	printf("TX fifo:%s\n", cpuemu_set_comm_tx_fifo());
+	err = STD_E_INVALID;
+	if (file_exist(cpuemu_get_comm_rx_fifo()) == FALSE) {
+		printf("ERROR: can not found fifo file %s...\n", cpuemu_get_comm_rx_fifo());
+		goto errdone;
+	}
+	if (file_exist(cpuemu_get_comm_tx_fifo()) == FALSE) {
+		printf("ERROR: can not found fifo file %s...\n", cpuemu_get_comm_rx_fifo());
+		goto errdone;
+	}
+
+	printf("RX fifo:%s\n", cpuemu_get_comm_rx_fifo());
+	printf("TX fifo:%s\n", cpuemu_get_comm_tx_fifo());
 
 	file_close(&cpuemu_fifocfg);
 	return STD_E_OK;
@@ -255,12 +265,12 @@ errdone:
 	return err;
 }
 
-const char* cpuemu_set_comm_rx_fifo(void)
+const char* cpuemu_get_comm_rx_fifo(void)
 {
 	return (const char*)cpuemu_fifo_file.rx_path.str;
 }
 
-const char* cpuemu_set_comm_tx_fifo(void)
+const char* cpuemu_get_comm_tx_fifo(void)
 {
 	return (const char*)cpuemu_fifo_file.tx_path.str;
 }

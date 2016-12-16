@@ -39,6 +39,7 @@ typedef uint16_t	Elf32_Half;
 typedef uint32_t	Elf32_Off;
 typedef int32_t		Elf32_Sword;
 typedef uint32_t	Elf32_Word;
+typedef uint16 Elf32_Section;
 
 /*
  * ELF header.
@@ -90,5 +91,17 @@ typedef struct {
 	Elf32_Word	p_flags;	/* Access permission flags. */
 	Elf32_Word	p_align;	/* Alignment in memory and file. */
 } Elf32_Phdr;
+
+/* Symbol table entry.  */
+
+
+typedef struct {
+	Elf32_Word    st_name;        /* Symbol name (string tbl index) */
+	Elf32_Addr    st_value;       /* Symbol value */
+	Elf32_Word    st_size;        /* Symbol size */
+	unsigned char st_info;        /* Symbol type and binding */
+	unsigned char st_other;       /* Symbol visibility */
+	Elf32_Section st_shndx;       /* Section index */
+} Elf32_Sym;
 
 #endif /* __ELF_H__ */

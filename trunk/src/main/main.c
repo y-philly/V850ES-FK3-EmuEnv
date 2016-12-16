@@ -4,6 +4,7 @@
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "cpuemu_ops.h"
+#include "loader/elf_section.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -83,6 +84,7 @@ int main(int argc, const char *argv[])
 	}
 	else {
 		elf_load((uint8*)opt->load_file.buffer);
+
 	}
 
 	if (opt->is_interaction == TRUE) {

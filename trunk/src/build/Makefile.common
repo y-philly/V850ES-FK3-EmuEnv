@@ -63,6 +63,7 @@ OBJS	+= file.o
 OBJS	+= dbg_cpu_control.o
 OBJS	+= dbg_cpu_thread_control.o
 OBJS	+= dbg_cpu_callback.o
+OBJS	+= elf_section.o
 
 
 .SUFFIXES:	.c .o

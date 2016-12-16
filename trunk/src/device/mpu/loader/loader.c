@@ -3,6 +3,7 @@
 #include "mpu.h"
 #include "mpu_ops.h"
 #include "loader/elf.h"
+#include "loader/elf_section.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -34,6 +35,10 @@ Std_ReturnType elf_load(uint8 *elf_data)
 		return err;
 	}
 	err = Elf_LoadProgram((const Elf32_Ehdr*)elf_data);
+	if (err != STD_E_OK) {
+		return err;
+	}
+	err = elf_symbol_load(elf_data);
 
 	return err;
 }

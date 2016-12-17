@@ -4,7 +4,7 @@
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "cpuemu_ops.h"
-#include "loader/elf_section.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -15,6 +15,7 @@ static int cui_getline(char *line, int size)
 {
 	int n = 0;
 	char c;
+	//printf("cui_getline:enter\n");
 	while (TRUE) {
 		c = fgetc(stdin);
 		if (c < 0 || c == '\n') {
@@ -23,6 +24,7 @@ static int cui_getline(char *line, int size)
 		line[n] = c;
 		n++;
 	}
+	//printf("cui_getline:exit\n");
 	return n;
 }
 
@@ -84,7 +86,9 @@ int main(int argc, const char *argv[])
 	}
 	else {
 		elf_load((uint8*)opt->load_file.buffer);
-
+		if (cpuemu_symbol_set() != STD_E_OK) {
+			return -1;
+		}
 	}
 
 	if (opt->is_interaction == TRUE) {

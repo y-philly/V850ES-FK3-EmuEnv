@@ -7,6 +7,8 @@
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "cpu_control/dbg_cpu_callback.h"
+#include "elf_section.h"
+#include "symbol_ops.h"
 #include "token.h"
 #include "file.h"
 #include <stdio.h>
@@ -18,6 +20,48 @@
 static DeviceClockType cpuemu_dev_clock;
 static bool cpuemu_is_cui_mode = FALSE;
 static uint64 cpuemu_cpu_end_clock = -1LLU;
+
+Std_ReturnType cpuemu_symbol_set(void)
+{
+	uint32 i;
+	uint32 num;
+	Std_ReturnType err;
+	DbgSymbolType sym;
+	ElfSymbolType elfsym;
+
+
+	err = elfsym_get_symbol_num(&num);
+	if (err != STD_E_OK) {
+		return err;
+	}
+
+	for (i = 0; i < num; i++) {
+		err = elfsym_get_symbol(i, &elfsym);
+		if (err != STD_E_OK) {
+			return err;
+		}
+		sym.name = &elfsym.name[1];
+		sym.addr = elfsym.addr;
+		sym.size = elfsym.size;
+		switch (elfsym.type) {
+		case SYMBOL_TYPE_OBJECT:
+			if (symbol_gl_add(&sym) < 0) {
+				return STD_E_INVALID;
+			}
+			break;
+		case SYMBOL_TYPE_FUNC:
+			if (symbol_func_add(&sym) < 0) {
+				return STD_E_INVALID;
+			}
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	return STD_E_OK;
+}
 
 bool cpuemu_cui_mode(void)
 {

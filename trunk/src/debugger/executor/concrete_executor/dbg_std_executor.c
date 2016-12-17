@@ -7,7 +7,9 @@
 #include "dbg_log.h"
 #include "assert.h"
 #include "concrete_executor/target/dbg_target_serial.h"
+#include "symbol_ops.h"
 #include <stdio.h>
+#include <string.h>
 
 void dbg_std_executor_parse_error(void *executor)
 {
@@ -126,27 +128,57 @@ void dbg_std_executor_view(void *executor)
 static void print_memory(uint32 vaddr, uint8 *top_addr, uint32 size)
 {
 	uint32 i;
+	printf("size=%u byte\n", size);
 	for (i = 0; i < size; i++) {
-		printf("0x%x 0x%x\n", (vaddr + i), *(top_addr + i));
+		printf("%4u 0x%x 0x%x\n", i, (vaddr + i), *(top_addr + i));
+	}
+	return;
+}
+static void print_memory_type(uint32 vaddr, uint8 *top_addr, uint32 size)
+{
+	if (size == 2) {
+		uint16 *data = (uint16*)top_addr;
+		printf("size=%u byte\n", size);
+		printf("0x%x 0x%x\n", (vaddr), *(data));
+	}
+	else if (size == 4) {
+		uint32 *data = (uint32*)top_addr;
+		printf("size=%u byte\n", size);
+		printf("0x%x 0x%x\n", (vaddr), *(data));
+	}
+	else {
+		print_memory(vaddr, top_addr, size);
 	}
 	return;
 }
 
+#define SYMBOL_CANDIATE_NUM		5
 void dbg_std_executor_print(void *executor)
 {
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	 DbgCmdExecutorPrintType *parsed_args = (DbgCmdExecutorPrintType *)(arg->parsed_args);
 	 uint8 *data;
+	 uint32 gl_len;
+	 uint32 addr;
+	 uint32 size;
 
 	 if (parsed_args->type == DBG_CMD_PRINT_SYMBOL) {
-		 printf("ERROR: not supported:print symbol(%s)\n", parsed_args->symbol.str);
+		 gl_len = strlen((char*)parsed_args->symbol.str);
+		 if (symbol_get_gl((char*)parsed_args->symbol.str, gl_len, &addr, &size) < 0) {
+			 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
+			 symbol_print_gl((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+		 }
+		 else {
+			 cpuemu_get_addr_pointer(addr, &data);
+			 print_memory_type(addr, data, size);
+		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR) {
 		 printf("ERROR: not supported:print addr(0x%x)\n", parsed_args->addr);
 	 }
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR_SIZE) {
 		 cpuemu_get_addr_pointer(parsed_args->addr, &data);
-		 print_memory(parsed_args->addr, data, parsed_args->size);
+		 print_memory_type(parsed_args->addr, data, parsed_args->size);
 	 }
 	 return;
 }

@@ -12,6 +12,7 @@ IFLAGS	+= -I$(ROOTDIR)/device/mpu
 IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target
 IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/config
 
 IFLAGS	+= -I$(ROOTDIR)/debugger/interaction
 IFLAGS	+= -I$(ROOTDIR)/debugger/executor
@@ -64,6 +65,7 @@ OBJS	+= dbg_cpu_control.o
 OBJS	+= dbg_cpu_thread_control.o
 OBJS	+= dbg_cpu_callback.o
 OBJS	+= elf_section.o
+OBJS	+= symbol_ops.o
 
 
 .SUFFIXES:	.c .o

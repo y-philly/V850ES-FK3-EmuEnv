@@ -293,6 +293,7 @@ DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContaine
 	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
 		return NULL;
 	}
+
 	if ((token_strcmp(&token_container->array[0].body.str, &print_string) == FALSE) &&
 			(token_strcmp(&token_container->array[0].body.str, &print_string_short) == FALSE)) {
 		return NULL;

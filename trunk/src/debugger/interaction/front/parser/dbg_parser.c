@@ -34,6 +34,7 @@ DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
 	DbgCmdExecutorType *arg = NULL;
 	TokenContainerType token_container;
 	DbgModeType mode;
+	//printf("dbg_parse:str=%s len=%u\n", str, len);
 
 	if ((len == 0) && (last_command != NULL)) {
 		/*

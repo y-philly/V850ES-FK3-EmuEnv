@@ -3,7 +3,7 @@
 #include "mpu.h"
 #include "mpu_ops.h"
 #include "loader/elf.h"
-#include "loader/elf_section.h"
+#include "elf_section.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -24,7 +24,6 @@ Std_ReturnType binary_load(uint8 *binary_data, uint32 load_addr, uint32 binary_d
 
 	return STD_E_OK;
 }
-
 
 Std_ReturnType elf_load(uint8 *elf_data)
 {

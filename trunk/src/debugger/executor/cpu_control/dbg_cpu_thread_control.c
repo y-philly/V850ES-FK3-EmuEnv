@@ -19,8 +19,8 @@ typedef enum {
 static pthread_mutex_t dbg_mutex;
 static pthread_cond_t dbg_cv;
 static pthread_cond_t cpu_cv;
-static DbgCpuThrStateType dbgthr_state = THREAD_STATE_RUNNING;
-static DbgCpuThrStateType cputhr_state = THREAD_STATE_WAIT;
+static volatile DbgCpuThrStateType dbgthr_state = THREAD_STATE_RUNNING;
+static volatile DbgCpuThrStateType cputhr_state = THREAD_STATE_WAIT;
 
 void cputhr_control_init(void)
 {

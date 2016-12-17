@@ -6,7 +6,7 @@
 #include "std_types.h"
 
 
-#define DBG_CMD_BUFFER_SIZE		(1024U)
+#define DBG_CMD_BUFFER_SIZE		(4096*256U)
 typedef struct {
 	DbgCmdStdIdType			std_id;
 	DbgCmdTargetIdType		target_id;

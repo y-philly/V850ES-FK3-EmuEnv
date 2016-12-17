@@ -25,5 +25,6 @@ extern Std_ReturnType cpuemu_set_comm_fifocfg(const char* fifocfg);
 extern const char* cpuemu_get_comm_rx_fifo(void);
 extern const char* cpuemu_get_comm_tx_fifo(void);
 
+extern Std_ReturnType cpuemu_symbol_set(void);
 
 #endif /* _CPUEMU_OPS_H_ */

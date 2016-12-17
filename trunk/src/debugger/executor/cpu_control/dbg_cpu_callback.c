@@ -18,10 +18,16 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 		return;
 	}
 	/*
+	 * cont timeout check
 	 * break point check
 	 * debug mode check
 	 */
-	if ((cpuctrl_is_break_point(pc) == TRUE)) {
+	if (cpuctrl_is_timeout_cont_clocks(cpu_get_core_id(core)) == TRUE) {
+		need_stop = TRUE;
+		printf("CONT TIMEOUT\n");
+		printf("[DBG>");
+	}
+	else if ((cpuctrl_is_break_point(pc) == TRUE)) {
 		need_stop = TRUE;
 		printf("HIT break:0x%x\n", pc);
 		printf("[DBG>");

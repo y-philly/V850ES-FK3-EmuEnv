@@ -124,17 +124,31 @@ static const TokenStringType cont_string_short = {
 
 DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
 {
-	if (token_container->num != 1) {
+	DbgCmdExecutorContType *parsed_args = (DbgCmdExecutorContType *)arg->parsed_args;
+
+	if (token_container->num > 2) {
 		return NULL;
 	}
 
 	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
 		return NULL;
 	}
+	if ((token_container->num == 2) &&
+			(token_container->array[1].type != TOKEN_TYPE_VALUE_DEC)) {
+		return NULL;
+	}
+
 
 	if ((token_strcmp(&token_container->array[0].body.str, &cont_string) == TRUE) ||
 			(token_strcmp(&token_container->array[0].body.str, &cont_string_short) == TRUE)) {
 		arg->std_id = DBG_CMD_STD_ID_CONT;
+		if (token_container->num == 1) {
+			parsed_args->type = DBG_CMD_CONT_ALL;
+		}
+		else {
+			parsed_args->type = DBG_CMD_CONT_CLOCKS;
+			parsed_args->cont_clocks = token_container->array[1].body.dec.value;
+		}
 		arg->run = dbg_std_executor_cont;
 		return arg;
 	}
@@ -365,6 +379,33 @@ DbgCmdExecutorType *dbg_parse_quit(DbgCmdExecutorType *arg, const TokenContainer
 			(token_strcmp(&token_container->array[0].body.str, &quit_string_short) == TRUE)) {
 		arg->std_id = DBG_CMD_STD_ID_QUIT;
 		arg->run = dbg_std_executor_quit;
+		return arg;
+	}
+	return NULL;
+}
+
+/************************************************************************************
+ * exit コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType exit_string = {
+		.len = 4,
+		.str = { 'e', 'x', 'i', 't', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_exit(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &exit_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_EXIT;
+		arg->run = dbg_std_executor_exit;
 		return arg;
 	}
 	return NULL;

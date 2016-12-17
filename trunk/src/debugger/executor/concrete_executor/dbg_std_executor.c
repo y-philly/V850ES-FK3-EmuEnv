@@ -81,6 +81,15 @@ void dbg_std_executor_delete(void *executor)
 
 void dbg_std_executor_cont(void *executor)
 {
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorContType *parsed_args = (DbgCmdExecutorContType *)(arg->parsed_args);
+
+	if (parsed_args->type == DBG_CMD_CONT_ALL) {
+		cpuctrl_set_cont_clocks(FALSE, 0);
+	}
+	else {
+		cpuctrl_set_cont_clocks(TRUE, parsed_args->cont_clocks);
+	}
 	cpuctrl_set_debug_mode(FALSE);
 	cputhr_control_dbg_wakeup_cpu();
 	return;
@@ -120,6 +129,14 @@ void dbg_std_executor_quit(void *executor)
 {
 	cpuctrl_set_debug_mode(TRUE);
 	cputhr_control_dbg_waitfor_cpu_stopped();
+}
+void dbg_std_executor_exit(void *executor)
+{
+	cpuctrl_set_debug_mode(TRUE);
+	cputhr_control_dbg_waitfor_cpu_stopped();
+	printf("Exit\n");
+	exit(1);
+	return;
 }
 
 void dbg_std_executor_elaps(void *executor)

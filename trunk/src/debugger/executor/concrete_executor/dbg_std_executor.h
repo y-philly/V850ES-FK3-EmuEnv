@@ -9,6 +9,7 @@ extern void dbg_std_executor_cont(void *executor);
 extern void dbg_std_executor_next(void *executor);
 extern void dbg_std_executor_return(void *executor);
 extern void dbg_std_executor_quit(void *executor);
+extern void dbg_std_executor_exit(void *executor);
 
 extern void dbg_std_executor_elaps(void *executor);
 extern void dbg_std_executor_view(void *executor);

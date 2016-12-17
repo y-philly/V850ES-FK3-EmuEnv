@@ -25,6 +25,16 @@ typedef struct {
 	uint32 				delete_break_no;
 } DbgCmdExecutorDeleteType;
 extern DbgCmdExecutorType *dbg_parse_delete(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
+
+typedef enum {
+	DBG_CMD_CONT_ALL,
+	DBG_CMD_CONT_CLOCKS
+} DbgCmdContType;
+typedef struct {
+	DbgCmdContType 		type;
+	uint32 				cont_clocks;
+} DbgCmdExecutorContType;
 extern DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_elaps(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_next(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
@@ -43,6 +53,7 @@ typedef struct {
 } DbgCmdExecutorPrintType;
 extern DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_quit(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+extern DbgCmdExecutorType *dbg_parse_exit(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
 typedef struct {
 	uint32				channel;

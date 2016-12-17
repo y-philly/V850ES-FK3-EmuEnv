@@ -13,6 +13,8 @@ extern void cpuctrl_set_current_debugged_core(CoreIdType core_id);
 extern void cpuctrl_clr_current_debugged_core(void);
 extern bool cpuctrl_get_current_debugged_core(CoreIdType *core_id);
 
+extern void cpuctrl_set_cont_clocks(bool is_timeout, uint64 cont_clocks);
+extern bool cpuctrl_is_timeout_cont_clocks(CoreIdType core_id);
 
 typedef enum {
 	BREAK_POINT_TYPE_FOREVER,

@@ -35,7 +35,7 @@ void dbg_std_executor_break(void *executor)
 			 symbol_print_func((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
 		 }
 		 else {
-			 if (cpuctrl_set_break(parsed_args->break_addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
+			 if (cpuctrl_set_break(addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
 				 printf("break %s 0x%x\n", parsed_args->symbol.str, addr);
 			 }
 			 else {

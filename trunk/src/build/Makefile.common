@@ -36,6 +36,8 @@ VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/concrete_parser
 VPATH	+= $(ROOTDIR)/debugger/executor
 VPATH	+= $(ROOTDIR)/debugger/executor/concrete_executor
 VPATH	+= $(ROOTDIR)/debugger/executor/cpu_control
+VPATH	+= $(ROOTDIR)/lib/cui
+VPATH	+= $(ROOTDIR)/lib/cui/stdio
 
 CFLAGS	+= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
@@ -66,6 +68,8 @@ OBJS	+= dbg_cpu_thread_control.o
 OBJS	+= dbg_cpu_callback.o
 OBJS	+= elf_section.o
 OBJS	+= symbol_ops.o
+OBJS	+= cui_ops.o
+OBJS	+= cui_ops_stdio.o
 
 
 .SUFFIXES:	.c .o

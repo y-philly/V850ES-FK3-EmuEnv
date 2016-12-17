@@ -4,29 +4,16 @@
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "cpuemu_ops.h"
+#include "cui/cui_ops.h"
+#include "cui/stdio/cui_ops_stdio.h"
 
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include<windows.h>
 
-static int cui_getline(char *line, int size)
-{
-	int n = 0;
-	char c;
-	//printf("cui_getline:enter\n");
-	while (TRUE) {
-		c = fgetc(stdin);
-		if (c < 0 || c == '\n') {
-			break;
-		}
-		line[n] = c;
-		n++;
-	}
-	//printf("cui_getline:exit\n");
-	return n;
-}
 
 static void do_cui(void)
 {
@@ -39,7 +26,12 @@ static void do_cui(void)
 		is_dbgmode = cpuctrl_is_debug_mode();
 		printf("%s", (is_dbgmode == TRUE) ? "[DBG>" : "[CPU>");
 		fflush(stdout);
+retry:
 		len = cui_getline(buffer, 1024);
+		if (len < 0) {
+			Sleep(1000);
+			goto retry;
+		}
 		buffer[len] = '\0';
 		res = dbg_parse((uint8*)buffer, (uint32)len);
 
@@ -68,6 +60,8 @@ static void do_cui(void)
 int main(int argc, const char *argv[])
 {
 	CmdOptionType *opt;
+
+	cui_ops_stdio_init();
 
 	opt = parse_args(argc, argv);
 	if (opt == NULL) {

@@ -91,7 +91,8 @@ Std_ReturnType elfsym_get_symbol(uint32 index, ElfSymbolType *elfsym)
 	sym = &elf_symbol_section.sym[index];
 	elfsym->addr = sym->st_value;
 	elfsym->size = sym->st_size;
-	switch (sym->st_info) {
+	//printf("type=0x%x name=%s\n", sym->st_info, (char*)&(elf_symbol_section.string_table->shdata[sym->st_name]));
+	switch ((sym->st_info & 0x0F)) {
 	case STT_OBJECT:
 		elfsym->type = SYMBOL_TYPE_OBJECT;
 		break;

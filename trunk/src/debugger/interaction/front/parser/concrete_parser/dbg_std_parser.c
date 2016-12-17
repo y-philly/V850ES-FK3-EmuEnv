@@ -43,6 +43,13 @@ DbgCmdExecutorType *dbg_parse_break(DbgCmdExecutorType *arg, const TokenContaine
 			parsed_args->break_addr = token_container->array[1].body.hex.value;
 			return arg;
 		}
+		else if (token_container->array[1].type == TOKEN_TYPE_STRING) {
+			arg->std_id = DBG_CMD_STD_ID_BREAK;
+			parsed_args->type = DBG_CMD_BBREAK_SET_SYMBOL;
+			parsed_args->symbol = token_container->array[1].body.str;
+			arg->run = dbg_std_executor_break;
+			return arg;
+		}
 	}
 	else if (token_strcmp(&token_container->array[0].body.str, &break_info_string) == TRUE) {
 		if (token_strcmp(&token_container->array[1].body.str, &break_string) == TRUE) {

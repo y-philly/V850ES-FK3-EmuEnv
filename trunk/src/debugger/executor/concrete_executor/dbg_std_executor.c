@@ -10,6 +10,7 @@
 #include "symbol_ops.h"
 #include <stdio.h>
 #include <string.h>
+#define SYMBOL_CANDIATE_NUM		5
 
 void dbg_std_executor_parse_error(void *executor)
 {
@@ -23,8 +24,26 @@ void dbg_std_executor_break(void *executor)
 {
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	 DbgCmdExecutorBreakType *parsed_args = (DbgCmdExecutorBreakType *)(arg->parsed_args);
+	 uint32 func_len;
+	 uint32 addr;
+	 uint32 size;
 
-	 if (parsed_args->type == DBG_CMD_BBREAK_SET) {
+	 if (parsed_args->type == DBG_CMD_BBREAK_SET_SYMBOL) {
+		 func_len = strlen((char*)parsed_args->symbol.str);
+		 if (symbol_get_func((char*)parsed_args->symbol.str, func_len, &addr, &size) < 0) {
+			 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
+			 symbol_print_func((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+		 }
+		 else {
+			 if (cpuctrl_set_break(parsed_args->break_addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
+				 printf("break %s 0x%x\n", parsed_args->symbol.str, addr);
+			 }
+			 else {
+				 printf("ERROR: can not break %s\n", parsed_args->symbol.str);
+			 }
+		 }
+	 }
+	 else if (parsed_args->type == DBG_CMD_BBREAK_SET) {
 		 if (cpuctrl_set_break(parsed_args->break_addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
 			 printf("break 0x%x\n", parsed_args->break_addr);
 		 }
@@ -152,7 +171,6 @@ static void print_memory_type(uint32 vaddr, uint8 *top_addr, uint32 size)
 	return;
 }
 
-#define SYMBOL_CANDIATE_NUM		5
 void dbg_std_executor_print(void *executor)
 {
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;

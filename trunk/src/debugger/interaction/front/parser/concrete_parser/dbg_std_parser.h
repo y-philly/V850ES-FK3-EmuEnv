@@ -6,11 +6,13 @@
 
 typedef enum {
 	DBG_CMD_BBREAK_SET,
+	DBG_CMD_BBREAK_SET_SYMBOL,
 	DBG_CMD_BREAK_INFO
 } DbgCmdBreakType;
 typedef struct {
 	DbgCmdBreakType	type;
 	uint32 			break_addr;
+	TokenStringType		symbol;
 } DbgCmdExecutorBreakType;
 extern DbgCmdExecutorType *dbg_parse_break(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 

@@ -140,3 +140,31 @@ void symbol_print_gl(char *gl_name, uint32 show_num)
 	}
 	return;
 }
+
+
+void symbol_print_func(char *gl_name, uint32 show_num)
+{
+	int i;
+	uint32 len;
+	uint32 gl_len;
+
+	gl_len = strlen(gl_name);
+	for (i = 0; i < symbol_func_size; i++) {
+		len = strlen(symbol_func[i].name);
+		if (len < gl_len) {
+			continue;
+		}
+
+		if (strncmp(gl_name, symbol_func[i].name, gl_len) != 0) {
+			continue;
+		}
+		if (show_num > 0) {
+			printf("candidate %s\n", symbol_func[i].name);
+			show_num--;
+		}
+		else {
+			break;
+		}
+	}
+	return;
+}

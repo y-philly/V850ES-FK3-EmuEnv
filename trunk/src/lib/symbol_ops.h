@@ -17,10 +17,13 @@ extern int symbol_pc2funcid(uint32 pc, uint32 *funcaddr);
 extern char * symbol_funcid2funcname(int id);
 extern uint32 symbol_uncid2funcaddr(int id);
 extern int symbol_get_gl(char *gl_name, uint32 gl_len, uint32 *addrp, uint32 *size);
+
 extern void symbol_print_gl(char *gl_name, uint32 show_num);
+extern void symbol_print_func(char *gl_name, uint32 show_num);
 
 
 extern int symbol_gl_add(DbgSymbolType *sym);
 extern int symbol_func_add(DbgSymbolType *sym);
+
 
 #endif /* _SYMBOL_OPS_H_ */

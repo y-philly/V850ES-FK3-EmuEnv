@@ -49,6 +49,9 @@ retry:
  * -i		インタラクションモード
  * 	・あり：インタラクションモード
  * 	・なし：バックグラウンド実行モード
+ * -r(インタラクションモードのみ有効)
+ * 	・あり：リモートモード
+ * 	・なし：直接モード
  * -t<time>	終了時間(単位：clock)
  * 	・あり：終了時間
  * 	・なし：無制限
@@ -64,8 +67,6 @@ int main(int argc, const char *argv[])
 	CmdOptionType *opt;
 
 	winsock_init();
-	//cui_ops_stdio_init();
-	cui_ops_udp_init();
 
 	opt = parse_args(argc, argv);
 	if (opt == NULL) {
@@ -90,6 +91,13 @@ int main(int argc, const char *argv[])
 	}
 
 	if (opt->is_interaction == TRUE) {
+		if (opt->is_remote == TRUE) {
+			cui_ops_udp_init();
+		}
+		else {
+			cui_ops_stdio_init();
+		}
+
 		cpuemu_init(cpuemu_thread_run);
 		do_cui();
 	}

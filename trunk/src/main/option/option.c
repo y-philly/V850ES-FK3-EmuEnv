@@ -32,12 +32,16 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  cmd_option.load_filepath = NULL;
 	  cmd_option.is_binary_data = FALSE;
 	  cmd_option.is_interaction = FALSE;
+	  cmd_option.is_remote = FALSE;
 	  cmd_option.timeout = 0;
 
-	  while ((opt = getopt(argc, (char**)argv, "ibt:p:")) != -1) {
+	  while ((opt = getopt(argc, (char**)argv, "irbt:p:")) != -1) {
 		  switch (opt) {
 		  case 'i':
 	    	cmd_option.is_interaction = TRUE;
+	        break;
+		  case 'r':
+	    	cmd_option.is_remote = TRUE;
 	        break;
 	      case 'b':
 		    cmd_option.is_binary_data = TRUE;

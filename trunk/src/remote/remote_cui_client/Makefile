@@ -7,6 +7,7 @@ GCC			:= gcc
 
 IFLAGS		:= -I$(ROOTDIR)/inc
 IFLAGS		+= -I$(ROOTDIR)/lib
+IFLAGS		+= -I$(ROOTDIR)/config
 
 VPATH		:= $(TARGETDIR)
 VPATH		+= $(ROOTDIR)/lib/winsock_wrapper

@@ -8,6 +8,7 @@ typedef struct {
 	bool	is_interaction;
 	uint64	timeout;
 	bool	is_binary_data;
+	bool	is_remote;
 
 	char	*fifocfgpath;
 	char	buffer_fifopath[4096];

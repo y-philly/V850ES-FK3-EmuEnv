@@ -1,4 +1,5 @@
 #include "udp/udp_comm.h"
+#include "cpuemu_config.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -27,8 +28,8 @@ int main(int argc, const char* argv[])
 		cmd_buffer[cmd_buffer_len] = ' ';
 	}
 
-	config.server_port = 49153;
-	config.client_port = 49152;
+	config.server_port = CPUEMU_CONFIG_CUI_CLIENT_PORTNO;
+	config.client_port = CPUEMU_CONFIG_CUI_EMULATOR_PORTNO;
 
 	comm.write_data.len = cmd_buffer_len;
 	memcpy(comm.write_data.buffer, cmd_buffer, cmd_buffer_len);

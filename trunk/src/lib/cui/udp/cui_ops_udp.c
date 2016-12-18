@@ -1,6 +1,7 @@
 #include "cui/cui_ops.h"
 #include "cui/udp/cui_ops_udp.h"
 #include "udp/udp_comm.h"
+#include "cpuemu_config.h"
 #include <stdio.h>
 
 typedef struct {
@@ -15,8 +16,8 @@ static void cui_write_udp(char *line, int size);
 
 static UdpFileOpType cui_fileop_udp = {
 	.config = {
-			.server_port = 49152,
-			.client_port = 49153,
+			.server_port = CPUEMU_CONFIG_CUI_EMULATOR_PORTNO,
+			.client_port = CPUEMU_CONFIG_CUI_CLIENT_PORTNO,
 	},
 	.op = {
 			.cui_getline = cui_getline_udp,

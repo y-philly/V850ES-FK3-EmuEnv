@@ -3,6 +3,7 @@
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpuemu_ops.h"
+#include "cui/cui_ops.h"
 
 void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 {
@@ -37,6 +38,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	}
 
 	if (need_stop == TRUE) {
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
 		fflush(stdout);

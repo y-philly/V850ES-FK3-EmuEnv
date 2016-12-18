@@ -2,27 +2,37 @@
 #include <string.h>
 #include <stdio.h>
 
+static int cmd_buffer_len = 0;
+static char cmd_buffer[4096];
+
 int main(int argc, const char* argv[])
 {
+	int i;
 	UdpCommConfigType config;
 	UdpCommType comm;
 	int len;
 
-	if (argc != 2) {
+	if (argc < 2) {
 		printf("Usage: %s command\n", argv[0]);
 		return 1;
 	}
-	len = strlen(argv[1]);
-	if (len > UDP_BUFFER_LEN) {
-		printf("argument length is too large.len=%d\n", len);
-		return 1;
+	for (i = 1; i < argc; i++) {
+		len = strlen(argv[i]);
+		if ((cmd_buffer_len + (len + 2)) > UDP_BUFFER_LEN) {
+			printf("argument length is too large.len=%d\n", len);
+			return 1;
+		}
+		memcpy(&cmd_buffer[cmd_buffer_len], argv[i], len);
+		cmd_buffer_len += (len + 1);
+		cmd_buffer[cmd_buffer_len] = ' ';
 	}
+
 	config.server_port = 49153;
 	config.client_port = 49152;
 
-	comm.write_data.len = strlen(argv[1]);
-	memcpy(comm.write_data.buffer, argv[1], strlen(argv[1]));
-	comm.write_data.buffer[strlen(argv[1])] = '\0';
+	comm.write_data.len = cmd_buffer_len;
+	memcpy(comm.write_data.buffer, cmd_buffer, cmd_buffer_len);
+	cmd_buffer[cmd_buffer_len] = '\0';
 
 	if (winsock_init() < 0) {
 		printf("ERROR:winsock_init failed.\n");

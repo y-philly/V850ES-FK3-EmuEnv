@@ -36,22 +36,27 @@ void dbg_std_executor_break(void *executor)
 		 if (symbol_get_func((char*)parsed_args->symbol.str, func_len, &addr, &size) < 0) {
 			 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
 			 symbol_print_func((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 		 }
 		 else {
 			 if (cpuctrl_set_break(addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
 				 printf("break %s 0x%x\n", parsed_args->symbol.str, addr);
+				 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 			 }
 			 else {
 				 printf("ERROR: can not break %s\n", parsed_args->symbol.str);
+				 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 			 }
 		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_BBREAK_SET) {
 		 if (cpuctrl_set_break(parsed_args->break_addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
 			 printf("break 0x%x\n", parsed_args->break_addr);
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 		 }
 		 else {
 			 printf("ERROR: can not break 0x%x\n", parsed_args->break_addr);
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_BREAK_INFO) {
@@ -62,6 +67,7 @@ void dbg_std_executor_break(void *executor)
 				 printf("[%u] 0x%x\n", i, addr);
 			 }
 		 }
+		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	 }
 	 return;
 }
@@ -74,10 +80,12 @@ void dbg_std_executor_delete(void *executor)
 	 if (parsed_args->type == DBG_CMD_DELETE_ONE) {
 		 if (cpuctrl_del_break(parsed_args->delete_break_no) == FALSE) {
 			 printf("ERROR: can not delete %u\n", parsed_args->delete_break_no);
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_DELETE_ALL) {
 		 cpuctrl_del_all_break(BREAK_POINT_TYPE_FOREVER);
+		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	 }
 	 return;
 }
@@ -87,14 +95,16 @@ void dbg_std_executor_cont(void *executor)
 	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	DbgCmdExecutorContType *parsed_args = (DbgCmdExecutorContType *)(arg->parsed_args);
 
+	cpuctrl_set_debug_mode(FALSE);
 	if (parsed_args->type == DBG_CMD_CONT_ALL) {
 		cpuctrl_set_cont_clocks(FALSE, 0);
+		cputhr_control_dbg_wakeup_cpu();
 	}
 	else {
 		cpuctrl_set_cont_clocks(TRUE, parsed_args->cont_clocks);
+		cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
 	}
-	cpuctrl_set_debug_mode(FALSE);
-	cputhr_control_dbg_wakeup_cpu();
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	return;
 }
 
@@ -138,6 +148,7 @@ void dbg_std_executor_exit(void *executor)
 	cpuctrl_set_debug_mode(TRUE);
 	cputhr_control_dbg_waitfor_cpu_stopped();
 	printf("Exit\n");
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	exit(1);
 	return;
 }
@@ -147,6 +158,7 @@ void dbg_std_executor_elaps(void *executor)
 	CpuEmuElapsType elaps;
 	cpuemu_get_elaps(&elaps);
 	printf("clock = cpu %I64u intc %I64u\n", elaps.total_clocks, elaps.intr_clocks);
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%I64u\n", elaps.total_clocks));
 	return;
 }
 void dbg_std_executor_view(void *executor)
@@ -156,10 +168,12 @@ void dbg_std_executor_view(void *executor)
 	if (view_mode == TRUE) {
 		dbg_log_set_view_mode(FALSE);
 		printf("VIEW_MODE=OFF\n");
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "VIEW_MODE=OFF\n"));
 	}
 	else {
 		dbg_log_set_view_mode(TRUE);
 		printf("VIEW_MODE=ON\n");
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "VIEW_MODE=ON\n"));
 	}
 	return;
 }
@@ -171,6 +185,7 @@ static void print_memory(uint32 vaddr, uint8 *top_addr, uint32 size)
 	for (i = 0; i < size; i++) {
 		printf("%4u 0x%x 0x%x\n", i, (vaddr + i), *(top_addr + i));
 	}
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x\n", *top_addr));
 	return;
 }
 static void print_memory_type(uint32 vaddr, uint8 *top_addr, uint32 size)
@@ -179,11 +194,13 @@ static void print_memory_type(uint32 vaddr, uint8 *top_addr, uint32 size)
 		uint16 *data = (uint16*)top_addr;
 		printf("size=%u byte\n", size);
 		printf("0x%x 0x%x\n", (vaddr), *(data));
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x\n",  *(data)));
 	}
 	else if (size == 4) {
 		uint32 *data = (uint32*)top_addr;
 		printf("size=%u byte\n", size);
 		printf("0x%x 0x%x\n", (vaddr), *(data));
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x\n",  *(data)));
 	}
 	else {
 		print_memory(vaddr, top_addr, size);
@@ -205,6 +222,7 @@ void dbg_std_executor_print(void *executor)
 		 if (symbol_get_gl((char*)parsed_args->symbol.str, gl_len, &addr, &size) < 0) {
 			 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
 			 symbol_print_gl((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 		 }
 		 else {
 			 cpuemu_get_addr_pointer(addr, &data);
@@ -213,6 +231,7 @@ void dbg_std_executor_print(void *executor)
 	 }
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR) {
 		 printf("ERROR: not supported:print addr(0x%x)\n", parsed_args->addr);
+		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 	 }
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR_SIZE) {
 		 cpuemu_get_addr_pointer(parsed_args->addr, &data);

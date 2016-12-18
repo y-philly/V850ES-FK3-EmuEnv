@@ -34,7 +34,7 @@ void cpuctrl_set_cont_clocks(bool is_timeout, uint64 cont_clocks)
 bool cpuctrl_is_timeout_cont_clocks(CoreIdType core_id)
 {
 	if (dbg_cpu_cont[core_id].is_timeout == TRUE) {
-		if (dbg_cpu_cont[core_id].cont_clocks > 0) {
+		if (dbg_cpu_cont[core_id].cont_clocks > 1) {
 			dbg_cpu_cont[core_id].cont_clocks--;
 			return FALSE;
 		}

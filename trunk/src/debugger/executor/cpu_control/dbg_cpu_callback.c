@@ -38,7 +38,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	}
 
 	if (need_stop == TRUE) {
-		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = %x\n", cpu_get_core_id(core), pc));
 		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
 		fflush(stdout);

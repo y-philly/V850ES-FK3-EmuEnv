@@ -8,6 +8,7 @@
 #include "assert.h"
 #include "concrete_executor/target/dbg_target_serial.h"
 #include "symbol_ops.h"
+#include "cui/cui_ops.h"
 #include <stdio.h>
 #include <string.h>
 #define SYMBOL_CANDIATE_NUM		5
@@ -17,6 +18,8 @@ void dbg_std_executor_parse_error(void *executor)
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 
 	 printf("ERROR: %s :command not found\n", arg->original_str);
+	 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+
 	 return;
 }
 

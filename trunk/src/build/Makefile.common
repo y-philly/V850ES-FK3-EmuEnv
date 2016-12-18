@@ -38,6 +38,9 @@ VPATH	+= $(ROOTDIR)/debugger/executor/concrete_executor
 VPATH	+= $(ROOTDIR)/debugger/executor/cpu_control
 VPATH	+= $(ROOTDIR)/lib/cui
 VPATH	+= $(ROOTDIR)/lib/cui/stdio
+VPATH	+= $(ROOTDIR)/lib/cui/udp
+VPATH	+= $(ROOTDIR)/lib/winsock_wrapper
+VPATH	+= $(ROOTDIR)/lib/udp
 
 CFLAGS	+= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
@@ -45,7 +48,7 @@ CFLAGS	+= $(IFLAGS)
 LFLAGS	:= -Wl,--allow-multiple-definition
 LFLAGS	+= -Wl,--enable-stdcall-fixup
 
-LIBS	+= -lpthread
+LIBS	+= -lpthread -lwsock32 -lws2_32
 
 OBJS	+= main.o
 OBJS	+= option.o
@@ -70,6 +73,9 @@ OBJS	+= elf_section.o
 OBJS	+= symbol_ops.o
 OBJS	+= cui_ops.o
 OBJS	+= cui_ops_stdio.o
+OBJS	+= cui_ops_udp.o
+OBJS	+= winsock_wrapper.o
+OBJS	+= udp_comm.o
 
 
 .SUFFIXES:	.c .o

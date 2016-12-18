@@ -4,15 +4,15 @@
 #include "std_types.h"
 
 typedef struct {
-	int read_fd;
-	int write_fd;
-	void *opaq;
+	int  (*cui_getline) (char *line, int size);
+	void (*cui_write) (char *line, int size);
+	void (*cui_close) (void);
 } FileOpType;
 extern int	cui_fileop_register(FileOpType *fileop);
 
 extern int  cui_getline(char *line, int size);
 extern void cui_write(char *line, int size);
-
+extern void cui_close(void);
 
 #define CUI_BUFP_LEN		(1024U)
 typedef struct {
@@ -28,6 +28,5 @@ extern CuiPrintBufferType CuiPrintBuffer;
 do { \
 	CuiPrintBuffer.write_len = snprintf	arg;	\
 	cui_write(CPU_PRINT_BUF(), CuiPrintBuffer.write_len);	\
-	}	\
 } while (0)
 #endif /* _CUI_OPS_H_ */

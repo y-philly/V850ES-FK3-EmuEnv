@@ -6,13 +6,14 @@
 #include "cpuemu_ops.h"
 #include "cui/cui_ops.h"
 #include "cui/stdio/cui_ops_stdio.h"
-
+#include "cui/udp/cui_ops_udp.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include<windows.h>
+#include "winsock_wrapper/winsock_wrapper.h"
 
 
 static void do_cui(void)
@@ -29,6 +30,7 @@ static void do_cui(void)
 retry:
 		len = cui_getline(buffer, 1024);
 		if (len < 0) {
+			cui_close();
 			Sleep(1000);
 			goto retry;
 		}
@@ -61,7 +63,9 @@ int main(int argc, const char *argv[])
 {
 	CmdOptionType *opt;
 
-	cui_ops_stdio_init();
+	winsock_init();
+	//cui_ops_stdio_init();
+	cui_ops_udp_init();
 
 	opt = parse_args(argc, argv);
 	if (opt == NULL) {

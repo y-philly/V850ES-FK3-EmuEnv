@@ -10,15 +10,33 @@
  */
 static inline Std_ReturnType bus_get_data8(CoreIdType core_id, uint32 addr, uint8 *data)
 {
-	return mpu_get_data8(core_id, addr, data);
+	Std_ReturnType err;
+
+	err = mpu_get_data8(core_id, addr, data);
+	if (err != STD_E_OK) {
+		printf("ERROR:can not load data:addr=0x%x size=4byte\n", addr);
+	}
+	return err;
 }
 static inline Std_ReturnType bus_get_data16(CoreIdType core_id, uint32 addr, uint16 *data)
 {
-	return mpu_get_data16(core_id, addr, data);
+	Std_ReturnType err;
+
+	err = mpu_get_data16(core_id, addr, data);
+	if (err != STD_E_OK) {
+		printf("ERROR:can not load data:addr=0x%x size=4byte\n", addr);
+	}
+	return err;
 }
 static inline Std_ReturnType bus_get_data32(CoreIdType core_id, uint32 addr, uint32 *data)
 {
-	return mpu_get_data32(core_id, addr, data);
+	Std_ReturnType err;
+
+	err = mpu_get_data32(core_id, addr, data);
+	if (err != STD_E_OK) {
+		printf("ERROR:can not load data:addr=0x%x size=4byte\n", addr);
+	}
+	return err;
 }
 
 /*

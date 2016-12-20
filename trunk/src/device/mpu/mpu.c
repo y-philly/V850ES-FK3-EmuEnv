@@ -1,6 +1,7 @@
 #include "mpu.h"
 #include "cpu_config.h"
 #include "mpu_ops.h"
+#include <stdio.h>
 
 static Std_ReturnType memory_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
 static Std_ReturnType memory_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
@@ -52,14 +53,14 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 			) {
 			//printf("1:passed1\n");
 			if (has_permission( &mpu_address_map.map[i], core_id) == FALSE) {
-				//printf("1:FAILED\n");
+				printf("search_region:permission error:addr=0x%x\n", addr);
 				return NULL;
 			}
 			//printf("2:passed1:%u:0x%p\n", i,  &mpu_address_map.map[i]);
 			return &mpu_address_map.map[i];
 		}
 	}
-	//printf("2:FAILED\n");
+	printf("search_region:not found error:addr=0x%x\n", addr);
 	return NULL;
 }
 

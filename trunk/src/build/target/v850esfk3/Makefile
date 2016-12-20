@@ -46,6 +46,7 @@ OBJS	+=	serial.o
 OBJS	+=	comm.o
 OBJS	+=	can.o
 OBJS	+=	dbg_target_serial.o
+OBJS	+=	dbg_target_cpu.o
 
 include ../../Makefile.common
 

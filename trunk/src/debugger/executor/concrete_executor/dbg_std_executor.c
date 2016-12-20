@@ -9,6 +9,7 @@
 #include "concrete_executor/target/dbg_target_serial.h"
 #include "symbol_ops.h"
 #include "cui/cui_ops.h"
+#include "dbg_target_cpu.h"
 #include <stdio.h>
 #include <string.h>
 #define SYMBOL_CANDIATE_NUM		5
@@ -262,5 +263,11 @@ void dbg_std_executor_serialin(void *executor)
 		}
 	}
 
+	return;
+}
+
+void dbg_std_executor_info_cpu(void *executor)
+{
+	dbg_target_print_cpu();
 	return;
 }

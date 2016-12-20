@@ -454,3 +454,32 @@ DbgCmdExecutorType *dbg_parse_serialin(DbgCmdExecutorType *arg, const TokenConta
 	return NULL;
 }
 
+
+
+/************************************************************************************
+ * info cpu コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType info_cpu_string = {
+		.len = 3,
+		.str = { 'c', 'p', 'u', '\0' },
+};
+
+DbgCmdExecutorType *dbg_parse_info_cpu(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &info_cpu_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_INFO_CPU;
+		arg->run = dbg_std_executor_info_cpu;
+		return arg;
+	}
+	return NULL;
+}

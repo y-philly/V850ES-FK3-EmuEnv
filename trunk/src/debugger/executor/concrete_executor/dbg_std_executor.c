@@ -63,8 +63,16 @@ void dbg_std_executor_break(void *executor)
 		 uint32 i;
 		 uint32 addr;
 		 for (i = 0; i < DBG_CPU_CONTROL_BREAK_SETSIZE; i++) {
+			 int funcid;
+			 uint32 funcaddr;
 			 if (cpuctrl_get_break(i, &addr) == TRUE) {
-				 printf("[%u] 0x%x\n", i, addr);
+				 funcid = symbol_pc2funcid(addr, &funcaddr);
+				 if (funcid >= 0) {
+					 printf("[%u] 0x%x %s(+0x%x)\n", i, addr, symbol_funcid2funcname(funcid), addr - funcaddr);
+				 }
+				 else {
+					 printf("[%u] 0x%x\n", i, addr);
+				 }
 			 }
 		 }
 		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));

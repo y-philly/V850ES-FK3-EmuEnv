@@ -4,6 +4,7 @@
 #include "std_types.h"
 #include "std_errno.h"
 #include "mpu_ops.h"
+#include <stdio.h>
 
 /*
  * データ取得するための操作関数群

@@ -4,6 +4,7 @@
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpuemu_ops.h"
 #include "cui/cui_ops.h"
+#include "symbol_ops.h"
 
 void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 {
@@ -29,8 +30,17 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 		printf("[DBG>");
 	}
 	else if ((cpuctrl_is_break_point(pc) == TRUE)) {
-		need_stop = TRUE;
-		printf("HIT break:0x%x\n", pc);
+		 uint32 funcaddr;
+		 int funcid;
+		 need_stop = TRUE;
+		 funcid = symbol_pc2funcid(pc, &funcaddr);
+		 if (funcid >= 0) {
+			 printf("HIT break:0x%x %s(+0x%x)\n", pc, symbol_funcid2funcname(funcid), pc - funcaddr);
+		 }
+		 else {
+			 printf("HIT break:0x%x\n", pc);
+		 }
+
 		printf("[DBG>");
 	}
 	else if ((cpuctrl_is_debug_mode() == TRUE)) {

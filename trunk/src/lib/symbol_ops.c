@@ -87,7 +87,7 @@ char * symbol_funcid2funcname(int id)
 {
 	return symbol_func[id].name;
 }
-uint32 symbol_uncid2funcaddr(int id)
+uint32 symbol_funcid2funcaddr(int id)
 {
 	return symbol_func[id].addr;
 }
@@ -113,6 +113,30 @@ int symbol_get_gl(char *gl_name, uint32 gl_len, uint32 *addrp, uint32 *size)
 	}
 	return -1;
 }
+
+int symbol_addr2glid(uint32 addr, uint32 *gladdr)
+{
+	int i;
+
+	for (i = 0; i < symbol_gl_size; i++) {
+		if (addr < symbol_gl[i].addr) {
+			continue;
+		}
+		if (addr >= (symbol_gl[i].addr + symbol_gl[i].size)) {
+			continue;
+		}
+		*gladdr = symbol_gl[i].addr;
+		return  i;
+	}
+	return -1;
+
+}
+
+char * symbol_glid2glname(int id)
+{
+	return symbol_gl[id].name;
+}
+
 
 void symbol_print_gl(char *gl_name, uint32 show_num)
 {

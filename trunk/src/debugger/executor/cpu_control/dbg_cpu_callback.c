@@ -26,8 +26,8 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	 */
 	if (cpuctrl_is_timeout_cont_clocks(cpu_get_core_id(core)) == TRUE) {
 		need_stop = TRUE;
-		printf("CONT TIMEOUT\n");
-		printf("[DBG>");
+		printf("\nCONT TIMEOUT\n");
+		//printf("[DBG>");
 	}
 	else if ((cpuctrl_is_break_point(pc) == TRUE)) {
 		 uint32 funcaddr;
@@ -35,13 +35,13 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 		 need_stop = TRUE;
 		 funcid = symbol_pc2funcid(pc, &funcaddr);
 		 if (funcid >= 0) {
-			 printf("HIT break:0x%x %s(+0x%x)\n", pc, symbol_funcid2funcname(funcid), pc - funcaddr);
+			 printf("\nHIT break:0x%x %s(+0x%x)\n", pc, symbol_funcid2funcname(funcid), pc - funcaddr);
 		 }
 		 else {
-			 printf("HIT break:0x%x\n", pc);
+			 printf("\nHIT break:0x%x\n", pc);
 		 }
 
-		printf("[DBG>");
+		//printf("[DBG>");
 	}
 	else if ((cpuctrl_is_debug_mode() == TRUE)) {
 		need_stop = TRUE;

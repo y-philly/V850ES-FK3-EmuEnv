@@ -119,8 +119,15 @@ void dbg_std_executor_cont(void *executor)
 
 void dbg_std_executor_next(void *executor)
 {
+	bool org_view_mode = dbg_log_is_view_mode();
+	cpuctrl_set_cont_clocks(FALSE, 0);
+
 	cpuctrl_set_debug_mode(TRUE);
+	dbg_log_set_view_mode(TRUE);
+	dbg_log_set_print_mode(TRUE);
 	cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
+	dbg_log_set_print_mode(FALSE);
+	dbg_log_set_view_mode(org_view_mode);
 	return;
 }
 
@@ -128,6 +135,8 @@ void dbg_std_executor_return(void *executor)
 {
 	uint32 retaddr;
 	CoreIdType core_id;
+
+	cpuctrl_set_cont_clocks(FALSE, 0);
 
 	if (cpuctrl_get_current_debugged_core(&core_id) == TRUE) {
 		retaddr = cpuemu_get_retaddr(core_id);

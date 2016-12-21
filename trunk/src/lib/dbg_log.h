@@ -12,6 +12,7 @@
 typedef struct {
 	int fd;
 	bool is_view_mode;
+	bool can_print;
 	char *filepath;
 	int count;
 	struct {
@@ -34,6 +35,15 @@ static inline bool dbg_log_is_view_mode(void)
 {
 	return DbgExecOpBuffer.is_view_mode;
 }
+static inline void dbg_log_set_print_mode(bool on)
+{
+	DbgExecOpBuffer.can_print = on;
+}
+
+static inline bool dbg_log_can_print(void)
+{
+	return DbgExecOpBuffer.can_print;
+}
 
 
 
@@ -41,6 +51,9 @@ static inline bool dbg_log_is_view_mode(void)
 do { \
 	if (dbg_log_is_view_mode() == TRUE) {	\
 		DbgExecOpBuffer.buf[DbgExecOpBuffer.count].write_len = snprintf	arg;	\
+		if (dbg_log_can_print() == TRUE) {	\
+			printf("%s", DbgExecOpBuffer.buf[DbgExecOpBuffer.count].p);	\
+		}	\
 		DbgExecOpBuffer.count++;	\
 		if (DbgExecOpBuffer.count >= DBG_BUFP_MAX_CNT) {	\
 			dbg_log_sync();	\

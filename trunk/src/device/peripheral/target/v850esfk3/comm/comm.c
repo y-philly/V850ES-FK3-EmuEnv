@@ -165,6 +165,10 @@ static void tx_fifo_write(uint32 data)
 	uint32 write_data = (0xFF & data);
 	uint8 write_data8 = (uint8)write_data;
 
+	if (CpuEmuCommDev.tx_fifo.path == NULL) {
+		return;
+	}
+
 	if (CpuEmuCommDev.tx_fifo.size >= CpuEmuCommDev.tx_fifo.max) {
 		tx_fifo_sync();
 	}
@@ -186,6 +190,10 @@ static void rx_fifo_read(MpuAddressRegionType *region, uint32 *data)
 	uint32 stat_data;
 	uint32 off_stat = (CPU_EMU_COMM_FIFO_RX_STAT_ADDR & region->mask) - region->start;
 	uint32 *stat_data_addr;
+
+	if (CpuEmuCommDev.tx_fifo.path == NULL) {
+		return;
+	}
 
 	if (CpuEmuCommDev.rx_fifo.off >= CpuEmuCommDev.rx_fifo.size) {
 		rx_fifo_sync();
@@ -214,6 +222,11 @@ static void rx_fifo_read_status(MpuAddressRegionType *region, uint32 *data)
 	uint32 stat_data;
 	uint32 off_stat = (CPU_EMU_COMM_FIFO_RX_STAT_ADDR & region->mask) - region->start;
 	uint32 *stat_data_addr;
+
+	if (CpuEmuCommDev.tx_fifo.path == NULL) {
+		*data = 0;
+		return;
+	}
 
 	if (CpuEmuCommDev.rx_fifo.off >= CpuEmuCommDev.rx_fifo.size) {
 		rx_fifo_sync();

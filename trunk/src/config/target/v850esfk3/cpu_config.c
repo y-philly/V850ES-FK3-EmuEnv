@@ -50,6 +50,8 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	int ret;
 	Std_ReturnType err;
 
+	virtual_cpu.current_core = &virtual_cpu.cores[core_id];
+
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;
 	}

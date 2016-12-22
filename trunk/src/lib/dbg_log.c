@@ -7,6 +7,8 @@
 #include <unistd.h>
 
 DbgExecOpBufferType DbgExecOpBuffer;
+char dbg_tmp_logbuf[DBG_BUFP_LEN];
+uint32 dbg_tmp_logbuflen;
 
 void dbg_log_init(char *filepath)
 {

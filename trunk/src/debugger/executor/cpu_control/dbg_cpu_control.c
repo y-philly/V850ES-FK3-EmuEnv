@@ -1,5 +1,6 @@
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_config.h"
+#include "symbol_ops.h"
 
 typedef struct {
 	bool 				is_set;
@@ -24,6 +25,79 @@ typedef struct {
 } DbgCpuContType;
 
 static DbgCpuContType dbg_cpu_cont[CPU_CONFIG_CORE_NUM];
+
+
+typedef struct {
+	uint32	current;
+	uint32	lognum;
+	uint32	funcid[DBG_FUNCLOG_TRACE_SIZE];
+	uint32	funcoff[DBG_FUNCLOG_TRACE_SIZE];
+	uint32	funcpc[DBG_FUNCLOG_TRACE_SIZE];
+	char 	*funcname[DBG_FUNCLOG_TRACE_SIZE];
+} DbgFuncLogTraceType;
+
+static DbgFuncLogTraceType dbg_func_log_trace;
+
+
+void cpuctrl_set_func_log_trace(uint32 pc)
+{
+	uint32 inx;
+	uint32 next;
+	uint32 funcpc;
+	char *funcname;
+	int funcid;
+
+	funcid = symbol_pc2funcid(pc, &funcpc);
+	if (funcid < 0) {
+		return;
+	}
+	funcname = symbol_funcid2funcname(funcid);
+
+	if (dbg_func_log_trace.lognum > 0) {
+		inx = dbg_func_log_trace.current;
+		if (dbg_func_log_trace.funcpc[inx] == funcpc) {
+			return;
+		}
+		next = inx + 1;
+		if (next >= DBG_FUNCLOG_TRACE_SIZE) {
+			next = 0;
+		}
+	} else {
+		next = 0;
+	}
+
+	dbg_func_log_trace.current = next;
+	dbg_func_log_trace.funcid[next] = funcid;
+	dbg_func_log_trace.funcoff[next] = pc - funcpc;
+	dbg_func_log_trace.funcname[next] = funcname;
+	dbg_func_log_trace.funcpc[next] = funcpc;
+	if (dbg_func_log_trace.lognum < DBG_FUNCLOG_TRACE_SIZE) {
+		dbg_func_log_trace.lognum++;
+	}
+	return;
+}
+
+char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint32 *funcid)
+{
+	int off;
+	if (bt_number >= DBG_FUNCLOG_TRACE_SIZE) {
+		return NULL;
+	}
+	if (bt_number >= dbg_func_log_trace.lognum) {
+		return NULL;
+	}
+
+	if (dbg_func_log_trace.current >= bt_number) {
+		off = dbg_func_log_trace.current - bt_number;
+	}
+	else {
+		off = DBG_FUNCLOG_TRACE_SIZE - (bt_number - dbg_func_log_trace.current);
+	}
+	*funcid = dbg_func_log_trace.funcid[off];
+	*funcpcoff = dbg_func_log_trace.funcoff[off];
+	return dbg_func_log_trace.funcname[off];
+
+}
 
 void cpuctrl_set_cont_clocks(bool is_timeout, uint64 cont_clocks)
 {
@@ -91,6 +165,7 @@ static DbgCpuCtrlBreakPointType *search_break_point(uint32 addr)
 	}
 	return NULL;
 }
+
 static DbgCpuCtrlBreakPointType *search_break_point_with_type(uint32 addr, BreakPointEumType type)
 {
 	uint32 i;

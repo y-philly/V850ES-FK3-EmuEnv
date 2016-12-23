@@ -28,6 +28,6 @@ extern void symbol_print_func(char *gl_name, uint32 show_num);
 
 extern int symbol_gl_add(DbgSymbolType *sym);
 extern int symbol_func_add(DbgSymbolType *sym);
-
+extern uint32 symbol_funcid2funcsize(int id);
 
 #endif /* _SYMBOL_OPS_H_ */

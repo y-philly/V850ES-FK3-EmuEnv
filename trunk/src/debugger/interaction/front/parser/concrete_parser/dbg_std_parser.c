@@ -483,3 +483,37 @@ DbgCmdExecutorType *dbg_parse_info_cpu(DbgCmdExecutorType *arg, const TokenConta
 	}
 	return NULL;
 }
+
+/************************************************************************************
+ * func trace コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType func_trace_string = {
+		.len = 2,
+		.str = { 'f', 't', '\0' },
+};
+extern DbgCmdExecutorType *dbg_parse_func_trace(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)arg->parsed_args;
+
+	if (token_container->num != 2) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+	if (token_container->array[1].type != TOKEN_TYPE_VALUE_DEC) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &func_trace_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_FUNC_TRACE;
+		parsed_args->bt_number = token_container->array[1].body.dec.value;
+		arg->run = dbg_std_executor_func_trace;
+		return arg;
+	}
+	return NULL;
+}
+

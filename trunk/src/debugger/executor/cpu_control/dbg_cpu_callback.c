@@ -19,6 +19,9 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	if (cpuemu_cui_mode() == FALSE) {
 		return;
 	}
+
+	cpuctrl_set_func_log_trace(pc);
+
 	/*
 	 * cont timeout check
 	 * break point check

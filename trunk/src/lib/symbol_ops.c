@@ -91,6 +91,10 @@ uint32 symbol_funcid2funcaddr(int id)
 {
 	return symbol_func[id].addr;
 }
+uint32 symbol_funcid2funcsize(int id)
+{
+	return symbol_func[id].size;
+}
 
 
 int symbol_get_gl(char *gl_name, uint32 gl_len, uint32 *addrp, uint32 *size)

@@ -280,3 +280,24 @@ void dbg_std_executor_info_cpu(void *executor)
 	dbg_target_print_cpu();
 	return;
 }
+void dbg_std_executor_func_trace(void *executor)
+{
+	int i;
+	uint32 funcid;
+	uint32 funcsize;
+	uint32 funcpcoff;
+	char *funcname;
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)(arg->parsed_args);
+
+	for (i = (parsed_args->bt_number - 1); i >= 0; i--) {
+		funcname = cpuctrl_get_func_log_trace_info(i, &funcpcoff, &funcid);
+		if (funcname == NULL) {
+			break;
+		}
+		funcsize = symbol_funcid2funcsize(funcid);
+		printf("[%3u] <%04u%%> %s\n", i, (1000 * funcpcoff) / (funcsize - 1), funcname);
+	}
+
+	return;
+}

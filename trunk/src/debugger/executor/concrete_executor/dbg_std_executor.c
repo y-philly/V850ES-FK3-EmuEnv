@@ -280,11 +280,11 @@ void dbg_std_executor_info_cpu(void *executor)
 	dbg_target_print_cpu();
 	return;
 }
+
 void dbg_std_executor_func_trace(void *executor)
 {
 	int i;
 	uint32 funcid;
-	uint32 funcsize;
 	uint32 funcpcoff;
 	char *funcname;
 	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
@@ -295,8 +295,29 @@ void dbg_std_executor_func_trace(void *executor)
 		if (funcname == NULL) {
 			break;
 		}
-		funcsize = symbol_funcid2funcsize(funcid);
-		printf("[%3u] <%04u%%> %s\n", i, (1000 * funcpcoff) / (funcsize - 1), funcname);
+		printf("[%3u] <%03u> %s\n", i, funcpcoff, funcname);
+	}
+
+	return;
+}
+void dbg_std_executor_profile(void *executor)
+{
+	uint32 funcnum;
+	uint32 funcid;
+	char *funcname;
+	CpuProfileType profile;
+
+	funcnum = symbol_get_func_num();
+	printf("%-50s %-15s %-15s %-15s\n", "funcname", "call_num", "func_time", "total_time");
+	for (funcid = 0; funcid < funcnum; funcid++) {
+		cpuctrl_profile_get(funcid, &profile);
+		if (profile.call_num == 0) {
+			continue;
+		}
+		funcname = symbol_funcid2funcname(funcid);
+		printf("%-50s %-15I64u %-15I64u %-15I64u\n",
+				funcname, profile.call_num,
+				profile.func_time/profile.call_num, profile.total_time/profile.call_num);
 	}
 
 	return;

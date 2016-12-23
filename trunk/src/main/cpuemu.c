@@ -74,6 +74,7 @@ void cpuemu_init(void *(*cpu_run)(void *))
 	cpu_init();
 	device_init(&virtual_cpu, &cpuemu_dev_clock);
 	cputhr_control_init();
+	cpuctrl_init();
 	if (cpu_run != NULL) {
 		cpuemu_is_cui_mode = TRUE;
 		cputhr_control_start(cpu_run);

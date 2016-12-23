@@ -517,3 +517,31 @@ extern DbgCmdExecutorType *dbg_parse_func_trace(DbgCmdExecutorType *arg, const T
 	return NULL;
 }
 
+
+/************************************************************************************
+ * profile コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType prof_string = {
+		.len = 4,
+		.str = { 'p', 'r', 'o', 'f', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_profile(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &prof_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_PROFILE;
+		arg->run = dbg_std_executor_profile;
+		return arg;
+	}
+	return NULL;
+}
+

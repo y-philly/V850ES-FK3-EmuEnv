@@ -9,13 +9,13 @@ typedef struct {
 	uint32 size;
 } DbgSymbolType;
 
-
+extern uint32 symbol_get_func_num(void);
 
 extern int symbol_get_func(char *funcname, uint32 func_len, uint32 *addrp, uint32 *size);
 extern char * symbol_pc2func(uint32 pc);
 extern int symbol_pc2funcid(uint32 pc, uint32 *funcaddr);
 extern char * symbol_funcid2funcname(int id);
-extern uint32 symbol_uncid2funcaddr(int id);
+extern uint32 symbol_funcid2funcaddr(int id);
 extern int symbol_get_gl(char *gl_name, uint32 gl_len, uint32 *addrp, uint32 *size);
 
 extern int symbol_addr2glid(uint32 addr, uint32 *gladdr);

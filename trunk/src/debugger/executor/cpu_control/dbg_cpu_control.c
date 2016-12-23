@@ -1,6 +1,10 @@
 #include "cpu_control/dbg_cpu_control.h"
 #include "cpu_config.h"
 #include "symbol_ops.h"
+#include "assert.h"
+#include "cpuemu_ops.h"
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct {
 	bool 				is_set;
@@ -252,5 +256,53 @@ void cpuctrl_set_force_break(void)
 {
 	cpuctrl_set_debug_mode(TRUE);
 
+	return;
+}
+
+/*
+ * profile機能
+ */
+
+
+
+static CpuProfileType *CpuProfile;
+
+void cpuctrl_init(void)
+{
+	uint32 func_num = symbol_get_func_num();
+	CpuProfile = malloc(func_num * sizeof(CpuProfileType));
+	ASSERT(CpuProfile != NULL);
+	memset(CpuProfile, 0, func_num * sizeof(CpuProfileType));
+}
+
+void cpuctrl_profile_collect(uint32 pc)
+{
+	int funcid;
+	uint32 funcpc;
+	uint32 funcaddr;
+	CpuEmuElapsType elaps;
+
+	funcid = symbol_pc2funcid(pc, &funcaddr);
+	if (funcid < 0) {
+		return;
+	}
+	cpuemu_get_elaps(&elaps);
+	funcpc = symbol_funcid2funcaddr(funcid);
+
+	if (pc == funcpc) {
+		CpuProfile[funcid].call_num++;
+		if (CpuProfile[funcid].last_time > 0) {
+			CpuProfile[funcid].total_time +=
+					(CpuProfile[funcid].last_time - CpuProfile[funcid].start_time);
+		}
+		CpuProfile[funcid].start_time = elaps.total_clocks;
+	}
+	CpuProfile[funcid].func_time++;
+	CpuProfile[funcid].last_time = elaps.total_clocks;
+	return;
+}
+void cpuctrl_profile_get(uint32 funcid, CpuProfileType *profile)
+{
+	*profile = CpuProfile[funcid];
 	return;
 }

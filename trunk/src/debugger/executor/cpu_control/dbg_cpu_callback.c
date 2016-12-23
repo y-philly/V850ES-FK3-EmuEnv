@@ -21,6 +21,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	}
 
 	cpuctrl_set_func_log_trace(pc);
+	cpuctrl_profile_collect(pc);
 
 	/*
 	 * cont timeout check

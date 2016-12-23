@@ -9,7 +9,10 @@ static uint32 symbol_gl_size = 0;
 static DbgSymbolType symbol_func[CPUEMU_CONFIG_FUNC_SYMBOL_TABLE_NUM];
 static DbgSymbolType symbol_gl[CPUEMU_CONFIG_OBJECT_SYMBOL_TABLE_NUM];
 
-
+uint32 symbol_get_func_num(void)
+{
+	return symbol_func_size;
+}
 int symbol_gl_add(DbgSymbolType *sym)
 {
 	if (symbol_gl_size >= CPUEMU_CONFIG_OBJECT_SYMBOL_TABLE_NUM) {

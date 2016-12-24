@@ -295,7 +295,7 @@ void dbg_std_executor_func_trace(void *executor)
 		if (funcname == NULL) {
 			break;
 		}
-		printf("[%3u] <%03u> %s\n", i, funcpcoff, funcname);
+		printf("[%3u] <0x%03x> %s\n", i, funcpcoff, funcname);
 	}
 
 	return;

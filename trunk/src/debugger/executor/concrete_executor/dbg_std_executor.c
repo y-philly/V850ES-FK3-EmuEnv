@@ -287,15 +287,21 @@ void dbg_std_executor_func_trace(void *executor)
 	uint32 funcid;
 	uint32 funcpcoff;
 	char *funcname;
+	uint32 sp;
+	uint32 glid;
+	uint32 gladdr;
+	char *stackp;
 	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)(arg->parsed_args);
 
 	for (i = (parsed_args->bt_number - 1); i >= 0; i--) {
-		funcname = cpuctrl_get_func_log_trace_info(i, &funcpcoff, &funcid);
+		funcname = cpuctrl_get_func_log_trace_info(i, &funcpcoff, &funcid, &sp);
 		if (funcname == NULL) {
 			break;
 		}
-		printf("[%3u] <0x%03x> %s\n", i, funcpcoff, funcname);
+		glid = symbol_addr2glid(sp, &gladdr);
+		stackp = symbol_glid2glname(glid);
+		printf("<%-30s(0x%03x)> [%3u] <0x%03x> %s\n", stackp, sp - gladdr, i, funcpcoff, funcname);
 	}
 
 	return;

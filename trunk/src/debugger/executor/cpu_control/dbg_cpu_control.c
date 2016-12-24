@@ -35,6 +35,7 @@ static DbgCpuContType dbg_cpu_cont[CPU_CONFIG_CORE_NUM];
 typedef struct {
 	uint32	current;
 	uint32	lognum;
+	uint32	sp[DBG_FUNCLOG_TRACE_SIZE];
 	uint32	funcid[DBG_FUNCLOG_TRACE_SIZE];
 	uint32	funcoff[DBG_FUNCLOG_TRACE_SIZE];
 	uint32	funcpc[DBG_FUNCLOG_TRACE_SIZE];
@@ -44,7 +45,7 @@ typedef struct {
 static DbgFuncLogTraceType dbg_func_log_trace;
 
 
-void cpuctrl_set_func_log_trace(uint32 pc)
+void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp)
 {
 	uint32 inx;
 	uint32 next;
@@ -72,6 +73,7 @@ void cpuctrl_set_func_log_trace(uint32 pc)
 	}
 
 	dbg_func_log_trace.current = next;
+	dbg_func_log_trace.sp[next] = sp;
 	dbg_func_log_trace.funcid[next] = funcid;
 	dbg_func_log_trace.funcoff[next] = pc - funcpc;
 	dbg_func_log_trace.funcname[next] = funcname;
@@ -82,7 +84,7 @@ void cpuctrl_set_func_log_trace(uint32 pc)
 	return;
 }
 
-char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint32 *funcid)
+char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint32 *funcid, uint32 *sp)
 {
 	int off;
 	if (bt_number >= DBG_FUNCLOG_TRACE_SIZE) {
@@ -98,6 +100,7 @@ char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint3
 	else {
 		off = DBG_FUNCLOG_TRACE_SIZE - (bt_number - dbg_func_log_trace.current);
 	}
+	*sp = dbg_func_log_trace.sp[off];
 	*funcid = dbg_func_log_trace.funcid[off];
 	*funcpcoff = dbg_func_log_trace.funcoff[off];
 	return dbg_func_log_trace.funcname[off];

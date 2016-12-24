@@ -28,8 +28,8 @@ extern void cpuctrl_set_debug_mode(bool on);
 extern void cpuctrl_set_force_break(void);
 
 
-extern void cpuctrl_set_func_log_trace(uint32 pc);
-extern char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint32 *funcid);
+extern void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp);
+extern char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint32 *funcid, uint32 *sp);
 
 extern void cpuctrl_init(void);
 /*

@@ -19,7 +19,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 		return;
 	}
 
-	cpuctrl_set_func_log_trace(pc);
+	cpuctrl_set_func_log_trace(pc, sp);
 	cpuctrl_profile_collect(pc);
 	cpuctrl_set_stack_pointer(sp);
 

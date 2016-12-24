@@ -300,6 +300,78 @@ void dbg_std_executor_func_trace(void *executor)
 
 	return;
 }
+
+static void print_stack_data(uint32 addr)
+{
+	 uint32 funcaddr;
+	 int funcid;
+	 uint32 gladdr;
+	 int glid;
+	 uint32 *datap;
+	 uint32 data;
+
+
+	 cpuemu_get_addr_pointer(addr, (uint8**)&datap);
+	 data = *datap;
+
+	 funcid = symbol_pc2funcid(data, &funcaddr);
+	 if (funcid >= 0) {
+		printf("						0x%x 0x%x %s(+0x%x)", addr, data, symbol_funcid2funcname(funcid), data - funcaddr);
+	 }
+	 else {
+		glid = symbol_addr2glid(data, &gladdr);
+		if (glid >= 0) {
+			printf("						0x%x 0x%x %s(+0x%x)", addr, data, symbol_glid2glname(glid), data - gladdr);
+		}
+		else {
+			printf("						0x%x 0x%x", addr, data);
+		}
+	 }
+	printf("\n");
+	return;
+}
+void dbg_std_executor_back_trace(void *executor)
+{
+	int i;
+	uint32 prev_sp = -1;
+	uint32 sp;
+	Std_ReturnType err;
+	uint32 gl_num = symbol_get_gl_num();
+	int inx;
+
+	for (inx = 0; inx < gl_num; inx++) {
+		i = DBG_STACK_LOG_SIZE - 1;
+		if (cpuctrl_get_stack_pointer(inx, 0, &sp) == STD_E_OK) {
+			prev_sp = -1;
+			printf("*************************************\n");
+			while (i > 0) {
+				err = cpuctrl_get_stack_pointer(inx, i, &sp);
+				if (err == STD_E_OK) {
+					if (prev_sp != -1) {
+						uint32 addr_inx;
+						uint32 addr = sp;
+						uint32 num = (sp - prev_sp)/4;
+#if 1
+						for (addr_inx = 0; addr_inx < num; addr_inx++) {
+							print_stack_data(addr);
+							addr -= 4;
+						}
+#else
+						printf("addr_num=%u sp=%u prev_sp=%u\n", num, sp, prev_sp);
+#endif
+					}
+					prev_sp = sp;
+					printf(" %-30s [%4u] 0x%08x\n", symbol_glid2glname(inx), i, sp);
+					}
+				i--;
+			}
+			printf("\n");
+		}
+	}
+
+
+	return;
+}
 void dbg_std_executor_profile(void *executor)
 {
 	uint32 funcnum;

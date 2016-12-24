@@ -10,11 +10,10 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 {
 	bool need_stop = FALSE;
 	uint32 pc = cpu_get_pc(core);
+	uint32 sp = cpu_get_sp(core);
 	/*
 	 * call callback
 	 */
-	//TODO
-
 
 	if (cpuemu_cui_mode() == FALSE) {
 		return;
@@ -22,6 +21,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 
 	cpuctrl_set_func_log_trace(pc);
 	cpuctrl_profile_collect(pc);
+	cpuctrl_set_stack_pointer(sp);
 
 	/*
 	 * cont timeout check

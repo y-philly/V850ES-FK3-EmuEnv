@@ -10,6 +10,7 @@ typedef struct {
 } DbgSymbolType;
 
 extern uint32 symbol_get_func_num(void);
+extern uint32 symbol_get_gl_num(void);
 
 extern int symbol_get_func(char *funcname, uint32 func_len, uint32 *addrp, uint32 *size);
 extern char * symbol_pc2func(uint32 pc);

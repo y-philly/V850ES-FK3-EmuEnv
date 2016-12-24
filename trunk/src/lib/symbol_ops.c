@@ -13,6 +13,10 @@ uint32 symbol_get_func_num(void)
 {
 	return symbol_func_size;
 }
+uint32 symbol_get_gl_num(void)
+{
+	return symbol_gl_size;
+}
 int symbol_gl_add(DbgSymbolType *sym)
 {
 	if (symbol_gl_size >= CPUEMU_CONFIG_OBJECT_SYMBOL_TABLE_NUM) {

@@ -4,7 +4,6 @@
 #include "std_types.h"
 
 #define DBG_CPU_CONTROL_BREAK_SETSIZE	128
-
 #define DBG_FUNCLOG_TRACE_SIZE			1024
 
 extern bool cpuctrl_get_break(uint32 index, uint32 *addrp);
@@ -45,4 +44,13 @@ typedef struct {
 } CpuProfileType;
 extern void cpuctrl_profile_collect(uint32 pc);
 extern void cpuctrl_profile_get(uint32 funcid, CpuProfileType *profile);
+
+/*
+ * 関数フレーム記録
+ */
+#define DBG_STACK_LOG_SIZE				1024
+#define DBG_STACK_NUM					1024
+extern void cpuctrl_set_stack_pointer(uint32 sp);
+extern Std_ReturnType cpuctrl_get_stack_pointer(int glid, uint32 bt_number, uint32 *sp);
+
 #endif /* _DBG_CPU_CONTROL_H_ */

@@ -69,6 +69,8 @@ typedef struct {
 } DbgCmdExecutorFuncTraceType;
 extern DbgCmdExecutorType *dbg_parse_func_trace(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
+extern DbgCmdExecutorType *dbg_parse_back_trace(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
 extern DbgCmdExecutorType *dbg_parse_profile(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
 #endif /* _DBG_STD_PARSER_H_ */

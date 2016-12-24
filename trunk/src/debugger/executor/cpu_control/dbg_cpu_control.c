@@ -3,6 +3,7 @@
 #include "symbol_ops.h"
 #include "assert.h"
 #include "cpuemu_ops.h"
+#include "std_errno.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -262,9 +263,6 @@ void cpuctrl_set_force_break(void)
 /*
  * profile機能
  */
-
-
-
 static CpuProfileType *CpuProfile;
 
 void cpuctrl_init(void)
@@ -274,7 +272,6 @@ void cpuctrl_init(void)
 	ASSERT(CpuProfile != NULL);
 	memset(CpuProfile, 0, func_num * sizeof(CpuProfileType));
 }
-
 void cpuctrl_profile_collect(uint32 pc)
 {
 	int funcid;
@@ -305,4 +302,70 @@ void cpuctrl_profile_get(uint32 funcid, CpuProfileType *profile)
 {
 	*profile = CpuProfile[funcid];
 	return;
+}
+/*
+ * 関数フレーム記録
+ */
+typedef struct {
+	uint32	current;
+	uint32	lognum;
+	uint32	sp[DBG_STACK_LOG_SIZE];
+} DbgFuncFrameType;
+static DbgFuncFrameType dbg_func_frame[DBG_STACK_NUM];
+
+void cpuctrl_set_stack_pointer(uint32 sp)
+{
+	uint32 inx;
+	uint32 next;
+	uint32 prev;
+	uint32 gladdr;
+	int glid;
+
+	glid = symbol_addr2glid(sp, &gladdr);
+	if (glid < 0) {
+		return;
+	}
+	if (dbg_func_frame[glid].lognum > 0) {
+		inx = dbg_func_frame[glid].current;
+		/*
+		 * 同じスタックポインタの場合は終了
+		 */
+		if (dbg_func_frame[glid].sp[inx] == sp) {
+			return;
+		}
+		/*
+		 * 一個前のスタックポインタの場合は縮小する．
+		 */
+		for (prev = 0; prev < dbg_func_frame[glid].lognum; prev++) {
+			if (dbg_func_frame[glid].sp[prev] == sp) {
+				dbg_func_frame[glid].lognum = prev + 1;
+				dbg_func_frame[glid].current = prev;
+				return;
+			}
+		}
+		/*
+		 * 新しいスタックポインタの場合は追加する
+		 */
+		next = inx + 1;
+		ASSERT(next <= DBG_STACK_LOG_SIZE);
+	} else {
+		next = 0;
+	}
+	dbg_func_frame[glid].current = next;
+	dbg_func_frame[glid].sp[next] = sp;
+	dbg_func_frame[glid].lognum++;
+	return;
+}
+
+Std_ReturnType cpuctrl_get_stack_pointer(int glid, uint32 bt_number, uint32 *sp)
+{
+	if (dbg_func_frame[glid].lognum <= 1) {
+		return STD_E_NOENT;
+	}
+
+	if (bt_number >= dbg_func_frame[glid].lognum) {
+		return STD_E_NOENT;
+	}
+	*sp = dbg_func_frame[glid].sp[bt_number];
+	return STD_E_OK;
 }

@@ -331,3 +331,4 @@ const char* cpuemu_get_comm_tx_fifo(void)
 		return NULL;
 	}
 }
+

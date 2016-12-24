@@ -519,6 +519,33 @@ extern DbgCmdExecutorType *dbg_parse_func_trace(DbgCmdExecutorType *arg, const T
 
 
 /************************************************************************************
+ * back trace コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType back_trace_string = {
+		.len = 2,
+		.str = { 'b', 't', '\0' },
+};
+extern DbgCmdExecutorType *dbg_parse_back_trace(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &back_trace_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_BACK_TRACE;
+		arg->run = dbg_std_executor_back_trace;
+		return arg;
+	}
+	return NULL;
+}
+
+/************************************************************************************
  * profile コマンド
  *
  *

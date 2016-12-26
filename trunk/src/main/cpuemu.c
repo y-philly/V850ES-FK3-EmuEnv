@@ -332,3 +332,83 @@ const char* cpuemu_get_comm_tx_fifo(void)
 	}
 }
 
+#define CPUEMU_DEVCFG_PARAM_MAXNUM	128
+typedef struct {
+	uint32			param_num;
+	struct {
+		TokenValueType	key;
+		TokenValueType	value;
+	} param[CPUEMU_DEVCFG_PARAM_MAXNUM];
+} CpuEmuDevCfgType;
+
+static CpuEmuDevCfgType cpuemu_devcfg;
+static char dvcfg_buffer[4096];
+static TokenContainerType devcfg_token_container;
+static FileType devcfg_file;
+
+Std_ReturnType cpuemu_load_devcfg(const char *path)
+{
+	Std_ReturnType err = STD_E_OK;
+	uint32 len;
+	bool ret;
+
+	cpuemu_devcfg.param_num = 0;
+
+	ret = token_string_set(&devcfg_file.filepath, path);
+	if (ret == FALSE) {
+		return STD_E_INVALID;
+	}
+	ret = file_ropen(&devcfg_file);
+	if (ret == FALSE) {
+		return STD_E_NOENT;
+	}
+	while (TRUE) {
+		err = STD_E_INVALID;
+
+		len = file_getline(&devcfg_file, dvcfg_buffer, 4096);
+		if (len <= 0) {
+			break;
+		}
+
+		err = token_split(&devcfg_token_container, (uint8*)dvcfg_buffer, len);
+		if (err != STD_E_OK) {
+			printf("ERROR: can not parse data on %s...\n", path);
+			goto errdone;
+		}
+		if (devcfg_token_container.num != 2) {
+			printf("ERROR: the token is invalid %s on %s...\n", dvcfg_buffer, path);
+			goto errdone;
+		}
+		cpuemu_devcfg.param[cpuemu_devcfg.param_num].key = devcfg_token_container.array[0];
+		cpuemu_devcfg.param[cpuemu_devcfg.param_num].value = devcfg_token_container.array[1];
+		cpuemu_devcfg.param_num++;
+	}
+
+	file_close(&devcfg_file);
+	return STD_E_OK;
+errdone:
+	file_close(&devcfg_file);
+	return err;
+}
+
+Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value)
+{
+	int i;
+	TokenStringType token;
+
+	token.len = strlen(key);
+	memcpy(token.str, key, token.len);
+	token.str[token.len] = '\0';
+
+	for (i = 0; i < cpuemu_devcfg.param_num; i++) {
+		if (cpuemu_devcfg.param[i].value.type != TOKEN_TYPE_VALUE_DEC) {
+			continue;
+		}
+		if (token_strcmp(&cpuemu_devcfg.param[i].key.body.str, &token) == FALSE) {
+			continue;
+		}
+		*value = cpuemu_devcfg.param[i].value.body.dec.value;
+		return STD_E_OK;
+	}
+	return STD_E_NOENT;
+}

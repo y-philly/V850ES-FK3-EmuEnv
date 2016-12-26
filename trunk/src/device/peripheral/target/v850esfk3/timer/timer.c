@@ -1,4 +1,5 @@
 #include "inc/timer.h"
+#include "cpuemu_ops.h"
 #include <stdio.h>
 
 typedef enum {
@@ -27,6 +28,10 @@ void device_init_timer(MpuAddressRegionType *region)
 {
 	int i = 0;
 	uint16 base;
+	uint32 value = 32;
+
+	(void)cpuemu_get_devcfg_value("DEVICE_CONFIG_TIMER_FD", &value);
+	//printf("timer value=%d\n", value);
 
 	timer_region = region;
 
@@ -35,7 +40,8 @@ void device_init_timer(MpuAddressRegionType *region)
 		TimerDevice[i].mode = TIMER_MODE_STOP;
 		TimerDevice[i].compare0 = 0;
 		TimerDevice[i].compare1 = 0;
-		TimerDevice[i].fd = 32;
+		//TimerDevice[i].fd = 32;
+		TimerDevice[i].fd = value;
 	}
 
 	for (i = 0; i < 5; i++) {

@@ -35,7 +35,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  cmd_option.is_remote = FALSE;
 	  cmd_option.timeout = 0;
 
-	  while ((opt = getopt(argc, (char**)argv, "irbt:p:")) != -1) {
+	  while ((opt = getopt(argc, (char**)argv, "irbt:p:d:")) != -1) {
 		  switch (opt) {
 		  case 'i':
 	    	cmd_option.is_interaction = TRUE;
@@ -57,8 +57,13 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	    	cmd_option.buffer_fifopath[strlen(optarg)] = '\0';
 	        cmd_option.fifocfgpath = cmd_option.buffer_fifopath;
 	        break;
+	      case 'd':
+	    	memcpy(cmd_option.buffer_devcfgpath, optarg, strlen(optarg));
+	    	cmd_option.buffer_devcfgpath[strlen(optarg)] = '\0';
+	        cmd_option.devcfgpath = cmd_option.buffer_devcfgpath;
+	        break;
 	      default:
-	        printf("error! \'%c\' \'%c\'\n", opt, optopt);
+	        printf("parse_args:error! \'%c\' \'%c\'\n", opt, optopt);
 	        return NULL;
 	    }
 	  }
@@ -82,5 +87,10 @@ CmdOptionType *parse_args(int argc, const char* argv[])
     	  printf("ERROR: not found fifo(%s)\n", cmd_option.fifocfgpath);
     	  return NULL;
       }
+      if ((cmd_option.devcfgpath != NULL) &&(file_exist(cmd_option.devcfgpath) == FALSE)) {
+    	  printf("ERROR: not found devcfg(%s)\n", cmd_option.devcfgpath);
+    	  return NULL;
+      }
+
 	  return &cmd_option;
 }

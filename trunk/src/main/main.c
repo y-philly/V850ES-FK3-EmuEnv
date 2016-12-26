@@ -64,6 +64,7 @@ retry:
  */
 int main(int argc, const char *argv[])
 {
+	Std_ReturnType err;
 	CmdOptionType *opt;
 
 	winsock_init();
@@ -73,8 +74,13 @@ int main(int argc, const char *argv[])
 		return -1;
 	}
 	if (opt->fifocfgpath != NULL) {
-		Std_ReturnType err;
 		err = cpuemu_set_comm_fifocfg(opt->fifocfgpath);
+		if (err != STD_E_OK) {
+			return -1;
+		}
+	}
+	if (opt->devcfgpath != NULL) {
+		err = cpuemu_load_devcfg(opt->devcfgpath);
 		if (err != STD_E_OK) {
 			return -1;
 		}

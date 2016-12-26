@@ -572,3 +572,225 @@ DbgCmdExecutorType *dbg_parse_profile(DbgCmdExecutorType *arg, const TokenContai
 	return NULL;
 }
 
+/************************************************************************************
+ * help コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType help_string = {
+		.len = 4,
+		.str = { 'h', 'e', 'l', 'p', '\0' },
+};
+static const DbgCmdHelpType help_list = {
+	.cmd_num = DBG_CMD_STD_ID_NUM,
+	.cmd = {
+			{
+					.name = &break_string,
+					.name_shortcut = &break_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "break {<addr(hex)>|<funcname>}",
+									.description = "set a break point. Break points are shown using 'info break' command.",
+							},
+					},
+			},
+			{
+					.name = &delete_string,
+					.name_shortcut = &delete_string_short,
+					.opt_num = 2,
+					.opts = {
+							{
+									.semantics = "delete",
+									.description = "delete all break points",
+							},
+							{
+									.semantics = "delete <break_no>",
+									.description = "delete the break point of <break_no>",
+							},
+					},
+			},
+			{
+					.name = &cont_string,
+					.name_shortcut = &cont_string_short,
+					.opt_num = 2,
+					.opts = {
+							{
+									.semantics = "cont",
+									.description = "continue program",
+							},
+							{
+									.semantics = "cont <clocks>",
+									.description = "continue program until cpu has elapsed <clocks> times",
+							},
+					},
+			},
+			{
+					.name = &elaps_string,
+					.name_shortcut = &elaps_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "elaps",
+									.description = "show elapsed cpu clocks",
+							},
+					},
+			},
+			{
+					.name = &next_string,
+					.name_shortcut = &next_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "next",
+									.description = "step forward",
+							},
+					},
+			},
+			{
+					.name = &return_string,
+					.name_shortcut = &return_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "return",
+									.description = "return from the current function",
+							},
+					},
+			},
+			{
+					.name = &view_string,
+					.name_shortcut = &view_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "view",
+									.description = "select the logging mode",
+							},
+					},
+			},
+			{
+					.name = &print_string,
+					.name_shortcut = &print_string_short,
+					.opt_num = 2,
+					.opts = {
+							{
+									.semantics = "print <variable_name>",
+									.description = "show memory information of the <variable_name>",
+							},
+							{
+									.semantics = "print <addr(hex)> <size>",
+									.description = "show memory information from <addr> to (<addr> + <size>)",
+							},
+					},
+			},
+			{
+					.name = &quit_string,
+					.name_shortcut = &quit_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "quit",
+									.description = "quit form CPU mode",
+							},
+					},
+			},
+			{
+					.name = &exit_string,
+					.name_shortcut = NULL,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "exit",
+									.description = "exit from this program",
+							},
+					},
+			},
+			{
+					.name = &serial_string,
+					.name_shortcut = &serial_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "serial <input_data(string)>",
+									.description = "set <input_data> on the serial as an input",
+							},
+					},
+			},
+			{
+					.name = &info_cpu_string,
+					.name_shortcut = NULL,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "cpu",
+									.description = "show cpu registers",
+							},
+					},
+			},
+			{
+					.name = &func_trace_string,
+					.name_shortcut = NULL,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "ft <number>",
+									.description = "show function trace log(show size=<number>)",
+							},
+					},
+			},
+			{
+					.name = &back_trace_string,
+					.name_shortcut = NULL,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "bt",
+									.description = "show back trace result",
+							},
+					},
+			},
+			{
+					.name = &prof_string,
+					.name_shortcut = NULL,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "profile",
+									.description = "show profile result",
+							},
+					},
+			},
+			{
+					.name = &help_string,
+					.name_shortcut = NULL,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "help",
+									.description = "show all commands",
+							},
+					},
+			},
+	},
+};
+
+DbgCmdExecutorType *dbg_parse_help(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorHelpType *parsed_args = (DbgCmdExecutorHelpType *)arg->parsed_args;
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &help_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_HELP;
+		parsed_args->arg = &help_list;
+		arg->run = dbg_std_executor_help;
+		return arg;
+	}
+	return NULL;
+}

@@ -398,3 +398,27 @@ void dbg_std_executor_profile(void *executor)
 
 	return;
 }
+void dbg_std_executor_help(void *executor)
+{
+	int i;
+	int j;
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorHelpType *parsed_args = (DbgCmdExecutorHelpType *)(arg->parsed_args);
+
+	printf("LIst of commands:\n");
+	for (i = 0; i < parsed_args->arg->cmd_num; i++) {
+		if (parsed_args->arg->cmd[i].name_shortcut != NULL) {
+			printf(" * %s(%s):\n", parsed_args->arg->cmd[i].name->str, parsed_args->arg->cmd[i].name_shortcut->str);
+		}
+		else {
+			printf(" * %s(%s):\n", parsed_args->arg->cmd[i].name->str, "-");
+		}
+		for (j = 0; j < parsed_args->arg->cmd[i].opt_num; j++) {
+			printf("   %u) %s\n", j+1, parsed_args->arg->cmd[i].opts[j].semantics);
+			printf("      %s\n", parsed_args->arg->cmd[i].opts[j].description);
+		}
+	}
+
+
+	return;
+}

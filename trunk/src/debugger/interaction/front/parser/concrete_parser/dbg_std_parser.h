@@ -73,4 +73,23 @@ extern DbgCmdExecutorType *dbg_parse_back_trace(DbgCmdExecutorType *arg, const T
 
 extern DbgCmdExecutorType *dbg_parse_profile(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
+
+#define DBG_CMD_ARG_TYPES_MAX	3U
+typedef struct {
+	uint32			cmd_num;
+	struct {
+		const TokenStringType *name;
+		const TokenStringType *name_shortcut;
+		uint32			opt_num;
+		struct {
+			const char*		description;
+			const char*		semantics;
+		} opts[DBG_CMD_ARG_TYPES_MAX];
+	} cmd[DBG_CMD_STD_ID_NUM];
+} DbgCmdHelpType;
+
+typedef struct {
+	const DbgCmdHelpType *arg;
+} DbgCmdExecutorHelpType;
+extern DbgCmdExecutorType *dbg_parse_help(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 #endif /* _DBG_STD_PARSER_H_ */

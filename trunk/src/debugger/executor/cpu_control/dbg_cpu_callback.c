@@ -38,17 +38,16 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 			 printf("\nHIT break:0x%x\n", pc);
 		 }
 
-		//printf("[DBG>");
 	}
 	else if ((cpuctrl_is_debug_mode() == TRUE)) {
 		need_stop = TRUE;
 	}
 
 	if (need_stop == TRUE) {
+		fflush(stdout);
 		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = %x\n", cpu_get_core_id(core), pc));
 		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
-		fflush(stdout);
 		dbg_log_sync();
 		/*
 		 * return コマンド実行時の一時的なブレークポイントを削除する．
@@ -105,13 +104,7 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core)
 	}
 
 	if (need_stop == TRUE) {
-		printf("[DBG>");
-		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = %x\n", cpu_get_core_id(core), pc));
-		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
-		fflush(stdout);
-		dbg_log_sync();
-		cputhr_control_cpu_wait();
 	}
 
 	return;

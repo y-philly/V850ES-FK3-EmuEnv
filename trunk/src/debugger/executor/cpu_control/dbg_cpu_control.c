@@ -261,7 +261,7 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 	 return;
 }
 
-bool cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
+int cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
 {
 	uint32 i;
 	uint32 watch_start;
@@ -284,12 +284,12 @@ bool cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
 		else if (access_addr >= watch_end) {
 			continue;
 		}
-		return TRUE;
+		return i;
 	}
-	return FALSE;
+	return -1;
 }
 
-bool cpuctrl_is_break_write_access(uint32 access_addr, uint32 size)
+int cpuctrl_is_break_write_access(uint32 access_addr, uint32 size)
 {
 	uint32 i;
 	uint32 watch_start;
@@ -311,9 +311,9 @@ bool cpuctrl_is_break_write_access(uint32 access_addr, uint32 size)
 		else if (access_addr >= watch_end) {
 			continue;
 		}
-		return TRUE;
+		return i;
 	}
-	return FALSE;
+	return -1;
 }
 bool cpuctrl_get_data_watch_point(uint32 index, uint32 *addrp, uint32 *sizep, DataWatchPointEumType *type)
 {

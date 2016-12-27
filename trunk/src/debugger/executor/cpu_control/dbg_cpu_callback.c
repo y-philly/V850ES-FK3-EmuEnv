@@ -82,24 +82,30 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core)
 	 * data watch check
 	 */
 	while (TRUE) {
+		int inx;
 		Std_ReturnType err;
 		err = bus_access_get_log(&type, &size, &access_addr);
 		if (err != STD_E_OK) {
 			break;
 		}
 		if (type == BUS_ACCESS_TYPE_READ) {
-			if (cpuctrl_is_break_read_access(access_addr, size) == TRUE) {
+			inx = cpuctrl_is_break_read_access(access_addr, size);
+			if (inx >= 0) {
 				need_stop = TRUE;
+				printf("\nHIT watch data : read access : [%u] 0x%x %u\n", inx, access_addr, size);
 			}
 		}
 		else if (type == BUS_ACCESS_TYPE_WRITE) {
-			if (cpuctrl_is_break_write_access(access_addr, size) == TRUE) {
+			inx = cpuctrl_is_break_write_access(access_addr, size);
+			if (inx >= 0) {
 				need_stop = TRUE;
+				printf("\nHIT watch data : write access : [%u] 0x%x %u\n", inx, access_addr, size);
 			}
 		}
 	}
 
 	if (need_stop == TRUE) {
+		printf("[DBG>");
 		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = %x\n", cpu_get_core_id(core), pc));
 		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);

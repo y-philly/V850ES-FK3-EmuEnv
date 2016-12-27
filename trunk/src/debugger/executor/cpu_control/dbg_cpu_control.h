@@ -40,8 +40,8 @@ typedef enum {
 	DATA_WATCH_POINT_TYPE_WRITE,
 	DATA_WATCH_POINT_TYPE_RW,
 } DataWatchPointEumType;
-extern bool cpuctrl_is_break_read_access(uint32 access_addr, uint32 size);
-extern bool cpuctrl_is_break_write_access(uint32 access_addr, uint32 size);
+extern int cpuctrl_is_break_read_access(uint32 access_addr, uint32 size);
+extern int cpuctrl_is_break_write_access(uint32 access_addr, uint32 size);
 extern bool cpuctrl_get_data_watch_point(uint32 index, uint32 *addrp, uint32 *sizep, DataWatchPointEumType *type);
 extern bool cpuctrl_set_data_watch(DataWatchPointEumType watch_type, uint32 addr, uint32 size);
 extern bool cpuctrl_del_data_watch_point(uint32 delno);

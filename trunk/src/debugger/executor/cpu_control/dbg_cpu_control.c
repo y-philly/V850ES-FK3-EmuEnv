@@ -16,6 +16,15 @@ typedef struct {
 DbgCpuCtrlBreakPointType dbg_cpuctrl_break_points[DBG_CPU_CONTROL_BREAK_SETSIZE] = {
 		{ TRUE, 0x00 },
 };
+
+typedef struct {
+	bool					is_set;
+	DataWatchPointEumType	type;
+	uint32					addr;
+	uint32					size;
+} DbgCpuCtrlDataWatchType;
+DbgCpuCtrlDataWatchType dbg_cpuctrl_data_watch_points[DBG_CPU_CONTROL_WATCH_DATA_SETSIZE];
+
 bool dbg_cpuctrl_dbg_mode = TRUE;
 
 typedef struct {
@@ -251,6 +260,124 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 	 }
 	 return;
 }
+
+bool cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
+{
+	uint32 i;
+	uint32 watch_start;
+	uint32 watch_end;
+	uint32 access_end = access_addr + size;
+
+
+	for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
+		if (dbg_cpuctrl_data_watch_points[i].is_set == FALSE) {
+			continue;
+		}
+		if (dbg_cpuctrl_data_watch_points[i].type == DATA_WATCH_POINT_TYPE_WRITE) {
+			continue;
+		}
+		watch_start = dbg_cpuctrl_data_watch_points[i].addr;
+		watch_end = watch_start + dbg_cpuctrl_data_watch_points[i].size;
+		if (access_end <= watch_start) {
+			continue;
+		}
+		else if (access_addr >= watch_end) {
+			continue;
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+
+bool cpuctrl_is_break_write_access(uint32 access_addr, uint32 size)
+{
+	uint32 i;
+	uint32 watch_start;
+	uint32 watch_end;
+	uint32 access_end = access_addr + size;
+
+	for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
+		if (dbg_cpuctrl_data_watch_points[i].is_set == FALSE) {
+			continue;
+		}
+		if (dbg_cpuctrl_data_watch_points[i].type == DATA_WATCH_POINT_TYPE_READ) {
+			continue;
+		}
+		watch_start = dbg_cpuctrl_data_watch_points[i].addr;
+		watch_end = watch_start + dbg_cpuctrl_data_watch_points[i].size;
+		if (access_end <= watch_start) {
+			continue;
+		}
+		else if (access_addr >= watch_end) {
+			continue;
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+bool cpuctrl_get_data_watch_point(uint32 index, uint32 *addrp, uint32 *sizep)
+{
+	if (index >= DBG_CPU_CONTROL_WATCH_DATA_SETSIZE) {
+		return FALSE;
+	}
+	if (dbg_cpuctrl_data_watch_points[index].is_set == FALSE) {
+		return FALSE;
+	}
+	*addrp = dbg_cpuctrl_data_watch_points[index].addr;
+	*sizep = dbg_cpuctrl_data_watch_points[index].size;
+	return TRUE;
+}
+
+bool cpuctrl_set_data_watch(DataWatchPointEumType watch_type, uint32 addr, uint32 size)
+{
+	uint32 i;
+	/*
+	 * 既存のものを探し，上書きする
+	 */
+	for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
+		if (dbg_cpuctrl_data_watch_points[i].is_set == FALSE) {
+			continue;
+		}
+		if (dbg_cpuctrl_data_watch_points[i].addr == addr) {
+			dbg_cpuctrl_data_watch_points[i].type = watch_type;
+			dbg_cpuctrl_data_watch_points[i].addr = addr;
+			dbg_cpuctrl_data_watch_points[i].size = size;
+			return TRUE;
+		}
+	}
+	/*
+	 * 既存のものがない場合は，新規設定する
+	 */
+	for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
+		if (dbg_cpuctrl_data_watch_points[i].is_set == FALSE) {
+			dbg_cpuctrl_data_watch_points[i].is_set = TRUE;
+			dbg_cpuctrl_data_watch_points[i].type = watch_type;
+			dbg_cpuctrl_data_watch_points[i].addr = addr;
+			dbg_cpuctrl_data_watch_points[i].size = size;
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+bool cpuctrl_del_data_watch_point(uint32 delno)
+{
+	if (delno >= DBG_CPU_CONTROL_WATCH_DATA_SETSIZE) {
+		return FALSE;
+	}
+	dbg_cpuctrl_data_watch_points[delno].is_set = FALSE;
+	return TRUE;
+}
+void cpuctrl_del_all_data_watch_points(void)
+{
+	uint32 i;
+
+	for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
+		cpuctrl_del_data_watch_point(i);
+	}
+	return;
+}
+
+
 void cpuctrl_set_debug_mode(bool on)
 {
 	dbg_cpuctrl_dbg_mode = on;

@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "bus.h"
 #include "cpuemu_ops.h"
 #include "bus.h"
 #include "std_device_ops.h"
@@ -142,6 +143,11 @@ void *cpuemu_thread_run(void* arg)
 		 * CPU 実行
 		 */
 		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+			/*
+			 * バスのアクセスログをクリアする
+			 */
+			bus_access_set_log(BUS_ACCESS_TYPE_NONE, 8U, 0);
+
 			/**
 			 * CPU 実行開始通知
 			 */

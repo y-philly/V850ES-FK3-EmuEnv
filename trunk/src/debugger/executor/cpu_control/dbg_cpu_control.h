@@ -3,35 +3,64 @@
 
 #include "std_types.h"
 
-#define DBG_CPU_CONTROL_BREAK_SETSIZE	128
-#define DBG_FUNCLOG_TRACE_SIZE			1024
-
-extern bool cpuctrl_get_break(uint32 index, uint32 *addrp);
-extern bool cpuctrl_is_break_point(uint32 addr);
+/*
+ * 共通機能
+ */
+extern void cpuctrl_init(void);
 extern bool cpuctrl_is_debug_mode(void);
-
+extern void cpuctrl_set_debug_mode(bool on);
+extern void cpuctrl_set_force_break(void);
 extern void cpuctrl_set_current_debugged_core(CoreIdType core_id);
 extern void cpuctrl_clr_current_debugged_core(void);
 extern bool cpuctrl_get_current_debugged_core(CoreIdType *core_id);
 
-extern void cpuctrl_set_cont_clocks(bool is_timeout, uint64 cont_clocks);
-extern bool cpuctrl_is_timeout_cont_clocks(CoreIdType core_id);
+
+/*
+ * break機能
+ */
+#define DBG_CPU_CONTROL_BREAK_SETSIZE	128
 
 typedef enum {
 	BREAK_POINT_TYPE_FOREVER,
 	BREAK_POINT_TYPE_ONLY_ONCE,
 } BreakPointEumType;
+extern bool cpuctrl_is_break_point(uint32 addr);
+extern bool cpuctrl_get_break(uint32 index, uint32 *addrp);
 extern bool cpuctrl_set_break(uint32 addr, BreakPointEumType type);
 extern bool cpuctrl_del_break(uint32 index);
 extern void cpuctrl_del_all_break(BreakPointEumType type);
-extern void cpuctrl_set_debug_mode(bool on);
-extern void cpuctrl_set_force_break(void);
 
+/*
+ * データウォッチ機能
+ */
+#define DBG_CPU_CONTROL_WATCH_DATA_SETSIZE	128
 
+typedef enum {
+	DATA_WATCH_POINT_TYPE_READ,
+	DATA_WATCH_POINT_TYPE_WRITE,
+	DATA_WATCH_POINT_TYPE_RW,
+} DataWatchPointEumType;
+extern bool cpuctrl_is_break_read_access(uint32 access_addr, uint32 size);
+extern bool cpuctrl_is_break_write_access(uint32 access_addr, uint32 size);
+extern bool cpuctrl_get_data_watch_point(uint32 index, uint32 *addrp, uint32 *sizep);
+extern bool cpuctrl_set_data_watch(DataWatchPointEumType watch_type, uint32 addr, uint32 size);
+extern bool cpuctrl_del_data_watch_point(uint32 delno);
+extern void cpuctrl_del_all_data_watch_points(void);
+
+/*
+ * cont機能
+ */
+extern void cpuctrl_set_cont_clocks(bool is_timeout, uint64 cont_clocks);
+extern bool cpuctrl_is_timeout_cont_clocks(CoreIdType core_id);
+
+/*
+ * 関数ログ機能
+ */
+#define DBG_FUNCLOG_TRACE_SIZE			1024
 extern void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp);
 extern char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint32 *funcid, uint32 *sp);
 
-extern void cpuctrl_init(void);
+
 /*
  * profile機能
  */

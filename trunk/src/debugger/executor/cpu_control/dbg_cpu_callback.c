@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "bus.h"
 #include "cpu_control/dbg_cpu_callback.h"
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "cpu_control/dbg_cpu_control.h"
@@ -62,6 +63,10 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core)
 {
 	uint32 pc = cpu_get_pc(core);
 	uint32 sp = cpu_get_sp(core);
+	BusAccessType type;
+	uint32 size;
+	uint32 access_addr;
+	bool need_stop = FALSE;
 
 	if (cpuemu_cui_mode() == FALSE) {
 		return;
@@ -72,6 +77,36 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core)
 	cpuctrl_set_func_log_trace(pc, sp);
 	cpuctrl_profile_collect(pc);
 	cpuctrl_set_stack_pointer(sp);
+
+	/*
+	 * data watch check
+	 */
+	while (TRUE) {
+		Std_ReturnType err;
+		err = bus_access_get_log(&type, &size, &access_addr);
+		if (err != STD_E_OK) {
+			break;
+		}
+		if (type == BUS_ACCESS_TYPE_READ) {
+			if (cpuctrl_is_break_read_access(access_addr, size) == TRUE) {
+				need_stop = TRUE;
+			}
+		}
+		else if (type == BUS_ACCESS_TYPE_WRITE) {
+			if (cpuctrl_is_break_write_access(access_addr, size) == TRUE) {
+				need_stop = TRUE;
+			}
+		}
+	}
+
+	if (need_stop == TRUE) {
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = %x\n", cpu_get_core_id(core), pc));
+		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
+		cpuctrl_set_debug_mode(TRUE);
+		fflush(stdout);
+		dbg_log_sync();
+		cputhr_control_cpu_wait();
+	}
 
 	return;
 }

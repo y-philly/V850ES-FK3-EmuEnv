@@ -11,14 +11,10 @@ typedef enum {
 	BUS_ACCESS_TYPE_READ,
 	BUS_ACCESS_TYPE_WRITE,
 } BusAccessType;
-typedef enum {
-	BUS_ACCESS_SIZE_TYPE8,
-	BUS_ACCESS_SIZE_TYPE16,
-	BUS_ACCESS_SIZE_TYPE32,
-} BusAccessSizeType;
+#define BUS_ACCESS_LOG_SIZE	128
 
-extern void bus_access_set_log(BusAccessType type, BusAccessSizeType sizetype, uint32 access_data);
-extern void bus_access_get_log(BusAccessType *type, BusAccessSizeType *sizetype, uint32 *access_data);
+extern void bus_access_set_log(BusAccessType type, uint32 size, uint32 access_addr);
+extern Std_ReturnType bus_access_get_log(BusAccessType *type, uint32 *size, uint32 *access_addr);
 
 /*
  * データ取得するための操作関数群
@@ -27,7 +23,7 @@ static inline Std_ReturnType bus_get_data8(CoreIdType core_id, uint32 addr, uint
 {
 	Std_ReturnType err;
 
-	bus_access_set_log(BUS_ACCESS_TYPE_READ, BUS_ACCESS_SIZE_TYPE8, 0);
+	bus_access_set_log(BUS_ACCESS_TYPE_READ, 1U, addr);
 	err = mpu_get_data8(core_id, addr, data);
 	if (err != STD_E_OK) {
 		printf("ERROR:can not load data:addr=0x%x size=4byte\n", addr);
@@ -38,7 +34,7 @@ static inline Std_ReturnType bus_get_data16(CoreIdType core_id, uint32 addr, uin
 {
 	Std_ReturnType err;
 
-	bus_access_set_log(BUS_ACCESS_TYPE_READ, BUS_ACCESS_SIZE_TYPE16, 0);
+	bus_access_set_log(BUS_ACCESS_TYPE_READ, 2U, addr);
 	err = mpu_get_data16(core_id, addr, data);
 	if (err != STD_E_OK) {
 		printf("ERROR:can not load data:addr=0x%x size=4byte\n", addr);
@@ -49,7 +45,7 @@ static inline Std_ReturnType bus_get_data32(CoreIdType core_id, uint32 addr, uin
 {
 	Std_ReturnType err;
 
-	bus_access_set_log(BUS_ACCESS_TYPE_READ, BUS_ACCESS_SIZE_TYPE32, 0);
+	bus_access_set_log(BUS_ACCESS_TYPE_READ, 4U, addr);
 	err = mpu_get_data32(core_id, addr, data);
 	if (err != STD_E_OK) {
 		printf("ERROR:can not load data:addr=0x%x size=4byte\n", addr);
@@ -62,17 +58,17 @@ static inline Std_ReturnType bus_get_data32(CoreIdType core_id, uint32 addr, uin
  */
 static inline Std_ReturnType bus_put_data8(CoreIdType core_id, uint32 addr, uint8 data)
 {
-	bus_access_set_log(BUS_ACCESS_TYPE_WRITE, BUS_ACCESS_SIZE_TYPE8, data);
+	bus_access_set_log(BUS_ACCESS_TYPE_WRITE, 1U, addr);
 	return mpu_put_data8(core_id, addr, data);
 }
 static inline Std_ReturnType bus_put_data16(CoreIdType core_id, uint32 addr, uint16 data)
 {
-	bus_access_set_log(BUS_ACCESS_TYPE_WRITE, BUS_ACCESS_SIZE_TYPE16, data);
+	bus_access_set_log(BUS_ACCESS_TYPE_WRITE, 2U, addr);
 	return mpu_put_data16(core_id, addr, data);
 }
 static inline Std_ReturnType bus_put_data32(CoreIdType core_id, uint32 addr, uint32 data)
 {
-	bus_access_set_log(BUS_ACCESS_TYPE_WRITE, BUS_ACCESS_SIZE_TYPE32, data);
+	bus_access_set_log(BUS_ACCESS_TYPE_WRITE, 4U, addr);
 	return mpu_put_data32(core_id, addr, data);
 }
 

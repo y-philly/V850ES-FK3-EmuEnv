@@ -12,7 +12,7 @@
 #include "dbg_target_cpu.h"
 #include <stdio.h>
 #include <string.h>
-#define SYMBOL_CANDIATE_NUM		5
+#define SYMBOL_CANDIATE_NUM		10
 
 void dbg_std_executor_parse_error(void *executor)
 {
@@ -80,6 +80,116 @@ void dbg_std_executor_break(void *executor)
 	 }
 	 return;
 }
+static bool dbg_std_executor_watch_data_info(DbgCmdExecutorWatchDataType *arg)
+{
+	 uint32 i;
+	 uint32 addr;
+	 uint32 size;
+
+	 for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
+		 int glid;
+		 uint32 gladdr;
+		 if (cpuctrl_get_data_watch_point(i, &addr, &size) == TRUE) {
+			 glid = symbol_addr2glid(addr, &gladdr);
+			 if (glid >= 0) {
+				 printf("[%u] 0x%x %u %s(+0x%x)\n", i, addr, size, symbol_glid2glname(glid), addr - gladdr);
+			 }
+			 else {
+				 printf("[%u] 0x%x %u\n", i, addr, size);
+			 }
+		 }
+	 }
+	return TRUE;
+}
+static bool dbg_std_executor_watch_data_delete(DbgCmdExecutorWatchDataType *arg)
+{
+	 if (arg->type == DBG_CMD_WATCH_DELETE_ONE) {
+		 if (cpuctrl_del_data_watch_point(arg->delno) == FALSE) {
+			 printf("ERROR: can not delete %u\n", arg->delno);
+			 return FALSE;
+		 }
+	 }
+	 else if (arg->type == DBG_CMD_WATCH_DELETE_ALL) {
+		 cpuctrl_del_all_data_watch_points();
+	 }
+
+	 return TRUE;
+}
+static bool dbg_std_executor_watch_data_set(DbgCmdExecutorWatchDataType *arg)
+{
+	uint32 addr;
+	uint32 size;
+	DataWatchPointEumType type;
+
+	if (arg->type == DBG_CMD_WATCH_SET_SYMBOL) {
+		/*
+		 * symbol指定の場合は，アドレス，サイズ変換する
+		 */
+		 if (symbol_get_gl((char*)arg->symbol.str, arg->symbol.len, &addr, &size) < 0) {
+			 printf("ERROR: not found symbol %s\n", arg->symbol.str);
+			 symbol_print_gl((char*)arg->symbol.str, SYMBOL_CANDIATE_NUM);
+			 return FALSE;
+		 }
+	}
+	else {
+		addr = arg->addr;
+		size = arg->size;
+	}
+
+	if ((arg->watch_type & DBG_CMD_WATCH_TYPE_RW) == DBG_CMD_WATCH_TYPE_READ) {
+		type = DATA_WATCH_POINT_TYPE_READ;
+	}
+	else if ((arg->watch_type & DBG_CMD_WATCH_TYPE_RW) == DBG_CMD_WATCH_TYPE_WRITE) {
+		type = DATA_WATCH_POINT_TYPE_WRITE;
+	}
+	else if ((arg->watch_type & DBG_CMD_WATCH_TYPE_RW) == DBG_CMD_WATCH_TYPE_RW) {
+		type = DATA_WATCH_POINT_TYPE_RW;
+	}
+	else {
+		return FALSE;
+	}
+
+	if (cpuctrl_set_data_watch(type, addr, size) == TRUE) {
+		 printf("set watch point 0x%x %u\n", addr, size);
+	 }
+	 else {
+		 printf("ERROR: can not set watch point 0x%x %u\n", addr, size);
+		 return FALSE;
+	 }
+	return TRUE;
+}
+
+void dbg_std_executor_watch_data(void *executor)
+{
+	bool result = FALSE;
+	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	 DbgCmdExecutorWatchDataType *parsed_args = (DbgCmdExecutorWatchDataType *)(arg->parsed_args);
+
+	 switch (parsed_args->type) {
+	 case DBG_CMD_WATCH_SET:
+	 case DBG_CMD_WATCH_SET_SYMBOL:
+		 result = dbg_std_executor_watch_data_set(parsed_args);
+		 break;
+	 case DBG_CMD_WATCH_DELETE_ALL:
+	 case DBG_CMD_WATCH_DELETE_ONE:
+		 result = dbg_std_executor_watch_data_delete(parsed_args);
+		 break;
+	 case DBG_CMD_WATCH_INFO:
+		 result = dbg_std_executor_watch_data_info(parsed_args);
+		 break;
+	 default:
+		 break;
+	 }
+
+	 if (result == TRUE) {
+		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+	 }
+	 else {
+		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+	 }
+	 return;
+}
+
 
 void dbg_std_executor_delete(void *executor)
 {
@@ -89,6 +199,9 @@ void dbg_std_executor_delete(void *executor)
 	 if (parsed_args->type == DBG_CMD_DELETE_ONE) {
 		 if (cpuctrl_del_break(parsed_args->delete_break_no) == FALSE) {
 			 printf("ERROR: can not delete %u\n", parsed_args->delete_break_no);
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+		 }
+		 else {
 			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 		 }
 	 }

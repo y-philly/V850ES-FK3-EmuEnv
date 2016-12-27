@@ -156,6 +156,10 @@ void *cpuemu_thread_run(void* arg)
 				cpu_illegal_opcode_trap(&CpuManager);
 	#endif
 			}
+			/**
+			 * CPU 実行完了通知
+			 */
+			dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core);
 		}
 
 

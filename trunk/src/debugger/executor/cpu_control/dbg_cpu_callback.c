@@ -10,18 +10,10 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 {
 	bool need_stop = FALSE;
 	uint32 pc = cpu_get_pc(core);
-	uint32 sp = cpu_get_sp(core);
-	/*
-	 * call callback
-	 */
 
 	if (cpuemu_cui_mode() == FALSE) {
 		return;
 	}
-
-	cpuctrl_set_func_log_trace(pc, sp);
-	cpuctrl_profile_collect(pc);
-	cpuctrl_set_stack_pointer(sp);
 
 	/*
 	 * cont timeout check
@@ -66,3 +58,20 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	return;
 }
 
+void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core)
+{
+	uint32 pc = cpu_get_pc(core);
+	uint32 sp = cpu_get_sp(core);
+
+	if (cpuemu_cui_mode() == FALSE) {
+		return;
+	}
+	/*
+	 * call callback
+	 */
+	cpuctrl_set_func_log_trace(pc, sp);
+	cpuctrl_profile_collect(pc);
+	cpuctrl_set_stack_pointer(sp);
+
+	return;
+}

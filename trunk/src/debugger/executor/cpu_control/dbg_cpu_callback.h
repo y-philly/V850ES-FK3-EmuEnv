@@ -7,6 +7,7 @@
 #include "dbg_log.h"
 
 extern void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core);
+extern void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core);
 
 
 #endif /* _DBG_CPU_CALLBACK_H_ */

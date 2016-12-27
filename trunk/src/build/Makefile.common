@@ -23,6 +23,7 @@ IFLAGS	+=	-I$(ROOTDIR)/debugger/executor/concrete_executor/target
 
 VPATH	+= $(ROOTDIR)/main
 VPATH	+= $(ROOTDIR)/cpu
+VPATH	+= $(ROOTDIR)/bus
 VPATH	+= $(ROOTDIR)/lib
 VPATH	+= $(ROOTDIR)/device/mpu
 VPATH	+= $(ROOTDIR)/device/mpu/loader
@@ -52,6 +53,7 @@ LIBS	+= -lpthread -lwsock32 -lws2_32
 
 OBJS	+= main.o
 OBJS	+= option.o
+OBJS	+= bus.o
 OBJS	+= mpu.o
 OBJS	+= dbg_log.o
 OBJS	+= mpu_config.o

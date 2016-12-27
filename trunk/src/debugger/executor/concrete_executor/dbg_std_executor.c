@@ -117,6 +117,17 @@ void dbg_std_executor_cont(void *executor)
 	return;
 }
 
+void dbg_std_executor_intr(void *executor)
+{
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorIntrType *parsed_args = (DbgCmdExecutorIntrType *)(arg->parsed_args);
+
+	(void)cpuemu_raise_intr(parsed_args->intno);
+
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+	return;
+}
+
 void dbg_std_executor_next(void *executor)
 {
 	bool org_view_mode = dbg_log_is_view_mode();

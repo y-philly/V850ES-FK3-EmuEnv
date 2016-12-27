@@ -412,3 +412,10 @@ Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value)
 	}
 	return STD_E_NOENT;
 }
+
+void cpuemu_raise_intr(uint32 intno)
+{
+	(void)intc_raise_intr(intno);
+	return;
+}
+

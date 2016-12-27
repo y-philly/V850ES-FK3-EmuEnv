@@ -1,6 +1,4 @@
 #include "device.h"
-#include "intc_ops.h"
-#include "intc_ops.h"
 #include "device_ex_serial_ops.h"
 #include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>

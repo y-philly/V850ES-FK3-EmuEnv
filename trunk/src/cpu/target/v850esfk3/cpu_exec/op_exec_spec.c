@@ -1,7 +1,7 @@
 #include "cpu_exec/op_exec_ops.h"
 #include "cpu.h"
 #include "bus.h"
-#include "intc_ops.h"
+#include "device.h"
 #include <stdio.h> //TODO
 
 static int get_sysreg(CpuRegisterType *cpu, uint32 regid, uint32 **regp)

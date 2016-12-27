@@ -1,5 +1,5 @@
 #include "inc/serial.h"
-#include "intc_ops.h"
+#include "device.h"
 #include "std_errno.h"
 #include "mpu_types.h"
 #include "device_ex_serial_ops.h"

@@ -1,5 +1,5 @@
 #include "inc/can.h"
-#include "intc_ops.h"
+#include "device.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>

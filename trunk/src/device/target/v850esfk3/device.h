@@ -47,4 +47,10 @@ extern int device_io_read8(MpuAddressRegionType *region, uint32 addr, uint8 *dat
 extern int device_io_read16(MpuAddressRegionType *region, uint32 addr, uint16 *data);
 extern int device_io_read32(MpuAddressRegionType *region, uint32 addr, uint32 *data);
 
+/*
+ * 割込みコントローラAPI
+ */
+extern void intc_clr_nmi(TargetCoreType *cpu);
+extern void intc_clr_currlvl_ispr(TargetCoreType *cpu);
+
 #endif /* _DEVICE_H_ */

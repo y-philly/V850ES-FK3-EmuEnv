@@ -1,6 +1,6 @@
 #include "inc/comm.h"
 #include "intc.h"
-#include "intc_ops.h"
+#include "device.h"
 #include "mpu_types.h"
 #include "std_errno.h"
 #include "cpuemu_ops.h"

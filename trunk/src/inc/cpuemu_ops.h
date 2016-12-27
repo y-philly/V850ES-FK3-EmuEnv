@@ -27,6 +27,7 @@ extern const char* cpuemu_get_comm_tx_fifo(void);
 
 extern Std_ReturnType cpuemu_symbol_set(void);
 
+extern void cpuemu_raise_intr(uint32 intno);
 
 extern Std_ReturnType cpuemu_load_devcfg(const char *path);
 extern Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value);

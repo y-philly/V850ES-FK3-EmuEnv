@@ -289,6 +289,7 @@ void dbg_std_executor_serialin(void *executor)
 void dbg_std_executor_info_cpu(void *executor)
 {
 	dbg_target_print_cpu();
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	return;
 }
 
@@ -314,6 +315,7 @@ void dbg_std_executor_func_trace(void *executor)
 		stackp = symbol_glid2glname(glid);
 		printf("<%-30s(0x%03x)> [%3u] <0x%03x> %s\n", stackp, sp - gladdr, i, funcpcoff, funcname);
 	}
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 
 	return;
 }
@@ -345,6 +347,7 @@ static void print_stack_data(uint32 addr)
 		}
 	 }
 	printf("\n");
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	return;
 }
 #define DBG_CMD_BACK_TRACE_SHOW_MAX		10
@@ -383,6 +386,7 @@ void dbg_std_executor_back_trace(void *executor)
 			printf("\n");
 		}
 	}
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 
 
 	return;
@@ -406,6 +410,7 @@ void dbg_std_executor_profile(void *executor)
 				funcname, profile.call_num,
 				profile.func_time/profile.call_num, profile.total_time/profile.call_num);
 	}
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 
 	return;
 }
@@ -430,6 +435,7 @@ void dbg_std_executor_help(void *executor)
 		}
 	}
 
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 
 	return;
 }

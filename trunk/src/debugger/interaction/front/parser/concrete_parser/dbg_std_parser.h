@@ -73,6 +73,32 @@ extern DbgCmdExecutorType *dbg_parse_back_trace(DbgCmdExecutorType *arg, const T
 
 extern DbgCmdExecutorType *dbg_parse_profile(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
+typedef enum {
+	DBG_CMD_WATCH_SET,
+	DBG_CMD_WATCH_SET_SYMBOL,
+	DBG_CMD_WATCH_DELETE_ONE,
+	DBG_CMD_WATCH_DELETE_ALL,
+	DBG_CMD_WATCH_INFO
+} DbgCmdDWatchDataType;
+#define DBG_CMD_WATCH_TYPE_READ		0x01
+#define DBG_CMD_WATCH_TYPE_WRITE	0x10
+#define DBG_CMD_WATCH_TYPE_RW		(DBG_CMD_WATCH_TYPE_READ|DBG_CMD_WATCH_TYPE_WRITE)
+typedef struct {
+	DbgCmdDWatchDataType	type;
+	uint8					watch_type;
+	TokenStringType			symbol;
+	uint32 					addr;
+	uint32 					size;
+	uint32					delno;
+} DbgCmdExecutorWatchDataType;
+extern DbgCmdExecutorType *dbg_parse_watch_data(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
+typedef struct {
+	uint32 				intno;
+} DbgCmdExecutorIntrType;
+extern DbgCmdExecutorType *dbg_parse_intr(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
+
 
 #define DBG_CMD_ARG_TYPES_MAX	3U
 typedef struct {

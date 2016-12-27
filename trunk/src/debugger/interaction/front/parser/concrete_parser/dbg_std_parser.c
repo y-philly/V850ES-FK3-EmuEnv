@@ -63,6 +63,123 @@ DbgCmdExecutorType *dbg_parse_break(DbgCmdExecutorType *arg, const TokenContaine
 }
 
 /************************************************************************************
+ * watch コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType watch_string = {
+		.len = 5,
+		.str = { 'w', 'a', 't', 'c', 'h', '\0' },
+};
+static const TokenStringType watch_string_short = {
+		.len = 1,
+		.str = { 'w', '\0' },
+};
+static const TokenStringType watch_info_string = {
+		.len = 4,
+		.str = { 'i', 'n', 'f', 'o', '\0' },
+};
+static const TokenStringType watch_option_string_readset = {
+		.len = 1,
+		.str = { 'r', '\0' },
+};
+static const TokenStringType watch_option_string_writeset = {
+		.len = 1,
+		.str = { 'w', '\0' },
+};
+static const TokenStringType watch_option_string_rwset = {
+		.len = 2,
+		.str = { 'r', 'w', '\0' },
+};
+static const TokenStringType watch_option_string_delete = {
+		.len = 1,
+		.str = { 'd', '\0' },
+};
+
+DbgCmdExecutorType *dbg_parse_watch_data(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorWatchDataType *parsed_args = (DbgCmdExecutorWatchDataType *)arg->parsed_args;
+
+	if (token_container->num < 2) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+	if (token_container->array[1].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &watch_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &watch_string_short) == TRUE)) {
+		/*
+		 * delete
+		 */
+		if ((token_strcmp(&token_container->array[1].body.str, &watch_option_string_delete) == TRUE)) {
+			if (token_container->num == 2) {
+				arg->std_id = DBG_CMD_STD_ID_DATA_WATCH;
+				parsed_args->type = DBG_CMD_WATCH_DELETE_ALL;
+				arg->run = dbg_std_executor_watch_data;
+				return arg;
+			}
+			else if ((token_container->num == 3) && (token_container->array[2].type == TOKEN_TYPE_VALUE_DEC)) {
+				arg->std_id = DBG_CMD_STD_ID_DATA_WATCH;
+				parsed_args->type = DBG_CMD_WATCH_DELETE_ONE;
+				parsed_args->delno = token_container->array[2].body.dec.value;
+				arg->run = dbg_std_executor_watch_data;
+				return arg;
+			}
+		}
+		/*
+		 * set
+		 */
+		if ((token_strcmp(&token_container->array[1].body.str, &watch_option_string_readset) == TRUE)) {
+			parsed_args->watch_type = DBG_CMD_WATCH_TYPE_READ;
+		}
+		else if ((token_strcmp(&token_container->array[1].body.str, &watch_option_string_writeset) == TRUE)) {
+			parsed_args->watch_type = DBG_CMD_WATCH_TYPE_WRITE;
+		}
+		else if ((token_strcmp(&token_container->array[1].body.str, &watch_option_string_rwset) == TRUE)) {
+			parsed_args->watch_type = DBG_CMD_WATCH_TYPE_RW;
+		}
+		else {
+			return NULL;
+		}
+
+		/*
+		 * check symbol or addr/size
+		 */
+		if ((token_container->num == 3) &&
+				(token_container->array[2].type == TOKEN_TYPE_STRING)) {
+			arg->std_id = DBG_CMD_STD_ID_DATA_WATCH;
+			parsed_args->type = DBG_CMD_WATCH_SET_SYMBOL;
+			parsed_args->symbol = token_container->array[2].body.str;
+			arg->run = dbg_std_executor_watch_data;
+			return arg;
+		}
+		else if ((token_container->num == 4) &&
+				(token_container->array[2].type == TOKEN_TYPE_VALUE_HEX) &&
+				(token_container->array[3].type == TOKEN_TYPE_VALUE_DEC)) {
+			arg->std_id = DBG_CMD_STD_ID_DATA_WATCH;
+			parsed_args->type = DBG_CMD_WATCH_SET;
+			parsed_args->addr = token_container->array[2].body.hex.value;
+			parsed_args->size = token_container->array[3].body.dec.value;
+			arg->run = dbg_std_executor_watch_data;
+			return arg;
+		}
+	}
+	else if (token_strcmp(&token_container->array[0].body.str, &watch_info_string) == TRUE) {
+		if (token_strcmp(&token_container->array[1].body.str, &watch_string) == TRUE) {
+			arg->std_id = DBG_CMD_STD_ID_DATA_WATCH;
+			parsed_args->type = DBG_CMD_WATCH_INFO;
+			arg->run = dbg_std_executor_watch_data;
+			return arg;
+		}
+	}
+	return NULL;
+}
+/************************************************************************************
  * delete コマンド
  *
  *
@@ -155,6 +272,45 @@ DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainer
 	return NULL;
 }
 
+/************************************************************************************
+ * intr コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType intr_string = {
+		.len = 4,
+		.str = { 'i', 'n', 't', 'r', '\0' },
+};
+static const TokenStringType intr_string_short = {
+		.len = 1,
+		.str = { 'i', '\0' },
+};
+
+DbgCmdExecutorType *dbg_parse_intr(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorIntrType *parsed_args = (DbgCmdExecutorIntrType *)arg->parsed_args;
+
+	if (token_container->num != 2) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+	if ((token_container->array[1].type != TOKEN_TYPE_VALUE_DEC)) {
+		return NULL;
+	}
+
+
+	if ((token_strcmp(&token_container->array[0].body.str, &intr_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &intr_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_INTR;
+		parsed_args->intno = token_container->array[1].body.dec.value;
+		arg->run = dbg_std_executor_intr;
+		return arg;
+	}
+	return NULL;
+}
 
 
 
@@ -611,6 +767,26 @@ static const DbgCmdHelpType help_list = {
 					},
 			},
 			{
+					.name = &watch_string,
+					.name_shortcut = &watch_string_short,
+					.opt_num = 3,
+					.opts = {
+							{
+									.semantics = "watch {r|w|rw} {<addr(hex)> size(dec)|<variable_ame>}",
+									.description = "set a watch point. Watch points are shown using 'info watch' command.",
+							},
+							{
+									.semantics = "watch d",
+									.description = "delete all watch points",
+							},
+							{
+									.semantics = "watch d <watch_no>",
+									.description = "delete the watch point of <watch_no>",
+							},
+					},
+			},
+
+			{
 					.name = &cont_string,
 					.name_shortcut = &cont_string_short,
 					.opt_num = 2,
@@ -622,6 +798,17 @@ static const DbgCmdHelpType help_list = {
 							{
 									.semantics = "cont <clocks>",
 									.description = "continue program until cpu has elapsed <clocks> times",
+							},
+					},
+			},
+			{
+					.name = &intr_string,
+					.name_shortcut = &intr_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "intr <intno>",
+									.description = "generate an interruption of <intno>",
 							},
 					},
 			},

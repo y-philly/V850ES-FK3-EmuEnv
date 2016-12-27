@@ -315,7 +315,7 @@ bool cpuctrl_is_break_write_access(uint32 access_addr, uint32 size)
 	}
 	return FALSE;
 }
-bool cpuctrl_get_data_watch_point(uint32 index, uint32 *addrp, uint32 *sizep)
+bool cpuctrl_get_data_watch_point(uint32 index, uint32 *addrp, uint32 *sizep, DataWatchPointEumType *type)
 {
 	if (index >= DBG_CPU_CONTROL_WATCH_DATA_SETSIZE) {
 		return FALSE;
@@ -325,6 +325,7 @@ bool cpuctrl_get_data_watch_point(uint32 index, uint32 *addrp, uint32 *sizep)
 	}
 	*addrp = dbg_cpuctrl_data_watch_points[index].addr;
 	*sizep = dbg_cpuctrl_data_watch_points[index].size;
+	*type = dbg_cpuctrl_data_watch_points[index].type;
 	return TRUE;
 }
 

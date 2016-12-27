@@ -80,22 +80,36 @@ void dbg_std_executor_break(void *executor)
 	 }
 	 return;
 }
+static char* watch_type_string(DataWatchPointEumType type)
+{
+	if (type == DATA_WATCH_POINT_TYPE_READ) {
+		return "r";
+	}
+	if (type == DATA_WATCH_POINT_TYPE_WRITE) {
+		return "w";
+	}
+	if (type == DATA_WATCH_POINT_TYPE_RW) {
+		return "rw";
+	}
+	return "none";
+}
 static bool dbg_std_executor_watch_data_info(DbgCmdExecutorWatchDataType *arg)
 {
 	 uint32 i;
 	 uint32 addr;
 	 uint32 size;
+	 DataWatchPointEumType type;
 
 	 for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
 		 int glid;
 		 uint32 gladdr;
-		 if (cpuctrl_get_data_watch_point(i, &addr, &size) == TRUE) {
+		 if (cpuctrl_get_data_watch_point(i, &addr, &size, &type) == TRUE) {
 			 glid = symbol_addr2glid(addr, &gladdr);
 			 if (glid >= 0) {
-				 printf("[%u] 0x%x %u %s(+0x%x)\n", i, addr, size, symbol_glid2glname(glid), addr - gladdr);
+				 printf("[%u] %-4s 0x%x %u %s(+0x%x)\n", i, watch_type_string(type), addr, size, symbol_glid2glname(glid), addr - gladdr);
 			 }
 			 else {
-				 printf("[%u] 0x%x %u\n", i, addr, size);
+				 printf("[%u] %-4s 0x%x %u\n", i, watch_type_string(type), addr, size);
 			 }
 		 }
 	 }

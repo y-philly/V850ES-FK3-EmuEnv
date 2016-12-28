@@ -932,8 +932,8 @@ static const DbgCmdHelpType help_list = {
 					.opt_num = 1,
 					.opts = {
 							{
-									.semantics = "serial <input_data(string)>",
-									.description = "set <input_data> on the serial as an input",
+									.semantics = "serial <channel> <input_data(string)>",
+									.description = "set <input_data> on the serial(<channel>) as an input",
 							},
 					},
 			},

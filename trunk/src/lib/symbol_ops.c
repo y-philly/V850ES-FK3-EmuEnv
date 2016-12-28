@@ -120,7 +120,7 @@ int symbol_get_gl(char *gl_name, uint32 gl_len, uint32 *addrp, uint32 *size)
 		}
 		*addrp = symbol_gl[i].addr;
 		*size = symbol_gl[i].size;
-		return 0;
+		return i;
 	}
 	return -1;
 }

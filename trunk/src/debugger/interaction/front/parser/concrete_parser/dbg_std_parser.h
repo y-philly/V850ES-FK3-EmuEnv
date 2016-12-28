@@ -93,6 +93,13 @@ typedef struct {
 } DbgCmdExecutorWatchDataType;
 extern DbgCmdExecutorType *dbg_parse_watch_data(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
+
+typedef struct {
+	TokenStringType			symbol;
+} DbgCmdExecutorDataAccessInfoType;
+extern DbgCmdExecutorType *dbg_parse_data_access_info(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
+
 typedef struct {
 	uint32 				intno;
 } DbgCmdExecutorIntrType;

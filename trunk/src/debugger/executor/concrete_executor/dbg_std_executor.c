@@ -447,6 +447,37 @@ void dbg_std_executor_func_trace(void *executor)
 	return;
 }
 
+
+void dbg_std_executor_data_access_info(void *executor)
+{
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorDataAccessInfoType *parsed_args = (DbgCmdExecutorDataAccessInfoType *)(arg->parsed_args);
+	DataAccessInfoType *table;
+	DataAccessInfoType *p;
+	int i;
+	int num = symbol_get_func_num();
+
+	table = cpuctrl_get_func_access_info_table((const char*)parsed_args->symbol.str);
+	printf("* %s\n", parsed_args->symbol.str);
+	printf(" READ\n");
+	for (i = 0; i < num; i++) {
+		p = &table[i];
+		if (p->read_access_num > 0) {
+			printf("  - %s\n", symbol_funcid2funcname(i));
+		}
+	}
+	printf(" WRITE\n");
+	for (i = 0; i < num; i++) {
+		p = &table[i];
+		if (p->write_access_num > 0) {
+			printf("  - %s\n", symbol_funcid2funcname(i));
+		}
+	}
+
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+
+	return;
+}
 static void print_stack_data(uint32 addr)
 {
 	 uint32 funcaddr;

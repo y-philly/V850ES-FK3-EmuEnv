@@ -673,6 +673,39 @@ extern DbgCmdExecutorType *dbg_parse_func_trace(DbgCmdExecutorType *arg, const T
 	return NULL;
 }
 
+/************************************************************************************
+ * data access info コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType data_access_info_string = {
+		.len = 6,
+		.str = { 'a', 'c', 'c', 'e', 's', 's', '\0' },
+};
+extern DbgCmdExecutorType *dbg_parse_data_access_info(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorDataAccessInfoType *parsed_args = (DbgCmdExecutorDataAccessInfoType *)arg->parsed_args;
+
+	if (token_container->num != 2) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+	if (token_container->array[1].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &data_access_info_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_DATA_ACCESS_INFO;
+		parsed_args->symbol = token_container->array[1].body.str;
+		arg->run = dbg_std_executor_data_access_info;
+		return arg;
+	}
+	return NULL;
+}
+
 
 /************************************************************************************
  * back trace コマンド

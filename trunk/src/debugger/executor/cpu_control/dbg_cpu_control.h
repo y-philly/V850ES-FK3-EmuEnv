@@ -48,6 +48,15 @@ extern bool cpuctrl_del_data_watch_point(uint32 delno);
 extern void cpuctrl_del_all_data_watch_points(void);
 
 /*
+ * データアクセス情報取得機能
+ */
+typedef struct {
+	uint64	read_access_num;
+	uint64	write_access_num;
+} DataAccessInfoType;
+extern DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname);
+
+/*
  * cont機能
  */
 extern void cpuctrl_set_cont_clocks(bool is_timeout, uint64 cont_clocks);

@@ -20,6 +20,7 @@ extern void dbg_std_executor_print(void *executor);
 extern void dbg_std_executor_serialin(void *executor);
 extern void dbg_std_executor_info_cpu(void *executor);
 extern void dbg_std_executor_func_trace(void *executor);
+extern void dbg_std_executor_data_access_info(void *executor);
 extern void dbg_std_executor_back_trace(void *executor);
 extern void dbg_std_executor_profile(void *executor);
 extern void dbg_std_executor_help(void *executor);

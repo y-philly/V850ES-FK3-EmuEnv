@@ -57,16 +57,21 @@ static DbgFuncLogTraceType dbg_func_log_trace;
 /*
  * データ×アクセス関数マッピング表
  */
-typedef struct {
-	uint64	read_access_num;
-	uint64	write_access_num;
-} DataAccessInfoType;
-
 static DataAccessInfoType *data_access_info;
 static DataAccessInfoType **data_access_info_table_gl;
-static DataAccessInfoType **data_access_info_table_func;
-
 static uint32 current_funcid;
+
+DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname)
+{
+	uint32 addr;
+	uint32 size;
+	int glid;
+	glid = symbol_get_gl((char*)glname, strlen(glname), &addr, &size);
+	if (glid < 0) {
+		return NULL;
+	}
+	return data_access_info_table_gl[glid];
+}
 
 void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp)
 {
@@ -309,6 +314,7 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 	return;
 }
 
+
 int cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
 {
 	uint32 i;
@@ -466,10 +472,6 @@ void cpuctrl_init(void)
 		data_access_info_table_gl[i] = &data_access_info[(func_num * i)];
 	}
 
-	data_access_info_table_func = malloc(func_num * sizeof(DataAccessInfoType *));
-	for (i = 0; i < func_num; i++) {
-		data_access_info_table_func[i] = &data_access_info[(gl_num * i)];
-	}
 	return;
 }
 void cpuctrl_profile_collect(uint32 pc)

@@ -772,7 +772,7 @@ static const DbgCmdHelpType help_list = {
 					.opt_num = 3,
 					.opts = {
 							{
-									.semantics = "watch {r|w|rw} {<addr(hex)> size(dec)|<variable_ame>}",
+									.semantics = "watch {r|w|rw} {<addr(hex)> size(dec)|<variable_name>}",
 									.description = "set a watch point. Watch points are shown using 'info watch' command.",
 							},
 							{

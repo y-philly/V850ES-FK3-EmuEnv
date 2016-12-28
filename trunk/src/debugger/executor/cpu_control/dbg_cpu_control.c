@@ -54,6 +54,20 @@ typedef struct {
 static DbgFuncLogTraceType dbg_func_log_trace;
 
 
+/*
+ * データ×アクセス関数マッピング表
+ */
+typedef struct {
+	uint64	read_access_num;
+	uint64	write_access_num;
+} DataAccessInfoType;
+
+static DataAccessInfoType *data_access_info;
+static DataAccessInfoType **data_access_info_table_gl;
+static DataAccessInfoType **data_access_info_table_func;
+
+static uint32 current_funcid;
+
 void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp)
 {
 	uint32 inx;
@@ -64,8 +78,10 @@ void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp)
 
 	funcid = symbol_pc2funcid(pc, &funcpc);
 	if (funcid < 0) {
+		current_funcid = -1;
 		return;
 	}
+	current_funcid = funcid;
 	funcname = symbol_funcid2funcname(funcid);
 
 	if (dbg_func_log_trace.lognum > 0) {
@@ -260,6 +276,38 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 	 }
 	 return;
 }
+#define ACCESS_TYPE_READ	0x01
+#define ACCESS_TYPE_WRITE	0x02
+static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 size)
+{
+	uint32 i;
+	uint32 prev_glid = -1;
+	uint32 glid;
+	uint32 gladdr;
+	DataAccessInfoType *access_infop;
+
+	if (current_funcid == -1) {
+		return;
+	}
+	for (i = 0; i < size; i++) {
+		glid = symbol_addr2glid(access_addr + i, &gladdr);
+		if (glid < 0) {
+			continue;
+		}
+		if (glid == prev_glid) {
+			continue;
+		}
+		access_infop = data_access_info_table_gl[glid];
+		if (access_type == ACCESS_TYPE_READ) {
+			access_infop->read_access_num++;
+		}
+		else {
+			access_infop->write_access_num++;
+		}
+		prev_glid = glid;
+	}
+	return;
+}
 
 int cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
 {
@@ -268,6 +316,7 @@ int cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
 	uint32 watch_end;
 	uint32 access_end = access_addr + size;
 
+	cpuctrl_set_access(ACCESS_TYPE_READ, access_addr, size);
 
 	for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
 		if (dbg_cpuctrl_data_watch_points[i].is_set == FALSE) {
@@ -295,6 +344,8 @@ int cpuctrl_is_break_write_access(uint32 access_addr, uint32 size)
 	uint32 watch_start;
 	uint32 watch_end;
 	uint32 access_end = access_addr + size;
+
+	cpuctrl_set_access(ACCESS_TYPE_WRITE, access_addr, size);
 
 	for (i = 0; i < DBG_CPU_CONTROL_WATCH_DATA_SETSIZE; i++) {
 		if (dbg_cpuctrl_data_watch_points[i].is_set == FALSE) {
@@ -396,12 +447,30 @@ void cpuctrl_set_force_break(void)
  */
 static CpuProfileType *CpuProfile;
 
+
 void cpuctrl_init(void)
 {
+	uint32 i;
 	uint32 func_num = symbol_get_func_num();
+	uint32 gl_num = symbol_get_gl_num();
 	CpuProfile = malloc(func_num * sizeof(CpuProfileType));
 	ASSERT(CpuProfile != NULL);
 	memset(CpuProfile, 0, func_num * sizeof(CpuProfileType));
+
+	data_access_info = malloc(func_num * gl_num * sizeof(DataAccessInfoType));
+	ASSERT(data_access_info != NULL);
+	memset(data_access_info, 0, func_num * gl_num * sizeof(DataAccessInfoType));
+
+	data_access_info_table_gl = malloc(gl_num * sizeof(DataAccessInfoType *));
+	for (i = 0; i < gl_num; i++) {
+		data_access_info_table_gl[i] = &data_access_info[(func_num * i)];
+	}
+
+	data_access_info_table_func = malloc(func_num * sizeof(DataAccessInfoType *));
+	for (i = 0; i < func_num; i++) {
+		data_access_info_table_func[i] = &data_access_info[(gl_num * i)];
+	}
+	return;
 }
 void cpuctrl_profile_collect(uint32 pc)
 {

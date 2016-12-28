@@ -960,6 +960,17 @@ static const DbgCmdHelpType help_list = {
 					},
 			},
 			{
+					.name = &data_access_info_string,
+					.name_shortcut = NULL,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "access <variable_name>",
+									.description = "show variable access functions",
+							},
+					},
+			},
+			{
 					.name = &back_trace_string,
 					.name_shortcut = NULL,
 					.opt_num = 1,

@@ -304,10 +304,10 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 		}
 		access_infop = data_access_info_table_gl[glid];
 		if (access_type == ACCESS_TYPE_READ) {
-			access_infop->read_access_num++;
+			access_infop[current_funcid].read_access_num++;
 		}
 		else {
-			access_infop->write_access_num++;
+			access_infop[current_funcid].write_access_num++;
 		}
 		prev_glid = glid;
 	}

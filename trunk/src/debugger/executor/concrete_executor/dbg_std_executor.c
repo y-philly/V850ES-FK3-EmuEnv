@@ -458,6 +458,14 @@ void dbg_std_executor_data_access_info(void *executor)
 	int num = symbol_get_func_num();
 
 	table = cpuctrl_get_func_access_info_table((const char*)parsed_args->symbol.str);
+	if (table == NULL) {
+		 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
+		 symbol_print_gl((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+		return;
+	}
+
+
 	printf("* %s\n", parsed_args->symbol.str);
 	printf(" READ\n");
 	for (i = 0; i < num; i++) {

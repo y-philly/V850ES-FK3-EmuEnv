@@ -5,11 +5,13 @@
 /*
  * imm5のテストデータ
  */
+#define IMM5_SIGN_MAX_PLUS_1	16
 #define IMM5_SIGN_MAX			15
 #define IMM5_SIGN_MAX_MINUS_1	14
 #define IMM5_ZERO				0
-#define IMM5_SIGN_MIN			-15
-#define IMM5_SIGN_MIN_MINUS_1	-14
+#define IMM5_SIGN_MIN_PLUS_1	-15
+#define IMM5_SIGN_MIN			-16
+#define IMM5_SIGN_MIN_MINUS_1	-17
 
 /*
  * 32bit　のテストデータ

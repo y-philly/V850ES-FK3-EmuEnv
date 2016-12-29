@@ -186,8 +186,8 @@ _do_test_mov2_5:
 	/*
 	 * テストコード
 	 */
-	mov 	IMM5_SIGN_MIN_MINUS_1, REG_OUT
-	cmp 	IMM5_SIGN_MIN_MINUS_1, REG_OUT
+	mov 	IMM5_SIGN_MIN_PLUS_1, REG_OUT
+	cmp 	IMM5_SIGN_MIN_PLUS_1, REG_OUT
 	cmov	NZ, -1, r0, r10
 
 	ld.w	0[sp], REG_IN
@@ -246,3 +246,52 @@ _do_test_mov3_2:
 	add		12, sp
 	jmp		[lp]
 .size		_do_test_mov3_2, .-_do_test_mov3_2
+
+.global	_do_test_mov3_3
+.type   _do_test_mov3_3, @function
+_do_test_mov3_3:
+	add		-12, sp
+	st.w	REG_IN, 0[sp]
+	st.w	REG_OUT, 4[sp]
+	st.w	REG_ADDR, 8[sp]
+
+	/*
+	 * テストコード
+	 */
+	mov		IMM5_SIGN_MAX_PLUS_1, REG_OUT
+	mov		REG_OUT_ADDR, REG_ADDR
+	ld.w	0[REG_ADDR], REG_IN
+	cmp		REG_IN, REG_OUT
+	cmov	NZ, -1, r0, r10
+
+	ld.w	0[sp], REG_IN
+	ld.w	4[sp], REG_OUT
+	ld.w	8[sp], REG_ADDR
+	add		12, sp
+	jmp		[lp]
+.size		_do_test_mov3_3, .-_do_test_mov3_3
+
+
+.global	_do_test_mov3_4
+.type   _do_test_mov3_4, @function
+_do_test_mov3_4:
+	add		-12, sp
+	st.w	REG_IN, 0[sp]
+	st.w	REG_OUT, 4[sp]
+	st.w	REG_ADDR, 8[sp]
+
+	/*
+	 * テストコード
+	 */
+	mov		IMM5_SIGN_MIN_MINUS_1, REG_OUT
+	mov		REG_OUT_ADDR, REG_ADDR
+	ld.w	0[REG_ADDR], REG_IN
+	cmp		REG_IN, REG_OUT
+	cmov	NZ, -1, r0, r10
+
+	ld.w	0[sp], REG_IN
+	ld.w	4[sp], REG_OUT
+	ld.w	8[sp], REG_ADDR
+	add		12, sp
+	jmp		[lp]
+.size		_do_test_mov3_4, .-_do_test_mov3_4

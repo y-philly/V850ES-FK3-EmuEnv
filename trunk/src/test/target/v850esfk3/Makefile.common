@@ -21,6 +21,7 @@ TEST_PATH := .
 
 IFLAGS	:= -I.
 IFLAGS	+= -I$(ROOT_PATH)/common
+IFLAGS	+= -I$(CPU_CONFIG_PATH)
 
 VPATH	:= $(ROOT_PATH)/common
 VPATH	+= $(TEST_PATH)

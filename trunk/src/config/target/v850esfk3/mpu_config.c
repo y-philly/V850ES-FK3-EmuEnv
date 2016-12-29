@@ -9,6 +9,7 @@
 #define MPU_ADDRESS_REGION_SIZE_INX_SERIAL	(0xFFFFFA78 - 0xFFFFFA00)
 #define MPU_ADDRESS_REGION_SIZE_INX_COMM	(0xFFFFF590 - 0xFFFFF560)
 #define MPU_ADDRESS_REGION_SIZE_INX_CAN		(0x03FEDCF0 - 0x03FEC000)
+#define MPU_ADDRESS_REGION_SIZE_INX_CPU		(65U * 4U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH0		(1024U * 4U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH1		(1024U * 12U)
 
@@ -25,6 +26,7 @@ extern MpuAddressRegionOperationType	serial_memory_operation;
 extern MpuAddressRegionOperationType	comm_memory_operation;
 extern MpuAddressRegionOperationType	can_memory_operation;
 extern MpuAddressRegionOperationType	intc_memory_operation;
+extern MpuAddressRegionOperationType	cpu_register_operation;
 
 MpuAddressMapType mpu_address_map = {
 		.map = {
@@ -76,6 +78,7 @@ MpuAddressMapType mpu_address_map = {
 						.data		= memory_data_SERIAL,
 						.ops		= &serial_memory_operation
 				},
+
 				/*
 				 * COMM
 				 */
@@ -99,6 +102,18 @@ MpuAddressMapType mpu_address_map = {
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
 						.data		= memory_data_CAN,
 						.ops		= &can_memory_operation
+				},
+				/*
+				 * INDEX :CPUレジスタ(デバッグ用)
+				 */
+				{
+						.type		= DEVICE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
+						.start		= CPU_CONFIG_DEBUG_REGISTER_ADDR,
+						.size		= MPU_ADDRESS_REGION_SIZE_INX_CPU,
+						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
+						.data		= NULL,
+						.ops		= &cpu_register_operation
 				},
 
 				/*

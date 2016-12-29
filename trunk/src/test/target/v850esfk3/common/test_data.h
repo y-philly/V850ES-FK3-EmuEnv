@@ -16,6 +16,7 @@
  */
 #define UINT32_MAX				0xFFFFFFFF
 #define UINT32_MIN				0x00000000
+
 #define SINT32_MAX				 2147483647
 #define SINT32_MIN				-2147483648
 

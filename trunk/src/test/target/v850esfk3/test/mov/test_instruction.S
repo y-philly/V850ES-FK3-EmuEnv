@@ -1,5 +1,6 @@
 #include "test_data.h"
 #include "test_reg.h"
+#include "v850asm.inc"
 
 /*
  * （ 1） MOV reg1, reg2
@@ -195,3 +196,53 @@ _do_test_mov2_5:
 	jmp		[lp]
 .size		_do_test_mov2_5, .-_do_test_mov2_5
 
+/*
+ * （ 3） MOV imm32, reg1
+ */
+.global	_do_test_mov3_1
+.type   _do_test_mov3_1, @function
+_do_test_mov3_1:
+	add		-12, sp
+	st.w	REG_IN, 0[sp]
+	st.w	REG_OUT, 4[sp]
+	st.w	REG_ADDR, 8[sp]
+
+	/*
+	 * テストコード
+	 */
+	mov		SINT32_MAX, REG_OUT
+	mov		REG_OUT_ADDR, REG_ADDR
+	ld.w	0[REG_ADDR], REG_IN
+	cmp		REG_IN, REG_OUT
+	cmov	NZ, -1, r0, r10
+
+	ld.w	0[sp], REG_IN
+	ld.w	4[sp], REG_OUT
+	ld.w	8[sp], REG_ADDR
+	add		12, sp
+	jmp		[lp]
+.size		_do_test_mov3_1, .-_do_test_mov3_1
+
+.global	_do_test_mov3_2
+.type   _do_test_mov3_2, @function
+_do_test_mov3_2:
+	add		-12, sp
+	st.w	REG_IN, 0[sp]
+	st.w	REG_OUT, 4[sp]
+	st.w	REG_ADDR, 8[sp]
+
+	/*
+	 * テストコード
+	 */
+	mov		SINT32_MIN, REG_OUT
+	mov		REG_OUT_ADDR, REG_ADDR
+	ld.w	0[REG_ADDR], REG_IN
+	cmp		REG_IN, REG_OUT
+	cmov	NZ, -1, r0, r10
+
+	ld.w	0[sp], REG_IN
+	ld.w	4[sp], REG_OUT
+	ld.w	8[sp], REG_ADDR
+	add		12, sp
+	jmp		[lp]
+.size		_do_test_mov3_2, .-_do_test_mov3_2

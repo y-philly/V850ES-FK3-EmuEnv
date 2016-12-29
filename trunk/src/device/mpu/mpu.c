@@ -70,6 +70,9 @@ Std_ReturnType mpu_get_data8(CoreIdType core_id, uint32 addr, uint8 *data)
 	if (region == NULL) {
 		return STD_E_SEGV;
 	}
+	if (region->ops->get_data8 == NULL) {
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->get_data8(region, core_id, paddr, data);
 }
@@ -77,6 +80,9 @@ Std_ReturnType mpu_get_data16(CoreIdType core_id, uint32 addr, uint16 *data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 2U);
 	if (region == NULL) {
+		return STD_E_SEGV;
+	}
+	if (region->ops->get_data16 == NULL) {
 		return STD_E_SEGV;
 	}
 	uint32 paddr = (addr & region->mask);
@@ -87,6 +93,9 @@ Std_ReturnType mpu_get_data32(CoreIdType core_id, uint32 addr, uint32 *data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 4U);
 	if (region == NULL) {
+		return STD_E_SEGV;
+	}
+	if (region->ops->get_data32 == NULL) {
 		return STD_E_SEGV;
 	}
 	uint32 paddr = (addr & region->mask);
@@ -100,6 +109,9 @@ Std_ReturnType mpu_put_data8(CoreIdType core_id, uint32 addr, uint8 data)
 	if (region == NULL) {
 		return STD_E_SEGV;
 	}
+	if (region->ops->put_data8 == NULL) {
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->put_data8(region, core_id, paddr, data);
 }
@@ -110,6 +122,9 @@ Std_ReturnType mpu_put_data16(CoreIdType core_id, uint32 addr, uint16 data)
 	if (region == NULL) {
 		return STD_E_SEGV;
 	}
+	if (region->ops->put_data16 == NULL) {
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->put_data16(region, core_id, paddr, data);
 }
@@ -118,6 +133,9 @@ Std_ReturnType mpu_put_data32(CoreIdType core_id, uint32 addr, uint32 data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 4U);
 	if (region == NULL) {
+		return STD_E_SEGV;
+	}
+	if (region->ops->put_data32 == NULL) {
 		return STD_E_SEGV;
 	}
 	uint32 paddr = (addr & region->mask);

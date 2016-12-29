@@ -4,6 +4,8 @@ unsigned char stack_data[1024];
 
 extern void test_suite(void);
 
+unsigned int test_data_uint32;
+
 void test_print(const char *str)
 {
 	int i;

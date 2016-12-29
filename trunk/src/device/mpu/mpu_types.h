@@ -7,7 +7,7 @@ typedef enum {
 	GLOBAL_MEMORY = 0,
 	LOCAL_MEMORY,
 	PRIVATE_MEMORY,
-	DEVICE
+	DEVICE,
 } MpuAddressRegionEnumType;
 
 #define MPU_ADDRESS_REGION_MASK_ALL				0xFFFFFFFF

@@ -2,6 +2,8 @@
 #include "cpu_dec/op_code.h"
 #include "cpu_exec/op_exec_ops.h"
 #include "cpu.h"
+#include "mpu_types.h"
+#include "std_errno.h"
 #include <stdio.h>
 
 static int OpExec1(TargetCoreType *cpu);
@@ -17,6 +19,47 @@ static int OpExec10(TargetCoreType *cpu);
 static int OpExec11(TargetCoreType *cpu);
 static int OpExec12(TargetCoreType *cpu);
 static int OpExec13(TargetCoreType *cpu);
+
+static Std_ReturnType cpu_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data);
+static Std_ReturnType cpu_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data);
+
+MpuAddressRegionOperationType cpu_register_operation = {
+		.get_data8 = NULL,
+		.get_data16 = NULL,
+		.get_data32 = cpu_get_data32,
+		.put_data8 = NULL,
+		.put_data16 = NULL,
+		.put_data32 = cpu_put_data32,
+};
+static uint32 *get_cpu_register_addr(TargetCoreType *core, uint32 addr)
+{
+	uint32 inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR) / sizeof(uint32);
+
+	//printf("get_cpu_register_addr:inx=%u\n", inx);
+	if (inx >= 0 && inx <= 31) {
+		return (uint32*)&core->reg.r[inx];
+	}
+	return NULL;
+}
+static Std_ReturnType cpu_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
+{
+	uint32 *registerp = get_cpu_register_addr(&virtual_cpu.current_core->core, addr);
+	if (registerp == NULL) {
+		return STD_E_SEGV;
+	}
+	*data = *registerp;
+	return STD_E_OK;
+}
+static Std_ReturnType cpu_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data)
+{
+	uint32 *registerp = get_cpu_register_addr(&virtual_cpu.current_core->core, addr);
+	if (registerp == NULL) {
+		return STD_E_SEGV;
+	}
+	*registerp = data;
+	return STD_E_OK;
+}
+
 
 uint32 cpu_get_pc(const TargetCoreType *core)
 {

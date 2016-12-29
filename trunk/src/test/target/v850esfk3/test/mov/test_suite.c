@@ -11,6 +11,9 @@ extern int do_test_mov2_3(void);
 extern int do_test_mov2_4(void);
 extern int do_test_mov2_5(void);
 
+extern int do_test_mov3_1(void);
+extern int do_test_mov3_2(void);
+
 void test_suite(void)
 {
 
@@ -25,5 +28,7 @@ void test_suite(void)
 	DO_TEST(do_test_mov2_4);
 	DO_TEST(do_test_mov2_5);
 
+	DO_TEST(do_test_mov3_1);
+	DO_TEST(do_test_mov3_2);
 	return;
 }

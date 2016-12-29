@@ -96,6 +96,7 @@ void comm_hook_load_reg32(CpuManagerType *cpu, uint32 regaddr)
 
 static void tx_fifo_init(void)
 {
+#if 0
 	int fd;
 	fd = open(CpuEmuCommDev.tx_fifo.path, O_CREAT | O_TRUNC |O_WRONLY|O_BINARY, 00777);
 	if (fd < 0) {
@@ -104,11 +105,13 @@ static void tx_fifo_init(void)
 	}
 
 	close(fd);
+#endif
 	return;
 }
 
 static void tx_fifo_sync(void)
 {
+#if 0
 	int fd;
 	int err;
 
@@ -134,10 +137,12 @@ static void tx_fifo_sync(void)
 
 	close(fd);
 	return;
+#endif
 }
 
 static void rx_fifo_sync(void)
 {
+#if 0
 	int fd;
 	int err;
 	struct stat buf;
@@ -171,6 +176,7 @@ static void rx_fifo_sync(void)
 	close(fd);
 
 	return;
+#endif
 }
 
 static void tx_fifo_write(uint32 data)

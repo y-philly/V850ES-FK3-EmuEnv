@@ -5,7 +5,6 @@
 /*
  * 汎用レジスタの位置づけ
  * 以下のスクラッチレジスタを使用する．
- * R19
  * R20
  * R21
  * R22
@@ -17,7 +16,7 @@
  * R28
  * R29
  */
-#define	REG_OUT					r19
-#define	REG_IN					r20
+#define	REG_OUT					r20
+#define	REG_IN					r21
 
 #endif /* _TEST_REG_H_ */

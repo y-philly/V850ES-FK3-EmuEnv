@@ -7,6 +7,7 @@
 #include "cui/cui_ops.h"
 #include "cui/stdio/cui_ops_stdio.h"
 #include "cui/udp/cui_ops_udp.h"
+#include "file_address_mapping.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -104,6 +105,7 @@ int main(int argc, const char *argv[])
 		if (cpuemu_symbol_set() != STD_E_OK) {
 			return -1;
 		}
+		file_address_mapping_init();
 	}
 
 	if (opt->is_interaction == TRUE) {

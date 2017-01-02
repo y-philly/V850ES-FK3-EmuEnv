@@ -74,6 +74,7 @@ OBJS	+= dbg_cpu_callback.o
 OBJS	+= elf_section.o
 OBJS	+= elf_dwarf_line.o
 OBJS	+= elf_dwarf_util.o
+OBJS	+= file_address_mapping.o
 OBJS	+= symbol_ops.o
 OBJS	+= cui_ops.o
 OBJS	+= cui_ops_stdio.o

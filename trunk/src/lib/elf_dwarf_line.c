@@ -12,7 +12,24 @@
 #endif
 
 static void parse_opcode(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op);
-static ElfDwarfLineType *elf_dwarf_line;
+static ElfDwarfLineType *elf_dwarf_line = NULL;
+
+ElfDwarfLineType *elf_dwarf_line_get_ElfDwarfLine(void)
+{
+	return elf_dwarf_line;
+}
+void elf_dwarf_line_init_ElfDwarfLineStateMachineRegister(ElfDwarfLineStateMachineRegisterType *machine, ElfDwarfLineEntryHeaderType *hdr)
+{
+	machine->address = 0;
+	machine->file = 1;
+	machine->line = 1;
+	machine->column = 0;
+	machine->is_stmt = hdr->default_is_stmt;
+	machine->basic_block = FALSE;
+	machine->end_sequence = FALSE;
+	return;
+}
+
 
 static uint32 parse_entry_header(ElfDwarfLineEntryHeaderType *header, uint8 *section_data);
 
@@ -131,15 +148,16 @@ Std_ReturnType elf_dwarf_line_load(uint8 *elf_data)
 		 * 6.2.5 The Statement Program
 		 */
 		uint32 off = hdr_size;
-		ElfDwarfLineParsedOpCodeType *op = elf_dwarf_line_alloc_empty_ElfDwarfLineParsedOpCode();
-		op->hdr = entry->header;
-		while (off < (op->hdr->total_length + 4)) {
+		while (off < (entry->header->total_length + 4)) {
+			ElfDwarfLineParsedOpCodeType *op = elf_dwarf_line_alloc_empty_ElfDwarfLineParsedOpCode();
+			op->hdr = entry->header;
 			DBG_PRINTF(("opcode[0x%x]=%u ", current_size + off, section_data[current_size + off] - op->hdr->opcode_base));
 			parse_opcode(&section_data[current_size + off], op);
 			off += op->size;
 			elf_array_add_entry(entry->ops, op);
 		}
 		current_size += off;
+		elf_array_add_entry(elf_dwarf_line->entries, entry);
 	}
 	DBG_PRINTF(("END\n"));
 	return STD_E_OK;
@@ -193,7 +211,7 @@ static void set_ExtendedOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 		DBG_PRINTF(("DW_LINE_define_file\n"));
 		break;
 	case DW_LNE_set_discriminator:
-		op->subtype = DW_LINE_define_file;
+		op->subtype = DW_LNE_set_discriminator;
 		op->args.extSetDescriminator.discriminator = elf_dwarf_decode_uleb128(&opcode[1], &size);
 		DBG_PRINTF(("DW_LNE_set_discriminator\n"));
 		break;

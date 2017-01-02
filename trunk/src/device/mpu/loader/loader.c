@@ -4,6 +4,7 @@
 #include "mpu_ops.h"
 #include "loader/elf.h"
 #include "elf_section.h"
+#include "elf_dwarf_line.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -38,6 +39,13 @@ Std_ReturnType elf_load(uint8 *elf_data)
 		return err;
 	}
 	err = elf_symbol_load(elf_data);
+	if (err != STD_E_OK) {
+		return err;
+	}
+	err = elf_dwarf_line_load(elf_data);
+	if (err != STD_E_OK) {
+		return err;
+	}
 
 	return err;
 }

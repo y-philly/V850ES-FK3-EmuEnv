@@ -22,4 +22,12 @@ typedef struct {
 } ElfSymbolType;
 extern Std_ReturnType elfsym_get_symbol(uint32 index, ElfSymbolType *elfsym);
 
+
+#define SECTION_DWARF_LINE_NAME	".debug_line"
+extern Std_ReturnType elf_section_get_dwarf_line(uint8 *elf_data, uint8 **section_data, uint32 *section_size);
+
+extern uint8 elf_get_data8(uint8 *elf_data, uint32 off);
+extern uint16 elf_get_data16(uint8 *elf_data, uint32 off);
+extern uint32 elf_get_data32(uint8 *elf_data, uint32 off);
+
 #endif /* _ELF_SECTION_H_ */

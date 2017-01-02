@@ -1,5 +1,6 @@
 #include "elf_section.h"
 #include <stdio.h>
+#include <string.h>
 
 /*
  * セクション情報(内部向け)
@@ -26,6 +27,8 @@ typedef struct {
 
 static ElfSymbolSectionType 		elf_symbol_section;
 static ElfStringTableSectionType	elf_string_table_section;
+static char *section_name = NULL;
+static uint8 *elf_binary_data = NULL;
 
 Std_ReturnType elf_symbol_load(uint8 *elf_data)
 {
@@ -37,10 +40,24 @@ Std_ReturnType elf_symbol_load(uint8 *elf_data)
 	Elf32_Ehdr *hdr = (Elf32_Ehdr*)elf_data;
 	Elf32_Shdr *shdr;
 
+	elf_binary_data = elf_data;
+
 	sec_shr_index = hdr->e_shstrndx;
 	shdr_num = hdr->e_shnum;
 	shdr_off = hdr->e_shoff;
 	shdr_size = hdr->e_shentsize;
+
+	/*
+	 * search_section_name
+	 */
+	for (i = 0; i < shdr_num; i++) {
+		if (i != sec_shr_index) {
+			continue;
+		}
+		shdr = (Elf32_Shdr *)&elf_data[(shdr_off + (i * shdr_size))];
+		section_name = (char*)&elf_data[shdr->sh_offset];
+		break;
+	}
 
 	/*
 	 * search section
@@ -109,5 +126,74 @@ Std_ReturnType elfsym_get_symbol(uint32 index, ElfSymbolType *elfsym)
 	elfsym->name = (char*)&(elf_symbol_section.string_table->shdata[sym->st_name]);
 
 	return STD_E_OK;
+}
+
+static Std_ReturnType elf_section_get(uint8 *elf_data, char *key, uint8 **section_data, uint32 *section_size)
+{
+	uint32 i;
+	uint32 shdr_num;
+	uint32 shdr_off;
+	uint32 shdr_size;
+	uint32 sec_shr_index;
+	Elf32_Ehdr *hdr = (Elf32_Ehdr*)elf_data;
+	Elf32_Shdr *shdr;
+	uint32 key_len = strlen(key);
+
+	sec_shr_index = hdr->e_shstrndx;
+	shdr_num = hdr->e_shnum;
+	shdr_off = hdr->e_shoff;
+	shdr_size = hdr->e_shentsize;
+
+
+	/*
+	 * search section
+	 */
+	for (i = 0; i < shdr_num; i++) {
+		shdr = (Elf32_Shdr *)&elf_data[(shdr_off + (i * shdr_size))];
+		if (i == sec_shr_index) {
+			continue;
+		}
+		uint32 len = strlen(&section_name[shdr->sh_name]);
+		if (key_len != len) {
+			continue;
+		}
+		if (strncmp(key, &section_name[shdr->sh_name], key_len) != 0) {
+			continue;
+		}
+		*section_data = &elf_data[shdr->sh_offset];
+		*section_size = shdr->sh_size;
+		//printf("inx=%u sh_name=%s\n", i, &section_name[shdr->sh_name]);
+
+		return STD_E_OK;
+	}
+	return STD_E_NOENT;
+}
+
+extern Std_ReturnType elf_section_get_dwarf_line(uint8 *elf_data, uint8 **section_data, uint32 *section_size)
+{
+	return elf_section_get(elf_data, SECTION_DWARF_LINE_NAME, section_data, section_size);
+}
+
+uint8 elf_get_data8(uint8 *elf_data, uint32 off)
+{
+	return elf_data[off];
+}
+uint16 elf_get_data16(uint8 *elf_data, uint32 off)
+{
+	uint16 data = 0;
+
+	data |=  ( ((uint16)elf_data[off + 0]) << 0 );
+	data |=  ( ((uint16)elf_data[off + 1]) << 8 );
+	return data;
+}
+uint32 elf_get_data32(uint8 *elf_data, uint32 off)
+{
+	uint32 data = 0;
+
+	data |=  ( ((uint32)elf_data[off + 0]) << 0 );
+	data |=  ( ((uint32)elf_data[off + 1]) << 8 );
+	data |=  ( ((uint32)elf_data[off + 2]) << 16 );
+	data |=  ( ((uint32)elf_data[off + 3]) << 24 );
+	return data;
 }
 

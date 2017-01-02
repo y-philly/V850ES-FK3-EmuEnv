@@ -82,14 +82,14 @@ static uint32 parse_entry_header(ElfDwarfLineEntryHeaderType *header, uint8 *sec
 		if (len > 0) {
 			ElfDwarfLineEntryHeaderFileType *obj = elf_obj_alloc(sizeof(ElfDwarfLineEntryHeaderFileType));
 			obj->filename = filename;
-			DBG_PRINTF(("filename=%s, len=%u\n", filename, len));
+			DBG_PRINTF(("filename=%s, len=%u ", filename, len));
 
 			obj->dir = elf_dwarf_decode_uleb128(&section_data[off], &size);
-			DBG_PRINTF(("Dir=%u\n", obj->dir));
+			DBG_PRINTF(("Dir=%u ", obj->dir));
 			off += size;
 
 			obj->time = elf_dwarf_decode_uleb128(&section_data[off], &size);
-			DBG_PRINTF(("Time=%u\n", obj->time));
+			DBG_PRINTF(("Time=%u ", obj->time));
 			off += size;
 
 			obj->size = elf_dwarf_decode_uleb128(&section_data[off], &size);
@@ -134,7 +134,7 @@ Std_ReturnType elf_dwarf_line_load(uint8 *elf_data)
 		ElfDwarfLineParsedOpCodeType *op = elf_dwarf_line_alloc_empty_ElfDwarfLineParsedOpCode();
 		op->hdr = entry->header;
 		while (off < (op->hdr->total_length + 4)) {
-			DBG_PRINTF(("opcode[0x%x]", current_size + off));
+			DBG_PRINTF(("opcode[0x%x]=%u ", current_size + off, section_data[current_size + off] - op->hdr->opcode_base));
 			parse_opcode(&section_data[current_size + off], op);
 			off += op->size;
 			elf_array_add_entry(entry->ops, op);
@@ -176,6 +176,7 @@ static void set_ExtDefineFile(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 }
 static void set_ExtendedOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 {
+	uint32 size;
 	switch (opcode[0]) {
 	case DW_LNE_end_sequence:
 		op->subtype = DW_LNE_end_sequence;
@@ -190,6 +191,11 @@ static void set_ExtendedOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 		op->subtype = DW_LINE_define_file;
 		set_ExtDefineFile(&opcode[1], op);
 		DBG_PRINTF(("DW_LINE_define_file\n"));
+		break;
+	case DW_LNE_set_discriminator:
+		op->subtype = DW_LINE_define_file;
+		op->args.extSetDescriminator.discriminator = elf_dwarf_decode_uleb128(&opcode[1], &size);
+		DBG_PRINTF(("DW_LNE_set_discriminator\n"));
 		break;
 	default:
 		op->subtype = DW_LINE_unknown;
@@ -206,7 +212,7 @@ static void set_StandardOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 		DBG_PRINTF(("DW_LNS_copy\n"));
 		break;
 	case DW_LNS_advance_pc:
-		op->args.stdAdvancePc.advance_size = elf_dwarf_decode_uleb128(opcode, &size) * op->hdr->minimum_instruction_length;;
+		op->args.stdAdvancePc.advance_size = elf_dwarf_decode_uleb128(opcode, &size) * ((uint32)op->hdr->minimum_instruction_length);
 		DBG_PRINTF(("DW_LNS_advance_pc:advance_size=0x%x\n", op->args.stdAdvancePc.advance_size));
 		break;
 	case DW_LNS_advance_line:
@@ -243,15 +249,16 @@ static void set_StandardOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 }
 static void set_SpecialOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 {
-	sint8 adjusted_opcode;
+	sint32 adjusted_opcode;
 
-	adjusted_opcode = ((sint8)opcode[0]) - ((sint8)op->hdr->opcode_base);
+	adjusted_opcode = ((opcode[0]) - (op->hdr->opcode_base));
+	//printf("adjusted_opcode=%d ", adjusted_opcode);
 
 	op->size = 1;
-	op->args.special.advance_addr = (adjusted_opcode / op->hdr->line_range) * op->hdr->minimum_instruction_length;
+	op->args.special.advance_addr = ((uint32)(adjusted_opcode / op->hdr->line_range)) * ((uint32)op->hdr->minimum_instruction_length);
 	op->args.special.advance_line = op->hdr->line_base + (adjusted_opcode % op->hdr->line_range);
-	DBG_PRINTF(("set_SpecialOp:advance_addr=0x%x\n", op->args.special.advance_addr));
-	DBG_PRINTF(("set_SpecialOp:advance_line=%d\n", op->args.special.advance_line));
+	DBG_PRINTF(("set_SpecialOp:advance_addr=%d ", op->args.special.advance_addr));
+	DBG_PRINTF(("advance_line=%d\n", op->args.special.advance_line));
 	return;
 }
 

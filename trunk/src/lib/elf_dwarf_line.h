@@ -45,6 +45,7 @@ typedef enum {
 	DW_LNE_end_sequence = 1,
 	DW_LNE_set_address,
 	DW_LINE_define_file,
+	DW_LNE_set_discriminator, /* dwarf ver.4 */
 	DW_LINE_unknown,
 } ElfDwarfLineOpExtendedType;
 
@@ -57,7 +58,9 @@ typedef struct {
 	uint32	time;
 	uint32	size;
 } DwLineDefineFileType;
-
+typedef struct {
+	uint32	discriminator;
+} DwLineSetDiscriminatorType;
 typedef enum {
 	DW_LNS_copy = 1,
 	DW_LNS_advance_pc,
@@ -98,6 +101,7 @@ typedef struct {
 	union {
 		DwLineSetAddressType		extSetAddress;
 		DwLineDefineFileType		extDefineFile;
+		DwLineSetDiscriminatorType	extSetDescriminator;
 		DwLnsAdvancePcType			stdAdvancePc;
 		DwLnsAdvanceLineType		stdAdvanceLine;
 		DwLnsSetFileType			stdSetFile;

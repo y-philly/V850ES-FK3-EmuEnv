@@ -53,6 +53,25 @@ typedef struct {
 
 static DbgFuncLogTraceType dbg_func_log_trace;
 
+#include "file.h"
+#include "file_address_mapping.h"
+static FileType dbg_std_executor_file;
+void dbg_cpu_control_print_source(uint32 pc)
+{
+	Std_ReturnType err = STD_E_OK;
+	ValueFileType value;
+	err = file_address_mapping_get(pc, &value);
+	if (err == STD_E_OK) {
+		token_string_set(&dbg_std_executor_file.filepath, "./arg_sakura.txt");
+		file_wopen(&dbg_std_executor_file);
+		int len = snprintf((char*)dbg_std_executor_file.buffer,
+				sizeof(dbg_std_executor_file.buffer),
+				"-Y=%u %s/%s\n", value.line, value.dir, value.file);
+		file_putline(&dbg_std_executor_file, (char*)dbg_std_executor_file.buffer, len);
+		file_close(&dbg_std_executor_file);
+	}
+	return;
+}
 
 /*
  * データ×アクセス関数マッピング表

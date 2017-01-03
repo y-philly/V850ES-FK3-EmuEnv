@@ -1,4 +1,5 @@
 #include "dbg_executor.h"
+
 #include "concrete_executor/dbg_std_executor.h"
 #include "front/parser/concrete_parser/dbg_std_parser.h"
 #include "cpu_control/dbg_cpu_control.h"
@@ -13,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #define SYMBOL_CANDIATE_NUM		10
+
 
 void dbg_std_executor_parse_error(void *executor)
 {
@@ -263,7 +265,9 @@ void dbg_std_executor_next(void *executor)
 	cpuctrl_set_debug_mode(TRUE);
 	dbg_log_set_view_mode(TRUE);
 	dbg_log_set_print_mode(TRUE);
+
 	cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
+
 	dbg_log_set_print_mode(FALSE);
 	dbg_log_set_view_mode(org_view_mode);
 	return;

@@ -30,12 +30,12 @@ static void file_address_mapping_build(void)
 	ElfDwarfLineStateMachineRegisterType machine;
 	ElfDwarfLineType *edl = elf_dwarf_line_get_ElfDwarfLine();
 
-	printf("file_address_mapping_build:enter:size=%u\n", edl->entries->current_array_size);
+	//printf("file_address_mapping_build:enter:size=%u\n", edl->entries->current_array_size);
 	for (entry_inx = 0; entry_inx < edl->entries->current_array_size; entry_inx++) {
 		ElfDwarfLineEntryType *entry = (ElfDwarfLineEntryType *)edl->entries->data[entry_inx];
 		elf_dwarf_line_init_ElfDwarfLineStateMachineRegister(&machine, entry->header);
 
-		printf("file_address_mapping_build:op_num=%u\n", entry->ops->current_array_size);
+		//printf("file_address_mapping_build:op_num=%u\n", entry->ops->current_array_size);
 		for (op_inx = 0; op_inx < entry->ops->current_array_size; op_inx++) {
 			ElfDwarfLineParsedOpCodeType *op = (ElfDwarfLineParsedOpCodeType *)entry->ops->data[op_inx];
 
@@ -55,9 +55,15 @@ static void file_address_mapping_build(void)
 		}
 
 	}
-	printf("file_address_mapping_build:exit\n");
+	//printf("file_address_mapping_build:exit\n");
 	return;
 }
+#if 0
+#include "file.h"
+static bool is_first = FALSE;
+static FileType my_file;
+static char my_buffer[4096];
+#endif
 
 static void file_address_mapping_add(KeyAddressType *key, ValueFileType *value)
 {
@@ -66,10 +72,20 @@ static void file_address_mapping_add(KeyAddressType *key, ValueFileType *value)
 	obj->value = *value;
 	elf_array_add_entry(key_value_mapping, obj);
 
-	printf("0x%x - 0x%x : %s/%s %d\n",
-			key->address_start, key->address_end,
-			value->dir, value->file,
-			value->line);
+#if 0
+	if (is_first == FALSE) {
+		is_first = TRUE;
+		printf("0x%x - 0x%x : %s/%s %d\n",
+				key->address_start, key->address_end,
+				value->dir, value->file,
+				value->line);
+		file_ropen_filepath(value->dir, value->file, &my_file);
+		file_readline(&my_file, my_buffer, sizeof(my_buffer), value->line);
+		//printf("%3u : %s\n", value->line, my_buffer);
+		printf("[%u] %s\n", value->line, my_buffer);
+		file_close(&my_file);
+	}
+#endif
 	return;
 }
 

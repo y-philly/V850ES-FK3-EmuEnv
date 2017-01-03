@@ -78,12 +78,28 @@ bool file_ropen(FileType *file)
 	}
 	return TRUE;
 }
+bool file_wopen(FileType *file)
+{
+	file->fp = fopen((char*)file->filepath.str, "wb");
+	if (file->fp == NULL) {
+		printf("file open error:%s\n", file->filepath.str);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+bool file_ropen_filepath(const char *dir, const char *filename, FileType *file)
+{
+	snprintf((char*)file->filepath.str, sizeof(file->filepath.str), "%s/%s", dir, filename);
+	return file_ropen(file);
+}
+
 
 uint32 file_getline(FileType *file, char *line, int size)
 {
 	uint32 n = 0;
 	char c;
-	while (TRUE) {
+	while (n < size) {
 		c = fgetc(file->fp);
 		if (c < 0 || c == '\n') {
 			break;
@@ -93,6 +109,26 @@ uint32 file_getline(FileType *file, char *line, int size)
 	}
 	return n;
 }
+uint32 file_readline(FileType *file, char *line, int size, int lineno)
+{
+	int count = 0;
+	uint32 n = 0;
+	(void)fseek(file->fp, 0, SEEK_SET);
+	for (count = 0; count < lineno; count++) {
+		n = file_getline(file, line, size);
+		line[n] = '\0';
+		//printf("%-3u : %s\n", count+1, line);
+	}
+	return n;
+}
+
+void file_putline(FileType *file, char *line, int size)
+{
+	(void)fseek(file->fp, 0, SEEK_SET);
+	(void)fprintf(file->fp, "%s\n", line);
+	return;
+}
+
 void file_close(FileType *file)
 {
 	if (file->fp != NULL) {
@@ -100,5 +136,21 @@ void file_close(FileType *file)
 		file->fp = NULL;
 	}
 	return;
+}
+
+bool file_printline(const char *dir, const char *filename, FileType *file, uint32 start, uint32 end)
+{
+	uint32 count;
+	if (file_ropen_filepath(dir, filename, file) == FALSE) {
+		return FALSE;
+	}
+
+	for (count = start; count <= end; count++) {
+		file_readline(file, (char*)file->buffer, sizeof(file->buffer), count);
+		printf("[%s %3u] %s\n", (char*)file->filepath.str, count, (char*)file->buffer);
+	}
+
+	file_close(file);
+	return TRUE;
 }
 

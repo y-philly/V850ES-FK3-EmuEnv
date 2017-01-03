@@ -13,7 +13,7 @@ extern void cpuctrl_set_force_break(void);
 extern void cpuctrl_set_current_debugged_core(CoreIdType core_id);
 extern void cpuctrl_clr_current_debugged_core(void);
 extern bool cpuctrl_get_current_debugged_core(CoreIdType *core_id);
-
+extern void dbg_cpu_control_print_source(uint32 pc);
 
 /*
  * break機能

@@ -551,6 +551,37 @@ DbgCmdExecutorType *dbg_parse_quit(DbgCmdExecutorType *arg, const TokenContainer
 }
 
 /************************************************************************************
+ * list コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType list_string = {
+		.len = 4,
+		.str = { 'l', 'i', 's', 't', '\0' },
+};
+static const TokenStringType list_string_short = {
+		.len = 1,
+		.str = { 'l', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_list(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	if (token_container->num != 1) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &list_string) == TRUE) ||
+			(token_strcmp(&token_container->array[0].body.str, &list_string_short) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_LIST;
+		arg->run = dbg_std_executor_list;
+		return arg;
+	}
+	return NULL;
+}
+/************************************************************************************
  * exit コマンド
  *
  *
@@ -1003,6 +1034,17 @@ static const DbgCmdHelpType help_list = {
 							{
 									.semantics = "profile",
 									.description = "show profile result",
+							},
+					},
+			},
+			{
+					.name = &list_string,
+					.name_shortcut = &list_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "list",
+									.description = "show the program code where the pc is stopped.",
 							},
 					},
 			},

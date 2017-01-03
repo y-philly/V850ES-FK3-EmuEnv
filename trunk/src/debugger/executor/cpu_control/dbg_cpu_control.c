@@ -56,6 +56,7 @@ static DbgFuncLogTraceType dbg_func_log_trace;
 #include "file.h"
 #include "file_address_mapping.h"
 static FileType dbg_std_executor_file;
+
 void dbg_cpu_control_print_source(uint32 pc)
 {
 	Std_ReturnType err = STD_E_OK;
@@ -73,6 +74,11 @@ void dbg_cpu_control_print_source(uint32 pc)
 	}
 	return;
 }
+char *dbg_cpu_control_get_print_args(void)
+{
+	return (char*)dbg_std_executor_file.buffer;
+}
+
 
 /*
  * データ×アクセス関数マッピング表

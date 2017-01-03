@@ -23,6 +23,7 @@ extern void dbg_std_executor_func_trace(void *executor);
 extern void dbg_std_executor_data_access_info(void *executor);
 extern void dbg_std_executor_back_trace(void *executor);
 extern void dbg_std_executor_profile(void *executor);
+extern void dbg_std_executor_list(void *executor);
 extern void dbg_std_executor_help(void *executor);
 
 

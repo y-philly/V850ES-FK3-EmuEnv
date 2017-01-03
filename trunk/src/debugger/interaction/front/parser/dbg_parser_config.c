@@ -20,5 +20,6 @@ DbgCmdParserTableType dbg_cmd_parser_std_table[DBG_CMD_STD_ID_NUM] = {
 		{ dbg_parse_data_access_info, },
 		{ dbg_parse_back_trace, },
 		{ dbg_parse_profile, },
+		{ dbg_parse_list, },
 		{ dbg_parse_help, },
 };

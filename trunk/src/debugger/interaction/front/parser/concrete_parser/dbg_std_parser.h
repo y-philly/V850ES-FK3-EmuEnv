@@ -107,6 +107,7 @@ typedef struct {
 } DbgCmdExecutorIntrType;
 extern DbgCmdExecutorType *dbg_parse_intr(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
+extern DbgCmdExecutorType *dbg_parse_list(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
 
 #define DBG_CMD_ARG_TYPES_MAX	3U

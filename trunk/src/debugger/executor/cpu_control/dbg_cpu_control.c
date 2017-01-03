@@ -69,6 +69,7 @@ void dbg_cpu_control_print_source(uint32 pc)
 				"-Y=%u %s/%s\n", value.line, value.dir, value.file);
 		file_putline(&dbg_std_executor_file, (char*)dbg_std_executor_file.buffer, len);
 		file_close(&dbg_std_executor_file);
+		printf("[NEXT> pc=0x%x %s %u\n", pc, value.file, value.line);
 	}
 	return;
 }

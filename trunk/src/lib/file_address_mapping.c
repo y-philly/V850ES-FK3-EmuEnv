@@ -1,6 +1,7 @@
 #include "file_address_mapping.h"
 #include "elf_dwarf_line.h"
 #include "assert.h"
+#include <string.h>
 
 typedef struct {
 	KeyAddressType	key;
@@ -103,6 +104,54 @@ Std_ReturnType file_address_mapping_get(uint32 addr, ValueFileType *value)
 	}
 	return STD_E_NOENT;
 }
+
+Std_ReturnType file_address_mapping_get_addr(const char*file, uint32 line, KeyAddressType *value)
+{
+	uint32 i;
+	KeyValueMappingType *map;
+	int len = strlen(file);
+	int file_len;
+
+	for (i = 0; i < key_value_mapping->current_array_size; i++) {
+		map = (KeyValueMappingType *)key_value_mapping->data[i];
+		file_len = strlen(map->value.file);
+		if (len != file_len) {
+			continue;
+		}
+		if (line != map->value.line) {
+			continue;
+		}
+		if (strncmp(file, map->value.file, len) == 0) {
+			*value = map->key;
+			return STD_E_OK;
+		}
+	}
+	return STD_E_NOENT;
+}
+Std_ReturnType file_address_mapping_get_candidate(const char*file, uint32 line, ValueFileType *value)
+{
+	uint32 i;
+	KeyValueMappingType *map;
+	int len = strlen(file);
+	int file_len;
+
+	for (i = 0; i < key_value_mapping->current_array_size; i++) {
+		map = (KeyValueMappingType *)key_value_mapping->data[i];
+		file_len = strlen(map->value.file);
+		if (len != file_len) {
+			continue;
+		}
+		if (line >= map->value.line) {
+			continue;
+		}
+		if (strncmp(file, map->value.file, len) == 0) {
+			*value = map->value;
+			return STD_E_OK;
+		}
+	}
+	return STD_E_NOENT;
+}
+
 Std_ReturnType file_address_mapping_get_last(KeyAddressType *key, ValueFileType *value)
 {
 	KeyValueMappingType *map;

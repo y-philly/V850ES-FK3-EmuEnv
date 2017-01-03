@@ -65,7 +65,8 @@ static inline void dbg_print_log(void)
 		DbgExecOpBuffer.buf[DbgExecOpBuffer.count].write_len = snprintf(
 				DbgExecOpBuffer.buf[DbgExecOpBuffer.count].p,
 				DBG_BUFP_LEN,
-				"%s(+%x) %s",
+				"[DONE> pc=0x%x %s(+%x) %s",
+				cpu_get_current_core_pc(),
 				DbgExecOpBuffer.funcname,
 				DbgExecOpBuffer.funcoff,
 				dbg_tmp_logbuf);
@@ -74,7 +75,7 @@ static inline void dbg_print_log(void)
 		DbgExecOpBuffer.buf[DbgExecOpBuffer.count].write_len = snprintf(
 				DbgExecOpBuffer.buf[DbgExecOpBuffer.count].p,
 				DBG_BUFP_LEN,
-				"null(null) %s",
+				"[DONE> pc=0x%x null(null) %s", cpu_get_current_core_pc(),
 				dbg_tmp_logbuf);
 	}
 	if (dbg_log_can_print() == TRUE) {

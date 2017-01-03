@@ -1,5 +1,5 @@
 #include "dbg_executor.h"
-
+#include "file_address_mapping.h"
 #include "concrete_executor/dbg_std_executor.h"
 #include "front/parser/concrete_parser/dbg_std_parser.h"
 #include "cpu_control/dbg_cpu_control.h"
@@ -60,6 +60,29 @@ void dbg_std_executor_break(void *executor)
 		 else {
 			 printf("ERROR: can not break 0x%x\n", parsed_args->break_addr);
 			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+		 }
+	 }
+	 else if (parsed_args->type == DBG_CMD_BREAK_SET_FILE_LINE) {
+		 Std_ReturnType err;
+		 KeyAddressType value;
+		 err = file_address_mapping_get_addr((char*)parsed_args->symbol.str, parsed_args->line, &value);
+		 if (err != STD_E_OK) {
+			 ValueFileType candidate;
+			 printf("ERROR: can not found break addr:%s %u\n", (char*)parsed_args->symbol.str, parsed_args->line);
+			 err = file_address_mapping_get_candidate((char*)parsed_args->symbol.str, parsed_args->line, &candidate);
+			 if (err == STD_E_OK) {
+				 printf("candidate : %s %u\n", candidate.file, candidate.line);
+			 }
+		 }
+		 else {
+			 if (cpuctrl_set_break(value.address_start, BREAK_POINT_TYPE_FOREVER) == TRUE) {
+				 printf("break 0x%x\n", value.address_start);
+				 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+			 }
+			 else {
+				 printf("ERROR: can not break 0x%x\n", value.address_start);
+				 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			 }
 		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_BREAK_INFO) {

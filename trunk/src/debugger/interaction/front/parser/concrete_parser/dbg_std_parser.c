@@ -26,7 +26,7 @@ DbgCmdExecutorType *dbg_parse_break(DbgCmdExecutorType *arg, const TokenContaine
 {
 	DbgCmdExecutorBreakType *parsed_args = (DbgCmdExecutorBreakType *)arg->parsed_args;
 
-	if (token_container->num != 2) {
+	if ((token_container->num != 2) && (token_container->num != 3)) {
 		return NULL;
 	}
 
@@ -44,11 +44,21 @@ DbgCmdExecutorType *dbg_parse_break(DbgCmdExecutorType *arg, const TokenContaine
 			return arg;
 		}
 		else if (token_container->array[1].type == TOKEN_TYPE_STRING) {
-			arg->std_id = DBG_CMD_STD_ID_BREAK;
-			parsed_args->type = DBG_CMD_BBREAK_SET_SYMBOL;
-			parsed_args->symbol = token_container->array[1].body.str;
-			arg->run = dbg_std_executor_break;
-			return arg;
+			if (token_container->num == 2) {
+				arg->std_id = DBG_CMD_STD_ID_BREAK;
+				parsed_args->type = DBG_CMD_BBREAK_SET_SYMBOL;
+				parsed_args->symbol = token_container->array[1].body.str;
+				arg->run = dbg_std_executor_break;
+				return arg;
+			}
+			else if ((token_container->num == 3) && (token_container->array[2].type == TOKEN_TYPE_VALUE_DEC)) {
+				arg->std_id = DBG_CMD_STD_ID_BREAK;
+				parsed_args->type = DBG_CMD_BREAK_SET_FILE_LINE;
+				parsed_args->symbol = token_container->array[1].body.str;
+				parsed_args->line = token_container->array[2].body.dec.value;
+				arg->run = dbg_std_executor_break;
+				return arg;
+			}
 		}
 	}
 	else if (token_strcmp(&token_container->array[0].body.str, &break_info_string) == TRUE) {
@@ -776,11 +786,15 @@ static const DbgCmdHelpType help_list = {
 			{
 					.name = &break_string,
 					.name_shortcut = &break_string_short,
-					.opt_num = 1,
+					.opt_num = 2,
 					.opts = {
 							{
 									.semantics = "break {<addr(hex)>|<funcname>}",
 									.description = "set a break point. Break points are shown using 'info break' command.",
+							},
+							{
+									.semantics = "break <file> <lineno>",
+									.description = "set a break point on the {<file>, <lineno>}. Break points are shown using 'info break' command.",
 							},
 					},
 			},

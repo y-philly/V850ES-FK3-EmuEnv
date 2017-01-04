@@ -422,6 +422,27 @@ Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value)
 	}
 	return STD_E_NOENT;
 }
+Std_ReturnType cpuemu_get_devcfg_string(const char* key, char **value)
+{
+	int i;
+	TokenStringType token;
+
+	token.len = strlen(key);
+	memcpy(token.str, key, token.len);
+	token.str[token.len] = '\0';
+
+	for (i = 0; i < cpuemu_devcfg.param_num; i++) {
+		if (cpuemu_devcfg.param[i].value.type != TOKEN_TYPE_STRING) {
+			continue;
+		}
+		if (token_strcmp(&cpuemu_devcfg.param[i].key.body.str, &token) == FALSE) {
+			continue;
+		}
+		*value = (char*)cpuemu_devcfg.param[i].value.body.str.str;
+		return STD_E_OK;
+	}
+	return STD_E_NOENT;
+}
 
 void cpuemu_raise_intr(uint32 intno)
 {

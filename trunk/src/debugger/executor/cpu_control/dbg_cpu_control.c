@@ -2,6 +2,7 @@
 #include "cpu_config.h"
 #include "symbol_ops.h"
 #include "assert.h"
+#include "file.h"
 #include "cpuemu_ops.h"
 #include "std_errno.h"
 #include <stdlib.h>
@@ -57,24 +58,61 @@ static DbgFuncLogTraceType dbg_func_log_trace;
 #include "file_address_mapping.h"
 static FileType dbg_std_executor_file;
 
+static char *search_filepath(char *dir, char *file)
+{
+	uint32 param_num;
+	uint32 i;
+	Std_ReturnType err;
+	char *candiate_path;
+	static char buffer[4096];
+	static char parameter[4096];
+
+	snprintf(buffer, sizeof(buffer), "%s/%s", dir, file);
+	if (file_exist(buffer) == TRUE) {
+		return buffer;
+	}
+	err = cpuemu_get_devcfg_value("EDITOR_SEARCH_PATH_NUM", &param_num);
+	if (err != STD_E_OK) {
+		return NULL;
+	}
+	//printf("param_num=%d\n", param_num);
+	for (i = 0; i < param_num; i++) {
+		snprintf(parameter, sizeof(parameter), "EDITOR_SEARCH_PATH_%d", i);
+		err = cpuemu_get_devcfg_string(parameter, &candiate_path);
+		if (err != STD_E_OK) {
+			printf("not found param=%s\n", parameter);
+			return NULL;
+		}
+		snprintf(buffer, sizeof(buffer), "%s/%s/%s", candiate_path, dir, file);
+		//printf("%s = %s %s\n", parameter, candiate_path, buffer);
+		if (file_exist(buffer) == TRUE) {
+			return buffer;
+		}
+	}
+	return NULL;
+}
+
 void dbg_cpu_control_print_source(uint32 pc)
 {
 	Std_ReturnType err = STD_E_OK;
 	ValueFileType value;
 	err = file_address_mapping_get(pc, &value);
 	if (err == STD_E_OK) {
-		token_string_set(&dbg_std_executor_file.filepath, "./arg_sakura.txt");
-		file_wopen(&dbg_std_executor_file);
-		int len = snprintf((char*)dbg_std_executor_file.buffer,
-				sizeof(dbg_std_executor_file.buffer),
-				"-Y=%u %s/%s\n", value.line, value.dir, value.file);
-		file_putline(&dbg_std_executor_file, (char*)dbg_std_executor_file.buffer, len);
-		file_close(&dbg_std_executor_file);
-		printf("[NEXT> pc=0x%x %s %u\n", pc, value.file, value.line);
-		/*
-		 * サクラエディタが常にフォーカスされてしまい，デバッグを阻害するため，コメントアウト
-		 */
-		//dbg_cpu_control_update_editor();
+		char *path = search_filepath(value.dir, value.file);
+		if (path != NULL) {
+			token_string_set(&dbg_std_executor_file.filepath, "./arg_sakura.txt");
+			file_wopen(&dbg_std_executor_file);
+			int len = snprintf((char*)dbg_std_executor_file.buffer,
+					sizeof(dbg_std_executor_file.buffer),
+					"-Y=%u %s\n", value.line, path);
+			file_putline(&dbg_std_executor_file, (char*)dbg_std_executor_file.buffer, len);
+			file_close(&dbg_std_executor_file);
+			printf("[NEXT> pc=0x%x %s %u\n", pc, value.file, value.line);
+			/*
+			 * サクラエディタが常にフォーカスされてしまい，デバッグを阻害するため，コメントアウト
+			 */
+			//dbg_cpu_control_update_editor();
+		}
 	}
 	return;
 }

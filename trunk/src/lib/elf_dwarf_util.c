@@ -32,17 +32,17 @@ sint32 elf_dwarf_decode_sleb128(uint8 *ptr, uint32 *size)
 
     for (i = 0; i < 5; i++) {
         byte = ptr[i];
+        sign = byte & 0x40;
         data |= ((sint32)(byte & 0x7f)) << shift;
         shift += 7;
         if ((byte & 0x80) == 0) {
-            sign = byte & 0x40;
             break;
         }
     }
     *size = i + 1;
 
     if (sign) {
-    	data = -1 * data;
+    	data |=  (- (1 << shift));
     }
 
 	return data;

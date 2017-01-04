@@ -218,8 +218,7 @@ static void do_std_build(ElfDwarfLineParsedOpCodeType *op, ElfDwarfLineStateMach
 	case DW_LNS_set_basic_block:
 		break;
 	case DW_LNS_const_add_pc:
-		//TODO
-		ASSERT(0);
+		machine->address += op->args.stdConstAddPc.const_add_pc;
 		break;
 	case DW_LNS_fixed_advance_pc:
 		machine->address += op->args.stdFixedAdvancePc.fixed_advance_pc;
@@ -239,6 +238,7 @@ static void add_map(KeyValueMappingType *map, ElfDwarfLineParsedOpCodeType *op, 
 	char *dir;
 
 	file_inx = machine->file  - 1;
+	ASSERT(file_inx < op->hdr->file_names->current_array_size);
 	dldf = (DwLineDefineFileType*)op->hdr->file_names->data[file_inx];
 	file = dldf->file;
 

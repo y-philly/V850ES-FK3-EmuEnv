@@ -224,6 +224,7 @@ static void set_ExtendedOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 static void set_StandardOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 {
 	uint32 size = 0;
+	uint8 const_add_pc = 255;
 
 	switch (op->subtype) {
 	case DW_LNS_copy:
@@ -253,6 +254,8 @@ static void set_StandardOp(uint8 *opcode, ElfDwarfLineParsedOpCodeType *op)
 		break;
 	case DW_LNS_const_add_pc:
 		DBG_PRINTF(("DW_LNS_const_add_pc\n"));
+		op->args.stdConstAddPc.const_add_pc = elf_dwarf_decode_uleb128(&const_add_pc, &size) * ((uint32)op->hdr->minimum_instruction_length);
+		size = 0;
 		break;
 	case DW_LNS_fixed_advance_pc:
 		op->args.stdFixedAdvancePc.fixed_advance_pc = elf_get_data16(opcode, 0) * op->hdr->minimum_instruction_length;

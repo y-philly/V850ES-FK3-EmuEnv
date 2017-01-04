@@ -92,6 +92,9 @@ typedef struct {
 typedef struct {
 	uint32 fixed_advance_pc;
 } DwLnsFixedAdvancePcType;
+typedef struct {
+	uint32 const_add_pc;
+} DwLnsConsdAddPcType;
 
 typedef struct {
 	ElfDwarfLineEntryHeaderType		*hdr;
@@ -107,6 +110,7 @@ typedef struct {
 		DwLnsSetFileType			stdSetFile;
 		DwLnsSetColumnType			stdSetColumn;
 		DwLnsFixedAdvancePcType		stdFixedAdvancePc;
+		DwLnsConsdAddPcType			stdConstAddPc;
 		DwLineSpecialType			special;
 	} args;
 } ElfDwarfLineParsedOpCodeType;

@@ -329,12 +329,7 @@ void dbg_std_executor_quit(void *executor)
 
 void dbg_std_executor_list(void *executor)
 {
-	char cmd[256];
-	//snprintf(cmd, sizeof(cmd), "%s %s &", "sakura.exe", dbg_cpu_control_get_print_args());
-	snprintf(cmd, sizeof(cmd), "sh sakura.sh");
-	if (system(cmd) < 0) {
-		printf("can not execute sakura\n");
-	}
+	dbg_cpu_control_update_editor();
 	return;
 }
 

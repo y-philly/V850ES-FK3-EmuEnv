@@ -71,12 +71,25 @@ void dbg_cpu_control_print_source(uint32 pc)
 		file_putline(&dbg_std_executor_file, (char*)dbg_std_executor_file.buffer, len);
 		file_close(&dbg_std_executor_file);
 		printf("[NEXT> pc=0x%x %s %u\n", pc, value.file, value.line);
+		/*
+		 * サクラエディタが常にフォーカスされてしまい，デバッグを阻害するため，コメントアウト
+		 */
+		//dbg_cpu_control_update_editor();
 	}
 	return;
 }
 char *dbg_cpu_control_get_print_args(void)
 {
 	return (char*)dbg_std_executor_file.buffer;
+}
+void dbg_cpu_control_update_editor(void)
+{
+	char cmd[256];
+	snprintf(cmd, sizeof(cmd), "sh sakura.sh");
+	if (system(cmd) < 0) {
+		printf("can not execute sakura\n");
+	}
+	return;
 }
 
 

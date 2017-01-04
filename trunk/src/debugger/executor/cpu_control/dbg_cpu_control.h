@@ -15,6 +15,7 @@ extern void cpuctrl_clr_current_debugged_core(void);
 extern bool cpuctrl_get_current_debugged_core(CoreIdType *core_id);
 extern void dbg_cpu_control_print_source(uint32 pc);
 extern char *dbg_cpu_control_get_print_args(void);
+extern void dbg_cpu_control_update_editor(void);
 
 /*
  * break機能

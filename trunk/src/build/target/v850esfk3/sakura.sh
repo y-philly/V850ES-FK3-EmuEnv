@@ -2,4 +2,4 @@
 
 SAKURA_FILE="./arg_sakura.txt"
 
-sakura  `cat ${SAKURA_FILE}`
+sakura  `cat ${SAKURA_FILE}` &

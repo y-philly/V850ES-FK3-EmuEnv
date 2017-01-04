@@ -12,7 +12,7 @@
 #include "cui/cui_ops.h"
 #include "dbg_target_cpu.h"
 #include <stdio.h>
-#include<windows.h>
+#include <windows.h>
 #include <string.h>
 #define SYMBOL_CANDIATE_NUM		10
 

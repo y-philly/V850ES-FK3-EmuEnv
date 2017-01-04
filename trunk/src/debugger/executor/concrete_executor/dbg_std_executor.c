@@ -12,6 +12,7 @@
 #include "cui/cui_ops.h"
 #include "dbg_target_cpu.h"
 #include <stdio.h>
+#include<windows.h>
 #include <string.h>
 #define SYMBOL_CANDIATE_NUM		10
 
@@ -291,6 +292,11 @@ void dbg_std_executor_next(void *executor)
 
 	cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
 
+	/*
+	 * ここにsleepを入れないと，cont => q コマンド実行後，ログ出力されなくなるため，
+	 * 一時的に本修正対応する．
+	 */
+	Sleep(50);
 	dbg_log_set_print_mode(FALSE);
 	dbg_log_set_view_mode(org_view_mode);
 	return;

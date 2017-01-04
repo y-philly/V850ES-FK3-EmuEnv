@@ -105,15 +105,22 @@ Std_ReturnType mpu_get_data32(CoreIdType core_id, uint32 addr, uint32 *data)
 
 Std_ReturnType mpu_put_data8(CoreIdType core_id, uint32 addr, uint8 data)
 {
+	Std_ReturnType err;
 	MpuAddressRegionType *region = search_region(core_id, addr, 1U);
 	if (region == NULL) {
+		printf("mpu_put_data8:error1:addr=0x%x data=%u\n", addr, data);
 		return STD_E_SEGV;
 	}
 	if (region->ops->put_data8 == NULL) {
+		printf("mpu_put_data8:error2:addr=0x%x data=%u\n", addr, data);
 		return STD_E_SEGV;
 	}
 	uint32 paddr = (addr & region->mask);
-	return region->ops->put_data8(region, core_id, paddr, data);
+	err = region->ops->put_data8(region, core_id, paddr, data);
+	if (err != STD_E_OK) {
+		printf("mpu_put_data8:error3:addr=0x%x data=%u\n", addr, data);
+	}
+	return err;
 }
 
 Std_ReturnType mpu_put_data16(CoreIdType core_id, uint32 addr, uint16 data)

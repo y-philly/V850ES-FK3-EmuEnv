@@ -76,12 +76,12 @@ void dbg_std_executor_break(void *executor)
 			 }
 		 }
 		 else {
-			 if (cpuctrl_set_break(value.address_start, BREAK_POINT_TYPE_FOREVER) == TRUE) {
-				 printf("break 0x%x\n", value.address_start);
+			 if (cpuctrl_set_break(value.addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
+				 printf("break 0x%x\n", value.addr);
 				 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 			 }
 			 else {
-				 printf("ERROR: can not break 0x%x\n", value.address_start);
+				 printf("ERROR: can not break 0x%x\n", value.addr);
 				 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 			 }
 		 }

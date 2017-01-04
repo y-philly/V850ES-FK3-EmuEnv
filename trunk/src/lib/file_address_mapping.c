@@ -94,13 +94,27 @@ Std_ReturnType file_address_mapping_get(uint32 addr, ValueFileType *value)
 {
 	uint32 i;
 	KeyValueMappingType *map;
+	KeyValueMappingType *last = NULL;
+	uint32 min = 0xFFFFFFFF;
 
 	for (i = 0; i < key_value_mapping->current_array_size; i++) {
 		map = (KeyValueMappingType *)key_value_mapping->data[i];
-		if ((addr >= map->key.address_start) && (addr < map->key.address_end)) {
+		if (addr > map->key.addr) {
+			if ((addr - map->key.addr) < min) {
+				last = map;
+				min = (addr - map->key.addr);
+			}
+			continue;
+		}
+		else if (addr == map->key.addr) {
 			*value = map->value;
 			return STD_E_OK;
 		}
+	}
+
+	if (last != NULL) {
+		*value = last->value;
+		return STD_E_OK;
 	}
 	return STD_E_NOENT;
 }
@@ -167,21 +181,9 @@ Std_ReturnType file_address_mapping_get_last(KeyAddressType *key, ValueFileType 
 
 static void do_ext_build(ElfDwarfLineParsedOpCodeType *op, ElfDwarfLineStateMachineRegisterType *machine)
 {
-	Std_ReturnType err;
-	KeyAddressType key;
-	ValueFileType value;
-
 	//printf("do_ext_build:op->subtype=%d\n", op->subtype);
 	switch (op->subtype) {
 	case DW_LNE_end_sequence:
-		err = file_address_mapping_get_last(&key, &value);
-		if (err == STD_E_OK) {
-			KeyValueMappingType map;
-			map.key.address_start = key.address_end;
-			map.key.address_end = machine->address;
-			map.value.line = machine->line;
-			add_map(&map, op, machine);
-		}
 		break;
 	case DW_LNE_set_address:
 		machine->address = op->args.extSetAddress.addr;
@@ -201,6 +203,12 @@ static void do_std_build(ElfDwarfLineParsedOpCodeType *op, ElfDwarfLineStateMach
 
 	switch (op->subtype) {
 	case DW_LNS_copy:
+		{
+			KeyValueMappingType map;
+			map.key.addr = machine->address;
+			map.value.line = machine->line;
+			add_map(&map, op, machine);
+		}
 		break;
 	case DW_LNS_advance_pc:
 		machine->address += op->args.stdAdvancePc.advance_size;
@@ -250,6 +258,9 @@ static void add_map(KeyValueMappingType *map, ElfDwarfLineParsedOpCodeType *op, 
 	else {
 		dir = (char*)op->hdr->include_directories->data[dir_inx -1];
 	}
+#if 0
+	printf("%s %u 0x%x- 0x%x\n", file, map->value.line, map->key.address_start, map->key.address_end);
+#endif
 
 	map->value.file = file;
 	map->value.dir = dir;
@@ -260,17 +271,17 @@ static void add_map(KeyValueMappingType *map, ElfDwarfLineParsedOpCodeType *op, 
 }
 static void do_spc_build(ElfDwarfLineParsedOpCodeType *op, ElfDwarfLineStateMachineRegisterType *machine)
 {
-	if (op->args.special.advance_addr != 0x0) {
+	machine->address = machine->address + op->args.special.advance_addr;
+	machine->line = machine->line + op->args.special.advance_line;
+
+	//if (op->args.special.advance_addr != 0x0) {
 		KeyValueMappingType map;
 
-		map.key.address_start = machine->address;
-		map.key.address_end = machine->address + op->args.special.advance_addr;
+		map.key.addr = machine->address;
 		map.value.line = machine->line;
 
 		add_map(&map, op, machine);
-	}
-	machine->address = machine->address + op->args.special.advance_addr;
-	machine->line = machine->line + op->args.special.advance_line;
+	//}
 
 	return;
 }

@@ -5,8 +5,7 @@
 #include "std_errno.h"
 
 typedef struct {
-	uint32	address_start;
-	uint32	address_end;
+	uint32	addr;
 } KeyAddressType;
 
 typedef struct {

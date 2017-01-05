@@ -21,14 +21,14 @@ Std_ReturnType dbg_serial_in(uint8 channel, uint8 data)
 	}
 
 	fifo = &dbg_serial_fifo[channel];
-	if (fifo->count >= DBG_SERIAL_CHANNEL_NUM) {
+	if (fifo->count >= DBG_SERIAL_BUFFER_SIZE) {
 		return STD_E_LIMIT;
 	}
 	fifo->buffer[fifo->write_off] = data;
 
 	fifo->count++;
 	fifo->write_off++;
-	if (fifo->write_off >= DBG_SERIAL_CHANNEL_NUM) {
+	if (fifo->write_off >= DBG_SERIAL_BUFFER_SIZE) {
 		fifo->write_off = 0U;
 	}
 	return STD_E_OK;
@@ -50,7 +50,7 @@ bool dbg_serial_getchar(uint8 channel, uint8 *data)
 
 	fifo->count--;
 	fifo->read_off++;
-	if (fifo->read_off >= DBG_SERIAL_CHANNEL_NUM) {
+	if (fifo->read_off >= DBG_SERIAL_BUFFER_SIZE) {
 		fifo->read_off = 0U;
 	}
 	return TRUE;

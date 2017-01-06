@@ -21,4 +21,23 @@ class TestTargetFunc
     self.out[self.out.length] = output
   end
   
+  def getGeneralRegisters()
+    regs = Array.new()
+    self.inp.each { |e|
+      if e.elm.instance_of?(GeneralRegister)
+        regs[regs.length] = e.elm.name
+      end
+    }
+    self.out.each { |e|
+      elm = e.test_output
+      if elm.instance_of?(GeneralRegister)
+        regs[regs.length] = elm.name
+      end
+      
+      regs[regs.length] = e.reg_output.name
+      regs[regs.length] = e.reg_expect.name
+    }
+    return regs.sort.uniq
+  end
+  
 end

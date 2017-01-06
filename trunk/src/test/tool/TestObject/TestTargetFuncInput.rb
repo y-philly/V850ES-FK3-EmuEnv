@@ -5,4 +5,5 @@ class TestTargetFuncInput
   def initialize (elm)
     self.elm = elm
   end
+  
 end

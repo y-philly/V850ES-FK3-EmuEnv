@@ -17,6 +17,8 @@
  * 32bit　のテストデータ
  */
 #define UINT32_MAX				0xFFFFFFFF
+#define UINT32_MAX_MINUS_1		0xFFFFFFFE
+#define UINT32_MIN_PLUS_1		0x00000001
 #define UINT32_MIN				0x00000000
 
 #define SINT32_MAX				 2147483647

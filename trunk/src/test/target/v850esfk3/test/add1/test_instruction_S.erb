@@ -37,28 +37,39 @@
 	 */
 	mov -1, r10
 	 
+	/* set input */
 <%-
-	spec.prepare_ins(item).each { |e|
+	item.inp.each { |inp|
 -%>
-	<%= e %>
+	mov 0x<%= inp.value %>,  <%= spec.target.inp[item.inp.index(inp)].elm.name %>
 <%-
 	}
 -%>
-
+	/* set expect */
+<%-
+	item.out.each { |out|
+-%>
+	mov 0x<%= out.value %>, <%= spec.target.out[item.out.index(out)].reg_expect.name %>
+<%-
+	}
+-%>
 	ldsr r0, psw
 
 	/*
 	 * do test
 	 */
-	<%= spec.test_ins() %>
+	add <%= spec.target.inp[0].elm.name %>, <%= spec.target.inp[1].elm.name %>
 
 	/*
 	 * done
 	 */
+	 /* get test results*/
+	 stsr <%= spec.target.out[1].test_output.name %>, <%= spec.target.out[1].reg_output.name %>
 <%-
-	spec.check_ins(item).each { |e|
+	spec.target.out.each { |elm|
 -%>
-	<%= e %>
+	 cmp <%= elm.reg_output.name %>, <%= elm.reg_expect.name %>
+	 bne <%= item.name %>_test_fail
 <%-
 	}
 -%>

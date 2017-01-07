@@ -13,8 +13,6 @@ class TestTargetFuncCreator
     type = reader.ref(row, column_type)
     reg  = reader.ref(row, column_reg)
     
-    #eval_arg = "#{xxx}"
-    #p type
     cls = eval type
     return TestTargetFuncInput.new(cls.new(reg))
   end

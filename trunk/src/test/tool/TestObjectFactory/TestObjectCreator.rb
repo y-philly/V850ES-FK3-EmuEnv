@@ -8,6 +8,7 @@ require 'TestTargetFunc.rb'
 
 class TestObjectCreator
   attr_accessor :path
+  @@myInstance = nil
   def initialize(path)
     self.path = path
   end
@@ -19,9 +20,11 @@ class TestObjectCreator
     ins_name = spec_reader.ref(4,3)
     inp_num = spec_reader.ref(4, 4).to_i
     out_num = spec_reader.ref(4, 5).to_i
-    ins_form = spec_reader.ref(4,6)
+    func_name = spec_reader.ref(4,6)
+    ins_form = spec_reader.ref(4,7)
     
-    spec = TestSpec.new(ins_form)
+    spec = TestSpec.new(func_name)
+    spec.setForm(ins_form)
     target = TestTargetFunc.new(ins_name)
 
     #input
@@ -134,6 +137,7 @@ class TestObjectCreator
       
       workbook.close(:SaveChanges => false)
       excel.quit
+      @@myInstance = spec
       return spec
     rescue => e
       if workbook != nil
@@ -145,6 +149,10 @@ class TestObjectCreator
       end
       raise e
     end
+  end
+  
+  def self.ref()
+    return @@myInstance
   end
   
 end

@@ -22,7 +22,7 @@
 .global	<%= funcname %>
 .type   <%= funcname %>, @function
 <%= funcname %>:
-	add		-<%= stack_size %>, sp
+	addi	-<%= stack_size %>, sp, sp
 <%-
 	stack_off = 0
 	regs.each { |r|
@@ -35,7 +35,7 @@
 	/*
 	 * prepare
 	 */
-	 mov -1, r10
+	mov -1, r10
 	 
 <%-
 	spec.prepare_ins(item).each { |e|
@@ -45,10 +45,10 @@
 	}
 -%>
 
-	 /*
-	  * do test
-	  */
-	  <%= spec.test_ins() %>
+	/*
+	 * do test
+	 */
+	<%= spec.test_ins() %>
 
 	/*
 	 * done
@@ -68,12 +68,12 @@
 	stack_off = 0
 	regs.each { |r|
 -%>
-	ld.w	<%= r %>, <%= stack_off %>[sp]
+	ld.w	<%= stack_off %>[sp], <%= r %>
 <%-
 		stack_off += 4
 	}
 -%>	
-	add		<%= stack_size %>, sp
+	addi	<%= stack_size %>, sp, sp
 	jmp		[lp]
 .size		<%= funcname %>, .-<%= funcname %>
 

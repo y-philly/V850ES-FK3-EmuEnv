@@ -9,6 +9,7 @@
 _start:
 	Lea _stack_data, r3
 	addi 1024, sp r3
+	ei
 	br	 _main
 .size		_start, .-_start
 

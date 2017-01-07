@@ -24,14 +24,14 @@ class TestSpec
   
   def prepare_ins(item)
     prepare_instructions = Array.new()
-    prepare_instructions[prepare_instructions.length] = "/* set input */\n"
+    prepare_instructions[prepare_instructions.length] = "/* set input */"
     item.inp.each { |inp|
-      prepare_instructions[prepare_instructions.length] = "mov 0x" + inp.value + ", " + target.inp[item.inp.index(inp)].elm.name + "\n"
+      prepare_instructions[prepare_instructions.length] = "mov 0x" + inp.value + ", " + target.inp[item.inp.index(inp)].elm.name 
     }
     
-    prepare_instructions[prepare_instructions.length] = "/* set expect */\n"
+    prepare_instructions[prepare_instructions.length] = "/* set expect */"
     item.out.each { |out|
-      prepare_instructions[prepare_instructions.length] = "mov 0x" + out.value + ", " + target.out[item.out.index(out)].reg_expect.name + "\n"
+      prepare_instructions[prepare_instructions.length] = "mov 0x" + out.value + ", " + target.out[item.out.index(out)].reg_expect.name 
     }
     
     return prepare_instructions
@@ -52,12 +52,12 @@ class TestSpec
   def check_ins(item)
     check_instructions = Array.new()
     target.out.each { |elm|
-      check_instructions[check_instructions.length] = "/* get test results*/\n"
+      check_instructions[check_instructions.length] = "/* get test results*/"
       if elm.test_output.instance_of?(SystemRegister)
-        check_instructions[check_instructions.length] =  "ldsr " + elm.reg_output.name + ", " + elm.test_output.name + "\n"
+        check_instructions[check_instructions.length] =  "ldsr " + elm.reg_output.name + ", " + elm.test_output.name
       end
-      check_instructions[check_instructions.length] =  "cmp " + elm.reg_output.name + ", " + elm.reg_expect.name + "\n"
-      check_instructions[check_instructions.length] =  "bne "+ item.name + "_test_fail\n"
+      check_instructions[check_instructions.length] =  "cmp " + elm.reg_output.name + ", " + elm.reg_expect.name
+      check_instructions[check_instructions.length] =  "bne "+ item.name + "_test_fail"
     }
     return check_instructions
   end

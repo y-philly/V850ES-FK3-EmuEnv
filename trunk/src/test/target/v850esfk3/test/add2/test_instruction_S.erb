@@ -1,0 +1,84 @@
+<%-
+    spec = TestObjectCreator.ref()
+-%>
+#include "test_data.h"
+#include "test_reg.h"
+#include "v850asm.inc"
+
+/*
+ * <%= spec.form %>
+ */
+
+.section	".text" , "ax"
+.align	4
+
+<%-
+	regs = spec.target.getGeneralRegisters
+	stack_size = regs.length * 4
+    spec.items.each { |item|
+    	funcname = "_do_test_" + spec.name + "_" + (spec.items.index(item) + 1).to_s
+-%>
+
+.global	<%= funcname %>
+.type   <%= funcname %>, @function
+<%= funcname %>:
+	addi	-<%= stack_size %>, sp, sp
+<%-
+	stack_off = 0
+	regs.each { |r|
+-%>
+	st.w	<%= r %>, <%= stack_off %>[sp]
+<%-
+		stack_off += 4
+	}
+-%>
+	/*
+	 * prepare
+	 */
+	mov -1, r10
+	 
+<%-
+	spec.prepare_ins(item).each { |e|
+-%>
+	<%= e %>
+<%-
+	}
+-%>
+
+	ldsr r0, psw
+
+	/*
+	 * do test
+	 */
+	<%= spec.test_ins() %>
+
+	/*
+	 * done
+	 */
+<%-
+	spec.check_ins(item).each { |e|
+-%>
+	<%= e %>
+<%-
+	}
+-%>
+
+	mov r0, r10
+
+<%= item.name + "_test_fail:" %>
+<%-
+	stack_off = 0
+	regs.each { |r|
+-%>
+	ld.w	<%= stack_off %>[sp], <%= r %>
+<%-
+		stack_off += 4
+	}
+-%>	
+	addi	<%= stack_size %>, sp, sp
+	jmp		[lp]
+.size		<%= funcname %>, .-<%= funcname %>
+
+<%-
+    }
+-%>

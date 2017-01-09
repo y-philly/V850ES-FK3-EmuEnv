@@ -151,6 +151,7 @@ typedef enum {
 } DwFormType;
 
 typedef struct {
+	uint32	offset;
 	/*
 	 * abbreviation code(uleb128)
 	 */

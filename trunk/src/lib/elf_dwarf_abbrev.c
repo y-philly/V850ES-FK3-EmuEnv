@@ -4,12 +4,6 @@
 
 #if 0
 #define DBG_PRINTF(arg)	printf arg
-#else
-#define DBG_PRINTF(arg)
-#endif
-
-static ElfPointerArrayType *elf_dwarf_abbrev_array = NULL;
-
 static void print_ElfDwarfAbbrev(ElfDwarfAbbrevType *entry)
 {
 	int i;
@@ -25,6 +19,13 @@ static void print_ElfDwarfAbbrev(ElfDwarfAbbrevType *entry)
 
 	return;
 }
+#else
+#define DBG_PRINTF(arg)
+#define	print_ElfDwarfAbbrev(arg)
+#endif
+
+static ElfPointerArrayType *elf_dwarf_abbrev_array = NULL;
+
 
 Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data)
 {
@@ -53,11 +54,12 @@ Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data)
 			current_size += entry_size;
 			continue;
 		}
-		current_size += entry_size;
 		/*
 		 * header
 		 */
 		entry = elf_dwarf_abbrev_alloc_empty_ElfDwarfAbbrev();
+		entry->offset = current_size;
+		current_size += entry_size;
 
 		/*
 		 * set abbrev code
@@ -88,7 +90,7 @@ Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data)
 			dwarf_uint32_array_add_entry(entry->attribute_form, attr_form);
 		} while (attr_name != 0);
 
-		print_ElfDwarfAbbrev(entry);
+		//print_ElfDwarfAbbrev(entry);
 		elf_array_add_entry(elf_dwarf_abbrev_array, entry);
 	}
 	DBG_PRINTF(("END\n"));

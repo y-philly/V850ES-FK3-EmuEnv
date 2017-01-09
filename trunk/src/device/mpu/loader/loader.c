@@ -5,6 +5,7 @@
 #include "loader/elf.h"
 #include "elf_section.h"
 #include "elf_dwarf_line.h"
+#include "elf_dwarf_abbrev.h"
 #include <string.h>
 #include <stdio.h>
 

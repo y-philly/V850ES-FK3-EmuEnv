@@ -24,5 +24,15 @@ extern void elf_array_add_entry(ElfPointerArrayType *array, void *entry);
 
 extern void *elf_obj_alloc(uint32 size);
 
+#define DWARF_ARRAY_SIZE_UNIT32		16
+typedef struct {
+	uint32 max_array_size;
+	uint32 current_array_size;
+	uint32 *data;
+} DwarfUint32ArrayType;
+extern DwarfUint32ArrayType *dwarf_uint32_array_alloc(void);
+extern void dwarf_uint32_array_realloc(DwarfUint32ArrayType *array);
+extern void dwarf_uint32_array_add_entry(DwarfUint32ArrayType *array, uint32 entry);
+
 
 #endif /* _ELF_DWARF_UTIL_H_ */

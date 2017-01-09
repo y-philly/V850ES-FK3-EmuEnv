@@ -89,3 +89,35 @@ void *elf_obj_alloc(uint32 size)
 	return obj;
 }
 
+DwarfUint32ArrayType *dwarf_uint32_array_alloc(void)
+{
+	DwarfUint32ArrayType *array = malloc(sizeof(DwarfUint32ArrayType));
+	ASSERT(array != NULL);
+	array->current_array_size = 0;
+	array->max_array_size = 0;
+	array->data = NULL;
+	dwarf_uint32_array_realloc(array);
+	return array;
+}
+void dwarf_uint32_array_realloc(DwarfUint32ArrayType *array)
+{
+	void *new_ptr;
+
+	if (array->current_array_size >= array->max_array_size) {
+		array->max_array_size += DWARF_ARRAY_SIZE_UNIT32;
+		new_ptr = realloc(array->data, (array->max_array_size * sizeof(uint32)));
+		ASSERT(new_ptr != NULL);
+		array->data = new_ptr;
+	}
+	return;
+}
+void dwarf_uint32_array_add_entry(DwarfUint32ArrayType *array, uint32 entry)
+{
+	if (array->current_array_size >= array->max_array_size) {
+		dwarf_uint32_array_realloc(array);
+	}
+	array->data[array->current_array_size] = entry;
+	array->current_array_size++;
+	return;
+}
+

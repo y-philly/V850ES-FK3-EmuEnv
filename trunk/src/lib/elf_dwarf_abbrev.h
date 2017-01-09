@@ -167,9 +167,11 @@ typedef struct {
 	/*
 	 * series of attribute specifications
 	 */
-	DwarfUint32ArrayType	attribute_name;
-	DwarfUint32ArrayType	attribute_form;
+	DwarfUint32ArrayType	*attribute_name;
+	DwarfUint32ArrayType	*attribute_form;
 } ElfDwarfAbbrevType;
 
+extern Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data);
+extern ElfDwarfAbbrevType *elf_dwarf_abbrev_alloc_empty_ElfDwarfAbbrev(void);
 
 #endif /* _ELF_DWARF_ABBREV_H_ */

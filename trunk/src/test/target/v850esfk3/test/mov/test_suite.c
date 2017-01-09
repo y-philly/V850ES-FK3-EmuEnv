@@ -1,5 +1,11 @@
 #include "test_check.h"
 
+struct test_structure {
+    int a;
+    short b;
+};
+struct test_structure test_variable;
+
 extern int do_test_mov1_1(void);
 extern int do_test_mov1_2(void);
 extern int do_test_mov1_3(void);

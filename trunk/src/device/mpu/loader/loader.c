@@ -46,6 +46,10 @@ Std_ReturnType elf_load(uint8 *elf_data)
 	if (err != STD_E_OK) {
 		return err;
 	}
+	err = elf_dwarf_abbrev_load(elf_data);
+	if (err != STD_E_OK) {
+		return err;
+	}
 
 	return err;
 }

@@ -128,7 +128,7 @@ Std_ReturnType elfsym_get_symbol(uint32 index, ElfSymbolType *elfsym)
 	return STD_E_OK;
 }
 
-static Std_ReturnType elf_section_get(uint8 *elf_data, char *key, uint8 **section_data, uint32 *section_size)
+Std_ReturnType elf_section_get(uint8 *elf_data, char *key, uint8 **section_data, uint32 *section_size)
 {
 	uint32 i;
 	uint32 shdr_num;

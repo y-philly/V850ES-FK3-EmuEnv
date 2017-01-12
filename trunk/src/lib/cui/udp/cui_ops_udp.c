@@ -18,6 +18,7 @@ static UdpFileOpType cui_fileop_udp = {
 	.config = {
 			.server_port = CPUEMU_CONFIG_CUI_EMULATOR_PORTNO,
 			.client_port = CPUEMU_CONFIG_CUI_CLIENT_PORTNO,
+			.is_wait = TRUE,
 	},
 	.op = {
 			.cui_getline = cui_getline_udp,

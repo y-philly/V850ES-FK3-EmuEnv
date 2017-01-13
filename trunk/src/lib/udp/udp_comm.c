@@ -1,10 +1,13 @@
 #include "udp_comm.h"
 
+#define UDP_COMM_BLOCKING		0
+#define UDP_COMM_NONBLOCKING	1
 
 Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *comm)
 {
 	int err;
 	struct sockaddr_in addr;
+	u_long val;
 
 	err = socket(AF_INET, SOCK_DGRAM, 0);
 	if (err < 0) {
@@ -20,6 +23,14 @@ Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *com
 	if (err < 0) {
 		return STD_E_INVALID;
 	}
+
+	if (!(config->is_wait)) {
+		val = UDP_COMM_NONBLOCKING;
+	}
+	else {
+		val = UDP_COMM_BLOCKING;
+	}
+	ioctlsocket(comm->srv_sock, FIONBIO, &val);
 
 	comm->client_port = htons(config->client_port);
 

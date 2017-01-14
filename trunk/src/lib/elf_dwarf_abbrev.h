@@ -127,6 +127,7 @@ typedef enum {
 } DwChildrenType;
 
 typedef enum {
+	DW_FORM_none = 0x0,
 	DW_FORM_addr = 0x01, //address
 	DW_FORM_block2 = 0x03, //block
 	DW_FORM_block4 = 0x04, //block
@@ -148,6 +149,10 @@ typedef enum {
 	DW_FORM_ref8 = 0x14, //reference
 	DW_FORM_ref_udata = 0x15, //reference
 	DW_FORM_indirect = 0x16, //(see section 7.5.3)
+	DW_FORM_sec_offset = 0x17,
+	DW_FORM_exprloc = 0x18,
+	DW_FORM_flag_present = 0x19,
+	DW_FORM_ref_sig8 = 0x20
 } DwFormType;
 
 typedef enum {

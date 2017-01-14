@@ -15,8 +15,12 @@ static char *debug_str = NULL;
 static DwFormEncodingType elf_dwarf_info_attrform_enctype(ElfDwarfCompilationUnitHeaderType *cu, uint8 *addr, DwFormType form, uint32 *size)
 {
 	DwFormEncodingType ret = DW_FORM_ENC_UNKNOWN;
+	uint32 length;
+	sint32 slength;
 	*size = 0;
 	switch (form) {
+	case DW_FORM_none:
+		break;
 	case DW_FORM_addr:
 		ret = DW_FORM_ENC_ADDRESS;
 		*size = cu->pointer_size;
@@ -58,10 +62,10 @@ static DwFormEncodingType elf_dwarf_info_attrform_enctype(ElfDwarfCompilationUni
 		ret = DW_FORM_ENC_CONSTANT;
 		break;
 	case DW_FORM_sdata:
-		ASSERT(0);
+		slength = elf_dwarf_decode_sleb128(addr, size);
 		break;
 	case DW_FORM_udata:
-		ASSERT(0);
+		length = elf_dwarf_decode_uleb128(addr, size);
 		ret = DW_FORM_ENC_CONSTANT;
 		break;
 	case DW_FORM_string:
@@ -109,7 +113,21 @@ static DwFormEncodingType elf_dwarf_info_attrform_enctype(ElfDwarfCompilationUni
 		ASSERT(0);
 		ret = DW_FORM_ENC_INDIRECT;
 		break;
+	case DW_FORM_sec_offset:
+		*size = 4;
+		break;
+	case DW_FORM_exprloc:
+		length = elf_dwarf_decode_uleb128(addr, size);
+		*size += length;
+		break;
+	case DW_FORM_flag_present:
+		*size = 0;
+		break;
+	case DW_FORM_ref_sig8:
+		ASSERT(0);
+		break;
 	default:
+		ASSERT(0);
 		break;
 	}
 	return ret;

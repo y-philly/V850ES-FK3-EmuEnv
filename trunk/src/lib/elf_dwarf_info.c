@@ -13,6 +13,9 @@
 static char *debug_str = NULL;
 static ElfPointerArrayType *compilation_unit_headers = NULL;
 
+static void printCompilationUnitHeader(ElfDwarfCompilationUnitHeaderType *cu);
+static void printAll(void);
+
 static ElfDwarfAttributeType *elf_dwarf_alloc_empty_ElfDwarfAttribute(void)
 {
 	return (ElfDwarfAttributeType *)elf_obj_alloc(sizeof(ElfDwarfAttributeType));
@@ -134,25 +137,25 @@ static void elf_dwarf_info_parse_attr(ElfDwarfCompilationUnitHeaderType *cu, Elf
 		break;
 	case DW_FORM_ref1:
 		obj = elf_dwarf_alloc_empty_ElfDwarfAttribute();
-		obj->encoded.ref8 = elf_get_data8(addr, 0);
+		obj->encoded.ref8 = elf_get_data8(addr, 0) + cu->offset;
 		obj->typename = "DW_FORM_ref1";
 		*size = 1;
 		break;
 	case DW_FORM_ref2:
 		obj = elf_dwarf_alloc_empty_ElfDwarfAttribute();
-		obj->encoded.ref16 = elf_get_data16(addr, 0);
+		obj->encoded.ref16 = elf_get_data16(addr, 0) + cu->offset;
 		obj->typename = "DW_FORM_ref2";
 		*size = 2;
 		break;
 	case DW_FORM_ref4:
 		obj = elf_dwarf_alloc_empty_ElfDwarfAttribute();
-		obj->encoded.ref32 = elf_get_data32(addr, 0);
+		obj->encoded.ref32 = elf_get_data32(addr, 0) + cu->offset;
 		obj->typename = "DW_FORM_ref4";
 		*size = 4;
 		break;
 	case DW_FORM_ref8:
 		obj = elf_dwarf_alloc_empty_ElfDwarfAttribute();
-		obj->encoded.ref64 = elf_get_data64(addr, 0);
+		obj->encoded.ref64 = elf_get_data64(addr, 0) + cu->offset;
 		obj->typename = "DW_FORM_ref8";
 		*size = 8;
 		break;
@@ -191,6 +194,7 @@ static void elf_dwarf_info_parse_attr(ElfDwarfCompilationUnitHeaderType *cu, Elf
 
 	if (obj != NULL) {
 		obj->type = form;
+		obj->size = *size;
 		elf_array_add_entry(die->attribute, obj);
 	}
 	return;
@@ -232,6 +236,7 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 
 		cu = elf_dwarf_alloc_empty_ElfDwarfCompilationUnitHeader();
 
+		cu->offset = current_size;
 		cu->length = elf_get_data32(&section_data[current_size], 0);
 		cu->version = elf_get_data16(&section_data[current_size], 4);
 		cu->abbrev_offset = elf_get_data32(&section_data[current_size], 6);
@@ -239,12 +244,6 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 
 		top = elf_dwarf_abbrev_get(cu->abbrev_offset);
 		ASSERT(top != NULL);
-
-		DBG_PRINTF(("**length=0x%x\n", cu->length));
-		DBG_PRINTF(("**version=0x%x\n", cu->version));
-		DBG_PRINTF(("**offset=0x%x\n", cu->abbrev_offset));
-		DBG_PRINTF(("**pointer_size=0x%x\n", cu->pointer_size));
-		DBG_PRINTF(("**top=0x%x\n", top));
 
 		entry_size = header_size;
 		while (entry_size < (cu->length + 4)) {
@@ -280,5 +279,145 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 
 		elf_array_add_entry(compilation_unit_headers, cu);
 	}
+	//printAll();
 	return STD_E_OK;
+}
+
+static void printOps(ElfDwarfAttributeType *obj)
+{
+	int i;
+	printf("size=%u",
+			obj->encoded.op.len);
+	for (i = 0; i < obj->encoded.op.len; i++) {
+		printf(" 0x%x ", obj->encoded.op.ops[i]);
+	}
+	printf("\n");
+	return;
+}
+
+static void printAttr(ElfDwarfAttributeType *obj)
+{
+	switch (obj->type) {
+	case DW_FORM_none:
+		break;
+	case DW_FORM_addr:
+		printf("0x%x\n", obj->encoded.addr);
+		break;
+	case DW_FORM_block:
+		ASSERT(0);
+		break;
+	case DW_FORM_block1:
+	case DW_FORM_block2:
+	case DW_FORM_block4:
+	case DW_FORM_exprloc:
+		printOps(obj);
+		break;
+	case DW_FORM_data1:
+		printf("0x%x\n", obj->encoded.const8);
+		break;
+	case DW_FORM_data2:
+		printf("0x%x\n", obj->encoded.const16);
+		break;
+	case DW_FORM_data4:
+		printf("0x%x\n", obj->encoded.const32);
+		break;
+	case DW_FORM_data8:
+		printf("0x%I64x\n", obj->encoded.const64);
+		break;
+	case DW_FORM_sdata:
+		printf("0x%I64x\n", obj->encoded.scont64);
+		break;
+	case DW_FORM_udata:
+		printf("0x%I64x\n", obj->encoded.const64);
+		break;
+	case DW_FORM_string:
+	case DW_FORM_strp:
+		printf("%s\n", obj->encoded.string);
+		break;
+	case DW_FORM_flag:
+		if (obj->encoded.flag == TRUE) {
+			printf("true\n");
+		}
+		else {
+			printf("false\n");
+		}
+		break;
+	case DW_FORM_ref_addr:
+		ASSERT(0);
+		break;
+	case DW_FORM_ref1:
+		printf("0x%x\n", obj->encoded.ref8);
+		break;
+	case DW_FORM_ref2:
+		printf("0x%x\n", obj->encoded.ref16);
+		break;
+	case DW_FORM_ref4:
+		printf("0x%x\n", obj->encoded.ref32);
+		break;
+	case DW_FORM_ref8:
+		printf("0x%I64x\n", obj->encoded.ref64);
+		break;
+	case DW_FORM_ref_udata:
+		ASSERT(0);
+		break;
+	case DW_FORM_indirect:
+		ASSERT(0);
+		break;
+	case DW_FORM_sec_offset:
+		printf("0x%x\n", obj->encoded.sec_offset);
+		break;
+	case DW_FORM_flag_present:
+		printf("true\n");
+		break;
+	case DW_FORM_ref_sig8:
+		ASSERT(0);
+		break;
+	default:
+		ASSERT(0);
+		break;
+	}
+	return;
+}
+
+static uint32 printDie(uint32 off, ElfDwarfDieType *die)
+{
+	int i;
+	uint32 size = 0;
+	ElfDwarfAttributeType *obj;
+
+	printf("<0><%x>: Abbrev Number: %u (TAG=0x%x)\n", off + size, die->abbrev_code, die->abbrev_info->tag);
+	size += 1;
+	for (i = 0; i < die->attribute->current_array_size; i++) {
+		obj = (ElfDwarfAttributeType *)die->attribute->data[i];
+		printf("	<%x> AT=0x%x %s(0x%x): ",
+				off + size, die->abbrev_info->attribute_name->data[i], obj->typename, obj->type);
+		printAttr(obj);
+		size += obj->size;
+	}
+	return size;
+}
+
+static void printCompilationUnitHeader(ElfDwarfCompilationUnitHeaderType *cu)
+{
+	int i;
+	uint32 off;
+	printf("Compilation Unit @ offset 0x%x\n", cu->offset);
+	printf(" Length:	0x%x\n", cu->length);
+	printf(" Version:	%u\n", cu->version);
+	printf(" Abbrev Offset:	0x%x\n", cu->abbrev_offset);
+	printf(" Pointer Size:	%u\n", cu->pointer_size);
+
+	off = cu->offset;
+	for (i = 0; i < cu->dies->current_array_size; i++) {
+		off += printDie(off + 0xb, cu->dies->data[i]);
+	}
+	return;
+}
+
+static void printAll(void)
+{
+	int i;
+	for (i = 0; i < compilation_unit_headers->current_array_size; i++) {
+		printCompilationUnitHeader(compilation_unit_headers->data[i]);
+	}
 }

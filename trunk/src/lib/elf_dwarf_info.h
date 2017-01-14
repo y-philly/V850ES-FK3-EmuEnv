@@ -8,6 +8,7 @@
 
 typedef struct {
 	DwFormType	type;
+	uint32		size;
 	char		*typename;
 	union {
 		uint32	addr;
@@ -37,6 +38,7 @@ typedef struct {
 } ElfDwarfDieType;
 
 typedef struct {
+	uint32				offset;
 	uint32				length;
 	uint16				version;
 	uint32				abbrev_offset;

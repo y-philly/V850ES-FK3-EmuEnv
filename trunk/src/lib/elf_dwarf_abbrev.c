@@ -2,7 +2,7 @@
 #include "elf_section.h"
 #include <stdio.h>
 
-#if 1
+#if 0
 #define DBG_PRINTF(arg)	printf arg
 static void print_ElfDwarfAbbrev(ElfDwarfAbbrevType *entry)
 {

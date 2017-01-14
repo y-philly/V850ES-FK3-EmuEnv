@@ -152,7 +152,7 @@ typedef enum {
 	DW_FORM_sec_offset = 0x17,
 	DW_FORM_exprloc = 0x18,
 	DW_FORM_flag_present = 0x19,
-	DW_FORM_ref_sig8 = 0x20
+	DW_FORM_ref_sig8 = 0x20,
 } DwFormType;
 
 typedef enum {

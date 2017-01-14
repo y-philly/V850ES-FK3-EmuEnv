@@ -33,5 +33,6 @@ extern Std_ReturnType elf_section_get(uint8 *elf_data, char *key, uint8 **sectio
 extern uint8 elf_get_data8(uint8 *elf_data, uint32 off);
 extern uint16 elf_get_data16(uint8 *elf_data, uint32 off);
 extern uint32 elf_get_data32(uint8 *elf_data, uint32 off);
+extern uint64 elf_get_data64(uint8 *elf_data, uint32 off);
 
 #endif /* _ELF_SECTION_H_ */

@@ -162,7 +162,7 @@ Std_ReturnType elf_section_get(uint8 *elf_data, char *key, uint8 **section_data,
 		}
 		*section_data = &elf_data[shdr->sh_offset];
 		*section_size = shdr->sh_size;
-		printf("inx=%u sh_name=%s\n", i, &section_name[shdr->sh_name]);
+		//printf("inx=%u sh_name=%s\n", i, &section_name[shdr->sh_name]);
 
 		return STD_E_OK;
 	}
@@ -195,5 +195,22 @@ uint32 elf_get_data32(uint8 *elf_data, uint32 off)
 	data |=  ( ((uint32)elf_data[off + 2]) << 16 );
 	data |=  ( ((uint32)elf_data[off + 3]) << 24 );
 	return data;
+}
+uint64 elf_get_data64(uint8 *elf_data, uint32 off)
+{
+	uint64 *data;
+	uint8 array[8];
+
+	data = (uint16*)array;
+	array[0] = elf_data[off + 0];
+	array[1] = elf_data[off + 1];
+	array[2] = elf_data[off + 2];
+	array[3] = elf_data[off + 3];
+	array[4] = elf_data[off + 4];
+	array[5] = elf_data[off + 5];
+	array[6] = elf_data[off + 6];
+	array[7] = elf_data[off + 7];
+
+	return *data;
 }
 

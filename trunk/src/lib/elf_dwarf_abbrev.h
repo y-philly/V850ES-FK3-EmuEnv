@@ -150,7 +150,19 @@ typedef enum {
 	DW_FORM_indirect = 0x16, //(see section 7.5.3)
 } DwFormType;
 
+typedef enum {
+	DW_FORM_ENC_ADDRESS = 0,
+	DW_FORM_ENC_BLOCK,
+	DW_FORM_ENC_CONSTANT,
+	DW_FORM_ENC_FLAG,
+	DW_FORM_ENC_REFERENCE,
+	DW_FORM_ENC_STRING,
+	DW_FORM_ENC_INDIRECT,
+	DW_FORM_ENC_UNKNOWN,
+} DwFormEncodingType;
+
 typedef struct {
+	uint32	index;
 	uint32	offset;
 	/*
 	 * abbreviation code(uleb128)
@@ -173,6 +185,9 @@ typedef struct {
 } ElfDwarfAbbrevType;
 
 extern Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data);
+extern ElfDwarfAbbrevType *elf_dwarf_abbrev_get(uint32 offset);
+extern ElfDwarfAbbrevType *elf_dwarf_abbrev_next(ElfDwarfAbbrevType *current);
+extern ElfDwarfAbbrevType *elf_dwarf_abbrev_get_from_code(ElfDwarfAbbrevType *top, uint32 code);
 extern ElfDwarfAbbrevType *elf_dwarf_abbrev_alloc_empty_ElfDwarfAbbrev(void);
 
 #endif /* _ELF_DWARF_ABBREV_H_ */

@@ -2,7 +2,7 @@
 #include "elf_section.h"
 #include <stdio.h>
 
-#if 0
+#if 1
 #define DBG_PRINTF(arg)	printf arg
 static void print_ElfDwarfAbbrev(ElfDwarfAbbrevType *entry)
 {
@@ -38,6 +38,7 @@ Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data)
 	uint32 attr_form;
 	uint32 code;
 	ElfDwarfAbbrevType *entry;
+	uint32 index = 0;
 
 	err = elf_section_get(elf_data, SECTION_DWARF_ABBREV_NAME, &section_data, &section_size);
 	if (err != STD_E_OK) {
@@ -59,6 +60,7 @@ Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data)
 		 */
 		entry = elf_dwarf_abbrev_alloc_empty_ElfDwarfAbbrev();
 		entry->offset = current_size;
+		entry->index = index++;
 		current_size += entry_size;
 
 		/*
@@ -97,6 +99,50 @@ Std_ReturnType elf_dwarf_abbrev_load(uint8 *elf_data)
 
 	return STD_E_OK;
 }
+
+ElfDwarfAbbrevType *elf_dwarf_abbrev_get(uint32 offset)
+{
+	ElfDwarfAbbrevType *entry;
+	int i;
+
+	for (i = 0; i < elf_dwarf_abbrev_array->current_array_size; i++) {
+		entry = (ElfDwarfAbbrevType *)elf_dwarf_abbrev_array->data[i];
+		if (entry->offset == offset) {
+			return entry;
+		}
+	}
+	return NULL;
+}
+
+ElfDwarfAbbrevType *elf_dwarf_abbrev_get_from_code(ElfDwarfAbbrevType *top, uint32 code)
+{
+	ElfDwarfAbbrevType *entry;
+	int i;
+	uint32 last_code = 0x0;
+
+	for (i = top->index; i < elf_dwarf_abbrev_array->current_array_size; i++) {
+		entry = (ElfDwarfAbbrevType *)elf_dwarf_abbrev_array->data[i];
+		if (entry->code <= last_code) {
+			break;
+		}
+		if (entry->code == code) {
+			return entry;
+		}
+		last_code = entry->code;
+	}
+	return NULL;
+}
+
+ElfDwarfAbbrevType *elf_dwarf_abbrev_next(ElfDwarfAbbrevType *current)
+{
+	uint32 index = current->index;
+
+	if (index >= (elf_dwarf_abbrev_array->current_array_size - 1)) {
+		return NULL;
+	}
+	return (ElfDwarfAbbrevType *)elf_dwarf_abbrev_array->data[index + 1];
+}
+
 
 ElfDwarfAbbrevType *elf_dwarf_abbrev_alloc_empty_ElfDwarfAbbrev(void)
 {

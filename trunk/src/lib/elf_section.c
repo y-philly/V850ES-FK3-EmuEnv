@@ -162,7 +162,7 @@ Std_ReturnType elf_section_get(uint8 *elf_data, char *key, uint8 **section_data,
 		}
 		*section_data = &elf_data[shdr->sh_offset];
 		*section_size = shdr->sh_size;
-		//printf("inx=%u sh_name=%s\n", i, &section_name[shdr->sh_name]);
+		printf("inx=%u sh_name=%s\n", i, &section_name[shdr->sh_name]);
 
 		return STD_E_OK;
 	}

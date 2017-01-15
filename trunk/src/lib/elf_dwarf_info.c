@@ -302,7 +302,7 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 
 		elf_array_add_entry(compilation_unit_headers, cu);
 	}
-	printAll();
+	//printAll();
 	return STD_E_OK;
 }
 

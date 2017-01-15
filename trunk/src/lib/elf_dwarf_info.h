@@ -8,6 +8,7 @@
 
 typedef struct {
 	DwFormType	type;
+	uint32		offset;
 	uint32		size;
 	char		*typename;
 	union {
@@ -31,10 +32,15 @@ typedef struct {
 	} encoded;
 } ElfDwarfAttributeType;
 
-typedef struct {
+struct ElfDwarfDie;
+typedef struct ElfDwarfDie {
+	uint32				offset;
 	uint32				abbrev_code;
 	ElfDwarfAbbrevType	*abbrev_info;
 	ElfPointerArrayType	*attribute;
+	uint32				level;
+	struct ElfDwarfDie	*parent;
+	ElfPointerArrayType	*children;
 } ElfDwarfDieType;
 
 typedef struct {

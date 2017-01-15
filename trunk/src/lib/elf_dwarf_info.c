@@ -10,6 +10,7 @@
 #define DBG_PRINTF(arg)
 #endif
 
+
 static char *debug_str = NULL;
 static ElfPointerArrayType *compilation_unit_headers = NULL;
 
@@ -39,7 +40,7 @@ static ElfDwarfDieType *elf_dwarf_alloc_empty_ElfDwarfDie(void)
 	return obj;
 }
 
-static void elf_dwarf_info_parse_attr(ElfDwarfCompilationUnitHeaderType *cu, ElfDwarfDieType *die, uint8 *addr, DwFormType form, uint32 *size)
+static ElfDwarfAttributeType *elf_dwarf_info_parse_attr(ElfDwarfCompilationUnitHeaderType *cu, ElfDwarfDieType *die, uint8 *addr, DwFormType form, uint32 *size)
 {
 	ElfDwarfAttributeType *obj = NULL;
 
@@ -192,12 +193,7 @@ static void elf_dwarf_info_parse_attr(ElfDwarfCompilationUnitHeaderType *cu, Elf
 		break;
 	}
 
-	if (obj != NULL) {
-		obj->type = form;
-		obj->size = *size;
-		elf_array_add_entry(die->attribute, obj);
-	}
-	return;
+	return obj;
 }
 
 Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
@@ -214,8 +210,10 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 	uint32 entry_size;
 	uint8 *addr;
 	uint32 code;
-	ElfDwarfDieType *die;
+	ElfDwarfDieType *die = NULL;
 	int i;
+	uint32 level;
+	ElfDwarfDieType *parent = NULL;
 
 	compilation_unit_headers = elf_array_alloc();
 
@@ -244,6 +242,8 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 
 		top = elf_dwarf_abbrev_get(cu->abbrev_offset);
 		ASSERT(top != NULL);
+		level = 0;
+		parent = NULL;
 
 		entry_size = header_size;
 		while (entry_size < (cu->length + 4)) {
@@ -251,6 +251,10 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 			DBG_PRINTF(("<%x>    entry_code=0x%x\n", current_size + entry_size, code));
 			entry_size += size;
 			if (code == 0x00) {
+				level--;
+				if (die != NULL) {
+					parent = die->parent;
+				}
 				continue;
 			}
 			entry = elf_dwarf_abbrev_get_from_code(top, code);
@@ -258,11 +262,30 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 			die = elf_dwarf_alloc_empty_ElfDwarfDie();
 			die->abbrev_code = code;
 			die->abbrev_info = entry;
+			die->offset = current_size + entry_size - size;
+			die->level = level;
+			if (parent != NULL) {
+				die->parent = parent;
+				elf_array_add_entry(parent->children, die);
+			}
+			if (entry->child == TRUE) {
+				die->children = elf_array_alloc();
+				parent = die;
+				level++;
+			}
 
 			DBG_PRINTF(("    code=0x%x tag=0x%x\n", entry->code, entry->tag));
 			for (i = 0; i < entry->attribute_name->current_array_size; i++) {
+				ElfDwarfAttributeType *obj;
 				addr = &section_data[current_size + entry_size];
-				elf_dwarf_info_parse_attr(cu, die, addr, entry->attribute_form->data[i], &size);
+				obj = elf_dwarf_info_parse_attr(cu, die, addr, entry->attribute_form->data[i], &size);
+
+				if (obj != NULL) {
+					obj->type = entry->attribute_form->data[i];
+					obj->size = size;
+					obj->offset = current_size + entry_size;
+					elf_array_add_entry(die->attribute, obj);
+				}
 
 				DBG_PRINTF(("<%x>    name=0x%x form=0x%x\n",
 						current_size + entry_size,
@@ -279,7 +302,7 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 
 		elf_array_add_entry(compilation_unit_headers, cu);
 	}
-	//printAll();
+	printAll();
 	return STD_E_OK;
 }
 
@@ -379,37 +402,43 @@ static void printAttr(ElfDwarfAttributeType *obj)
 	return;
 }
 
-static uint32 printDie(uint32 off, ElfDwarfDieType *die)
+static void printDie(ElfDwarfDieType *die)
 {
 	int i;
-	uint32 size = 0;
 	ElfDwarfAttributeType *obj;
+	uint32 parent_offset = 0x0;
+	uint32 children = 0;
 
-	printf("<0><%x>: Abbrev Number: %u (TAG=0x%x)\n", off + size, die->abbrev_code, die->abbrev_info->tag);
-	size += 1;
+	if (die->parent != NULL) {
+		parent_offset = die->parent->offset;
+	}
+	if (die->children != NULL) {
+		children = die->children->current_array_size;
+	}
+
+	printf("<%u><%x>: Abbrev Number: %u (TAG=0x%x) die=0x%x parent=0x%x children=%u\n",
+			die->level, die->offset, die->abbrev_code, die->abbrev_info->tag,
+			die->offset, parent_offset, children);
 	for (i = 0; i < die->attribute->current_array_size; i++) {
 		obj = (ElfDwarfAttributeType *)die->attribute->data[i];
 		printf("	<%x> AT=0x%x %s(0x%x): ",
-				off + size, die->abbrev_info->attribute_name->data[i], obj->typename, obj->type);
+				obj->offset, die->abbrev_info->attribute_name->data[i], obj->typename, obj->type);
 		printAttr(obj);
-		size += obj->size;
 	}
-	return size;
+	return;
 }
 
 static void printCompilationUnitHeader(ElfDwarfCompilationUnitHeaderType *cu)
 {
 	int i;
-	uint32 off;
 	printf("Compilation Unit @ offset 0x%x\n", cu->offset);
 	printf(" Length:	0x%x\n", cu->length);
 	printf(" Version:	%u\n", cu->version);
 	printf(" Abbrev Offset:	0x%x\n", cu->abbrev_offset);
 	printf(" Pointer Size:	%u\n", cu->pointer_size);
 
-	off = cu->offset;
 	for (i = 0; i < cu->dies->current_array_size; i++) {
-		off += printDie(off + 0xb, cu->dies->data[i]);
+		printDie(cu->dies->data[i]);
 	}
 	return;
 }

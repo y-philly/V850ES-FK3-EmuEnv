@@ -1,5 +1,7 @@
 #include "device.h"
 #include "device_ex_serial_ops.h"
+#include "dbg_can.h"
+#include "can.h"
 #include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
 
@@ -36,8 +38,9 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 	device_init_serial(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
 	device_ex_serial_register_ops(0U, &device_ex_serial_op);
 
-
+	device_can_register_ops( NULL, &dbg_can_ops);
 	device_init_can( &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);
+
 	device_init_adc(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	//device_init_wdg(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_comm(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
@@ -51,7 +54,7 @@ void device_supply_clock(DeviceClockType *dev_clock)
 	device_supply_clock_timer(dev_clock);
 	device_supply_clock_timer_m(dev_clock);
 	device_supply_clock_serial(dev_clock);
-	//device_supply_clock_can(dev_clock);
+	device_supply_clock_can(dev_clock);
 	//device_supply_clock_adc(dev_clock);
 	//device_supply_clock_wdg(dev_clock);
 	device_supply_clock_comm(dev_clock);

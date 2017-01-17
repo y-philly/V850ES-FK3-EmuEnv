@@ -249,6 +249,7 @@ void device_init_can(MpuAddressRegionType *region)
 	uint32 msg_id;
 	uint32* addr;
 	uint32 off;
+	bool result;
 
 	can_region = region;
 
@@ -296,13 +297,10 @@ void device_init_can(MpuAddressRegionType *region)
 	/*
 	 * CAN初期化
 	 */
-#if 0 //TODO 呼び出しもとで初期化すべき
-	result = dbg_can_ops.init(0);
+	result = dbg_can_ops.init(CAN_CHANNEL_ID_1);
 	if (result == FALSE) {
-		//printf("device_init_can:err\n");
-		exit(1);
+		printf("device_init_can:err\n");
 	}
-#endif
 	return;
 }
 static uint32 get_canid(uint32 channel, uint32 msg_id)
@@ -329,9 +327,9 @@ static uint32 get_ex_canid(uint32 channel, uint32 msg_id)
 	}
 
 	/*
-	 * 18bit
+	 * 29bit
 	 */
-	ex_canid = ((*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x0003) << 16U;
+	ex_canid = ((*CanDevice.module.channel[channel].msg[msg_id].idh) & 0x1FFF) << 16U;
 	ex_canid |= ((*CanDevice.module.channel[channel].msg[msg_id].idl));
 	//printf("get_excanid=0x%x\n", ex_canid);
 	return ex_canid;
@@ -471,8 +469,9 @@ static void send_can_data(uint32 channel,  uint32 msg_id)
 {
 	uint8 dlc = *CanDevice.module.channel[channel].msg[msg_id].dlc;
 	uint32 canid = CanDevice.module.channel[channel].msg[msg_id].canid;
+	uint8 canid_type = (uint8)CanDevice.module.channel[channel].msg[msg_id].canid_type;
 
-	(void)CanDevice.ops->send(channel, canid, CanDevice.module.channel[channel].msg[msg_id].buffer, dlc);
+	(void)CanDevice.ops->send(channel, canid, CanDevice.module.channel[channel].msg[msg_id].buffer, dlc, canid_type);
 
 	//TRQ clr
 	*(CanDevice.module.channel[channel].msg[msg_id].ctrl) &= ~(1U << CAN_READ_C1MCTRLm_TRQ);
@@ -537,6 +536,7 @@ static void recv_can_data_end(uint32 channel,  uint32 msg_id)
 	//DATA copy
 	for (i = 0U; i < CanDevice.module.channel[channel].rcv_dlc; i++) {
 		CanDevice.module.channel[channel].msg[msg_id].buffer[i] = CanDevice.module.channel[channel].rcv_data[i];
+		//printf("DATA copy data[%d] = %d\n", i, CanDevice.module.channel[channel].msg[msg_id].buffer[i]);
 	}
 
 	return;
@@ -573,7 +573,7 @@ static void recv_can_data_intr(uint32 channel,  uint32 msg_id)
 /*
  * マスクは未サポート
  */
-static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_canid, uint8 dlc, uint32 *msg_idp)
+static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_canid, uint8 dlc, CanIdType canid_type, uint32 *msg_idp)
 {
 	uint32 msg_id;
 	uint8 data8;
@@ -618,7 +618,8 @@ static bool get_highest_prio_rcv_msg(uint32 channel, uint32 canid, uint32 ex_can
 	 * 最高優先度の受信バッファを探す
 	 */
 	for (candidate_id = 0U; candidate_id < candidate_num; candidate_id++) {
-		if (ex_canid == 0xFFFFFFFF) {
+
+		if (canid_type == CANID_TYPE_NORMAL) {
 			if (get_canid(channel, candidate_msgid[candidate_id]) != canid) {
 				continue;
 			}
@@ -646,7 +647,9 @@ static void device_supply_clock_can_rcv(DeviceClockType *dev_clock)
 	uint32 ex_canid;
 	uint8 data[8U];
 	uint8 dlc;
+	uint8 canid_type;
 	uint8 i;
+
 
 	//CANデータ受信処理
 	if (CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state == CAN_DEVICE_CHANNEL_STATE_DOING) {
@@ -660,6 +663,8 @@ static void device_supply_clock_can_rcv(DeviceClockType *dev_clock)
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state = CAN_DEVICE_CHANNEL_STATE_INTR_WAITING;
 			CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_wait_time = CAN_DATA_RCV_CLOCKS_INTR;
 		}
+
+
 		return;
 	}
 	else if (CanDevice.module.channel[CAN_CHANNEL_ID_1].rcv_state == CAN_DEVICE_CHANNEL_STATE_INTR_WAITING) {
@@ -673,11 +678,12 @@ static void device_supply_clock_can_rcv(DeviceClockType *dev_clock)
 
 			recv_can_data_intr(CAN_CHANNEL_ID_1, msg_id);
 		}
+
 		return;
 	}
 
 	//CANデータ受信確認
-	has_recv = CanDevice.ops->recv(&channel, &canid, &ex_canid, data, &dlc);
+	has_recv = CanDevice.ops->recv(&channel, &canid, &ex_canid, data, &dlc, &canid_type);
 	if (has_recv == FALSE) {
 		return;
 	}
@@ -688,8 +694,9 @@ static void device_supply_clock_can_rcv(DeviceClockType *dev_clock)
 		CanDevice.module.channel[channel].rcv_data[i] = data[i];
 	}
 
+
 	//受信メッセージバッファ選択
-	has_msgid = get_highest_prio_rcv_msg(channel, canid, ex_canid, dlc, &msg_id);
+	has_msgid = get_highest_prio_rcv_msg(channel, canid, ex_canid, dlc, (CanIdType)canid_type, &msg_id);
 	if (has_msgid == FALSE) {
 		//printf("device_supply_clock_can_rcv:has_msgid==FALSE:NOP\n");
 		return;

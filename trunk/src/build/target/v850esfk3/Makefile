@@ -4,6 +4,7 @@ ARCH	:=v850esfk3
 IFLAGS	:=	-I$(ROOTDIR)/device/intc/target/$(ARCH)
 IFLAGS	+=	-I$(ROOTDIR)/device/peripheral/target/$(ARCH)
 IFLAGS	+=	-I$(ROOTDIR)/device/target/$(ARCH)
+IFLAGS	+=	-I$(ROOTDIR)/device/peripheral/target/$(ARCH)/inc
 
 VPATH	:=	$(ROOTDIR)/cpu/target/$(ARCH)/cpu_common
 VPATH	+=	$(ROOTDIR)/cpu/target/$(ARCH)/cpu_dec
@@ -18,6 +19,9 @@ VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/comm
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/can
 VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/debugger/executor/concrete_executor/target/$(ARCH)
+
+VPATH	+=	$(ROOTDIR)/debugger/device/target/$(ARCH)/can/udp
+
 
 CFLAGS	:=
 
@@ -47,6 +51,8 @@ OBJS	+=	comm.o
 OBJS	+=	can.o
 OBJS	+=	dbg_target_serial.o
 OBJS	+=	dbg_target_cpu.o
+OBJS	+=	dbg_can.o
+
 
 include ../../Makefile.common
 

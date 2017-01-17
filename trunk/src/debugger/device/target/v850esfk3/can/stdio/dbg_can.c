@@ -7,8 +7,8 @@
 #include <unistd.h>
 
 static bool dbg_stdio_can_init(uint32 ch);
-static bool dbg_stdio_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint8 *data, uint8 *dlc);
-static bool dbg_stdio_can_send(uint32 ch, uint32 msg_id, uint8 *data, uint8 dlc);
+static bool dbg_stdio_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint8 *data, uint8 *dlc, uint8 *canid_type);
+static bool dbg_stdio_can_send(uint32 ch, uint32 can_id, uint8 *data, uint8 dlc, uint8 canid_type);
 
 DeviceCanOpType dbg_can_ops = {
 		dbg_stdio_can_init,
@@ -61,7 +61,7 @@ static bool dbg_stdio_can_init(uint32 ch)
 }
 
 
-static bool dbg_stdio_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint8 *data, uint8 *dlc)
+static bool dbg_stdio_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint8 *data, uint8 *dlc, uint8 *canid_type)
 {
 	int i;
 	if (dbg_can_rcvinfo.is_rcv) {
@@ -71,11 +71,19 @@ static bool dbg_stdio_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint
 		*dlc = dbg_can_rcvinfo.dlc;
 		dbg_can_rcvinfo.is_rcv = FALSE;
 
+		if (dbg_can_rcvinfo.ex_canid ==  0xFFFFFFFF) {
+			*canid_type = 0;
+		}
+		else {
+			*canid_type = 1;
+		}
+
 		printf("\n");
 		printf("##RCV_CAN::ch=%u\n", *ch);
 		printf("##RCV_CNA:canid=0x%x\n", *canid);
 		printf("##RCV_CAN:ex_canid=0x%x\n", *ex_canid);
 		printf("##RCV_CNA:dlc=%u\n", *dlc);
+		printf("##RCV_CAN:canid_type=%u\n", *canid_type);
 		printf("##");
 		for (i = 0; i < *dlc; i++) {
 			data[i] = dbg_can_rcvinfo.data[i];
@@ -86,14 +94,15 @@ static bool dbg_stdio_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint
 	}
 	return FALSE;
 }
-static bool dbg_stdio_can_send(uint32 ch, uint32 msg_id, uint8 *data, uint8 dlc)
+static bool dbg_stdio_can_send(uint32 ch, uint32 can_id, uint8 *data, uint8 dlc, uint8 canid_type)
 {
 	uint8 i;
 	printf("\n");
 	printf("#########################CAN DEBUG INFO########################\n");
 	printf("##ch=%u\n", ch);
-	printf("##msg_id=%u\n", msg_id);
+	printf("##msg_id=%u\n", can_id);
 	printf("##dlc=%u\n", dlc);
+	printf("##canid_type=%u\n", canid_type);
 	printf("##");
 	for (i = 0U; i < dlc; i++) {
 		printf("%u:0x%02x ", i, data[i]);

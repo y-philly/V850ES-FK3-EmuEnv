@@ -40,6 +40,53 @@ static ElfDwarfDieType *elf_dwarf_alloc_empty_ElfDwarfDie(void)
 	return obj;
 }
 
+uint32 elf_dwarf_info_get_value(DwFormType form, ElfDwarfAttributeType *obj, uint32 *size)
+{
+	uint32 value = -1;
+	*size = 0;
+	switch (form) {
+	case DW_FORM_none:
+		break;
+	case DW_FORM_addr:
+		value = obj->encoded.addr;
+		*size = 4;
+		break;
+	case DW_FORM_data1:
+		value = obj->encoded.const8;
+		*size = 1;
+		break;
+	case DW_FORM_data2:
+		value = obj->encoded.const16;
+		*size = 2;
+		break;
+	case DW_FORM_data4:
+		value = obj->encoded.const32;
+		*size = 4;
+		break;
+	case DW_FORM_ref1:
+		value = obj->encoded.ref8;
+		*size = 1;
+		break;
+	case DW_FORM_ref2:
+		value = obj->encoded.ref16;
+		*size = 2;
+		break;
+	case DW_FORM_ref4:
+		value = obj->encoded.ref32;
+		*size = 4;
+		break;
+	case DW_FORM_sec_offset:
+		value = obj->encoded.sec_offset;
+		*size = 4;
+		break;
+	default:
+		printf("invalid form=0x%x\n", form);
+		ASSERT(0);
+		break;
+	}
+	return value;
+}
+
 static ElfDwarfAttributeType *elf_dwarf_info_parse_attr(ElfDwarfCompilationUnitHeaderType *cu, ElfDwarfDieType *die, uint8 *addr, DwFormType form, uint32 *size)
 {
 	ElfDwarfAttributeType *obj = NULL;
@@ -196,6 +243,11 @@ static ElfDwarfAttributeType *elf_dwarf_info_parse_attr(ElfDwarfCompilationUnitH
 	return obj;
 }
 
+ElfPointerArrayType *elf_dwarf_info_get(void)
+{
+	return compilation_unit_headers;
+}
+
 Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 {
 	uint8 *section_data;
@@ -217,7 +269,7 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 
 	compilation_unit_headers = elf_array_alloc();
 
-	err = elf_section_get(elf_data, SECTION_DWARF_STR_NAME, &debug_str, &section_size);
+	err = elf_section_get(elf_data, SECTION_DWARF_STR_NAME, (uint8**)&debug_str, &section_size);
 	if (err != STD_E_OK) {
 		return err;
 	}

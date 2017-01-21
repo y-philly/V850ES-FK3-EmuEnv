@@ -3,23 +3,29 @@
 
 #include "std_types.h"
 #include "elf_dwarf_util.h"
+#include "elf_dwarf_info.h"
 
 typedef enum {
-	DATA_TYPE_BASE,
+	DATA_TYPE_BASE = 0,
 	DATA_TYPE_STRUCT,
 	DATA_TYPE_ARRAY,
 	DATA_TYPE_POINTER,
 	DATA_TYPE_TYPEDEF,
+	DATA_TYPE_NUM,
 } DwarfDataEnumType;
 
 extern void *dwarf_alloc_data_type(DwarfDataEnumType type);
-extern void *dwarf_search_data_type(DwarfDataEnumType type, char *filename, char *typename);
-
+extern void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filename, char *typename);
 typedef struct {
+	ElfDwarfDieType		*die;
 	DwarfDataEnumType	type;
-	char				*name;
+	char				*dirname;
+	char				*filename;
+	char				*typename;
 	uint32				size;
 } DwarfDataType;
+extern void dwarf_register_data_type(DwarfDataType *entry);
+extern void dwarf_build_data_type_set(void);
 
 /*
  * ex. uint32
@@ -63,13 +69,14 @@ typedef struct {
 typedef struct {
 	DwarfDataType		info;
 	ElfPointerArrayType	*members;
-} DwarfDataTypedefType;
+} DwarfDataStructType;
 
 typedef struct {
 	char				*name;
 	uint32				off;
 	DwarfDataType		*ref;
 } DwarfDataStructMember;
+extern void dwarf_add_struct_member(DwarfDataStructType *obj, char *name, uint32 off, DwarfDataType *ref);
 
 typedef struct {
 	DwarfDataType			info;

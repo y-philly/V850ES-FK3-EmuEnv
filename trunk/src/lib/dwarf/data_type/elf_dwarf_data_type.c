@@ -3,6 +3,7 @@
 #include "elf_dwarf_base_type.h"
 #include "elf_dwarf_struct_type.h"
 #include "elf_dwarf_typedef_type.h"
+#include "elf_dwarf_pointer_type.h"
 #include "assert.h"
 #include <string.h>
 
@@ -13,9 +14,12 @@ static ElfPointerArrayType	*dwarf_data_type_set[DATA_TYPE_NUM] = {
 		NULL,
 		NULL
 };
+ElfPointerArrayType	*dwarf_get_data_types(DwarfDataEnumType type)
+{
+	return dwarf_data_type_set[type];
+}
 
 static void parse_array_type(ElfDwarfDieType *die);
-static void parse_pointer_type(ElfDwarfDieType *die);
 
 typedef  void (*parse_func_table_t)(ElfDwarfDieType *die);
 
@@ -23,7 +27,7 @@ static parse_func_table_t parse_func_table[DATA_TYPE_NUM] = {
 		elf_dwarf_build_base_type,
 		elf_dwarf_build_struct_type,
 		parse_array_type,
-		parse_pointer_type,
+		elf_dwarf_build_pointer_type,
 		elf_dwarf_build_typedef_type
 };
 
@@ -58,13 +62,6 @@ static void parse_array_type(ElfDwarfDieType *die)
 	//printf("array_type\n");
 	return;
 }
-static void parse_pointer_type(ElfDwarfDieType *die)
-{
-	//printf("pointer_type\n");
-
-	return;
-}
-
 
 static void dwarf_search_die_recursive(ElfDwarfDieType *die)
 {
@@ -119,8 +116,90 @@ static void build_types(void)
 	return;
 }
 
+static uint32 get_DW_AT_type_value(ElfDwarfDieType *die)
+{
+	int i;
+	uint32 size;
+	ElfDwarfAttributeType *attr;
+	ElfDwarfAbbrevType *abbrev;
+	DwAtType attr_type;
+
+	for (i = 0; i < die->attribute->current_array_size; i++) {
+		abbrev = (ElfDwarfAbbrevType *)die->abbrev_info;
+		attr = (ElfDwarfAttributeType*)die->attribute->data[i];
+		attr_type = abbrev->attribute_name->data[i];
+		//printf("get_DW_AT_type_value:off=0x%x 0x%x\n", die->offset, attr_type);
+		switch (attr_type) {
+		case DW_AT_type:
+			return elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
+		default:
+			break;
+		}
+	}
+	ASSERT(0);
+	return 0;
+}
+
+
+uint32 dwarf_get_real_type_offset(uint32 offset)
+{
+	uint32 ret_offset;
+	int i_cu;
+	int i_die;
+	ElfDwarfCompilationUnitHeaderType	*cu;
+	ElfDwarfDieType						*die;
+	DwarfDataEnumType					type;
+
+	ElfPointerArrayType *compilation_unit_set = elf_dwarf_info_get();
+
+retry:
+	for (i_cu = 0; i_cu < compilation_unit_set->current_array_size; i_cu++) {
+		cu = (ElfDwarfCompilationUnitHeaderType *)compilation_unit_set->data[i_cu];
+		//printf("cu->offset=0x%x\n", cu->offset);
+		if (cu->dies == NULL) {
+			continue;
+		}
+		for (i_die = 0; i_die < cu->dies->current_array_size; i_die++) {
+			die = (ElfDwarfDieType *)cu->dies->data[i_die];
+			if (die->offset != offset) {
+				continue;
+			}
+			type = get_dataType(die->abbrev_info->tag);
+			if (type == DATA_TYPE_NUM) {
+				ret_offset = get_DW_AT_type_value(die);
+				offset = ret_offset;
+				goto retry;
+			}
+			return die->offset;
+		}
+	}
+	ASSERT(0);
+	return ret_offset;
+}
+
+
+DwarfDataType *elf_dwarf_get_data_type(uint32 debug_info_offset)
+{
+	int i;
+	int j;
+	for (i = 0; i < DATA_TYPE_NUM; i++) {
+		if (dwarf_data_type_set[i] == NULL) {
+			continue;
+		}
+		for (j = 0; j < dwarf_data_type_set[i]->current_array_size; j++) {
+			DwarfDataType *dtype = (DwarfDataType*)dwarf_data_type_set[i]->data[j];
+			if (dtype->die->offset == debug_info_offset) {
+				return dtype;
+			}
+		}
+	}
+	return NULL;
+}
+
 static void resolve_reference(void)
 {
+	elf_dwarf_resolve_typedef_type();
+	elf_dwarf_resolve_pointer_type();
 	return;
 }
 

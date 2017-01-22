@@ -25,7 +25,11 @@ typedef struct {
 	uint32				size;
 } DwarfDataType;
 extern void dwarf_register_data_type(DwarfDataType *entry);
+extern ElfPointerArrayType	*dwarf_get_data_types(DwarfDataEnumType type);
 extern void dwarf_build_data_type_set(void);
+extern DwarfDataType *elf_dwarf_get_data_type(uint32 debug_info_offset);
+
+extern uint32 dwarf_get_real_type_offset(uint32 offset);
 
 /*
  * ex. uint32

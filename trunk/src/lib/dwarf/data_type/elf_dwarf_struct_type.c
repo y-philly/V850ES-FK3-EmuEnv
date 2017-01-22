@@ -71,7 +71,7 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 	}
 
 	obj->info.die = die;
-	//printf("struct_type=%s\n", obj->info.typename);
+	//printf("struct_type=%s off=0x%x\n", obj->info.typename, die->offset);
 	//printf("struct_size=%u\n", obj->info.size);
 	//TODO
 	//printf("DW_AT_TYPE=0x%x\n", value);

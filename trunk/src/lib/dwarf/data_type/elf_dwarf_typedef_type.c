@@ -9,6 +9,7 @@ void elf_dwarf_build_typedef_type(ElfDwarfDieType *die)
 	ElfDwarfAttributeType *attr;
 	ElfDwarfAbbrevType *abbrev;
 	DwAtType attr_type;
+	uint32 offset;
 
 	//printf("typedef_type\n");
 	for (i = 0; i < die->attribute->current_array_size; i++) {
@@ -21,7 +22,8 @@ void elf_dwarf_build_typedef_type(ElfDwarfDieType *die)
 			obj->info.typename = attr->encoded.string;
 			break;
 		case DW_AT_type:
-			obj->ref_debug_info_offset = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
+			offset = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
+			obj->ref_debug_info_offset = dwarf_get_real_type_offset(offset);
 			break;
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
@@ -31,9 +33,31 @@ void elf_dwarf_build_typedef_type(ElfDwarfDieType *die)
 		}
 	}
 	obj->info.die = die;
-	//printf("typedef=%s\n", obj->info.typename);
+	//printf("typedef=%s ref_offset=0x%x\n", obj->info.typename, obj->ref_debug_info_offset);
 
 	dwarf_register_data_type(&obj->info);
+
+	return;
+}
+void elf_dwarf_resolve_typedef_type(void)
+{
+	int i;
+	ElfPointerArrayType	*my_types = dwarf_get_data_types(DATA_TYPE_TYPEDEF);
+	DwarfDataTypedefType *obj;
+
+	for (i = 0; i < my_types->current_array_size; i++) {
+		obj = (DwarfDataTypedefType *)my_types->data[i];
+		if (obj->ref != NULL) {
+			continue;
+		}
+		obj->ref = elf_dwarf_get_data_type(obj->ref_debug_info_offset);
+		if (obj->ref == NULL) {
+			printf("Not supported:unknown typeref(%s) debug_offset=0x%x\n", obj->info.typename, obj->ref_debug_info_offset);
+		}
+		else {
+			printf("typedef %s %s\n", obj->ref->typename, obj->info.typename);
+		}
+	}
 
 	return;
 }

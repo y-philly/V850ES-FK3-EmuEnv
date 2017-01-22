@@ -47,6 +47,7 @@ void elf_dwarf_build_enum_type(ElfDwarfDieType *die)
 			switch (attr_type) {
 			case DW_AT_name:
 				mem.name = attr->encoded.string;
+				//printf("enum mem=%s\n", mem.name);
 				break;
 			case DW_AT_const_value:
 				mem.const_value = elf_dwarf_info_get_value(abbrev->attribute_form->data[j], attr, &size);

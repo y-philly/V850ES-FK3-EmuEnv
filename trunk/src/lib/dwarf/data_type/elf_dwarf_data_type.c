@@ -136,7 +136,7 @@ static Std_ReturnType get_DW_AT_type_value(ElfDwarfDieType *die, uint32 *retp)
 	DwAtType attr_type;
 
 	if (die->attribute->current_array_size == 0) {
-		printf("get_DW_AT_type_value:not supported:off=0x%x die->attribute->current_array_size=%u\n", die->offset, die->attribute->current_array_size);
+		//printf("get_DW_AT_type_value:not supported:off=0x%x die->attribute->current_array_size=%u\n", die->offset, die->attribute->current_array_size);
 		//ASSERT(0);
 		return STD_E_NOENT;
 	}
@@ -151,7 +151,7 @@ static Std_ReturnType get_DW_AT_type_value(ElfDwarfDieType *die, uint32 *retp)
 			*retp = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
 			return STD_E_OK;
 		case DW_AT_prototyped:
-			printf("Not Supported:get_DW_AT_type_value:off=0x%x 0x%x\n", die->offset, attr_type);
+			//printf("Not Supported:get_DW_AT_type_value:off=0x%x 0x%x\n", die->offset, attr_type);
 			return STD_E_NOENT;
 		default:
 			printf("get_DW_AT_type_value:not supported attr=0x%x\n", attr_type);
@@ -189,7 +189,7 @@ retry:
 				continue;
 			}
 			if (die->abbrev_info->tag == DW_TAG_subroutine_type) {
-				printf("Not supported:dwarf_get_real_type_offset(0x%x) DW_TAG_subroutine_type\n", die->offset);
+				//printf("Not supported:dwarf_get_real_type_offset(0x%x) DW_TAG_subroutine_type\n", die->offset);
 				return STD_E_NOENT;
 			}
 			type = get_dataType(die->abbrev_info->tag);

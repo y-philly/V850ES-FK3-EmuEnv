@@ -49,6 +49,7 @@ typedef struct {
 typedef struct {
 	DwarfDataType	info;
 	DwarfDataType	*ref;
+	uint32			ref_debug_info_offset;
 } DwarfDataPointerType;
 
 
@@ -63,6 +64,7 @@ typedef struct {
 typedef struct {
 	DwarfDataType	info;
 	DwarfDataType	*ref;
+	uint32			ref_debug_info_offset;
 } DwarfDataTypedefType;
 
 
@@ -75,6 +77,7 @@ typedef struct {
 	char				*name;
 	uint32				off;
 	DwarfDataType		*ref;
+	uint32				ref_debug_info_offset;
 } DwarfDataStructMember;
 extern void dwarf_add_struct_member(DwarfDataStructType *obj, char *name, uint32 off, DwarfDataType *ref);
 

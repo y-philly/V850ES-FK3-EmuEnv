@@ -4,6 +4,7 @@
 #include "elf_dwarf_struct_type.h"
 #include "elf_dwarf_typedef_type.h"
 #include "elf_dwarf_pointer_type.h"
+#include "elf_dwarf_array_type.h"
 #include "elf_dwarf_enum_type.h"
 #include "assert.h"
 #include <string.h>
@@ -30,7 +31,7 @@ static parse_func_table_t parse_func_table[DATA_TYPE_NUM] = {
 		elf_dwarf_build_base_type,
 		elf_dwarf_build_struct_type,
 		elf_dwarf_build_struct_type,
-		parse_array_type,
+		elf_dwarf_build_array_type,
 		elf_dwarf_build_pointer_type,
 		elf_dwarf_build_typedef_type,
 		elf_dwarf_build_enum_type
@@ -65,13 +66,6 @@ static DwarfDataEnumType get_dataType(DwTagType tag)
 		break;
 	}
 	return ret;
-}
-
-
-static void parse_array_type(ElfDwarfDieType *die)
-{
-	//printf("array_type\n");
-	return;
 }
 
 static void dwarf_search_die_recursive(ElfDwarfDieType *die)
@@ -232,6 +226,8 @@ static void resolve_reference(void)
 {
 	elf_dwarf_resolve_typedef_type();
 	elf_dwarf_resolve_pointer_type();
+	elf_dwarf_resolve_array_type();
+	elf_dwarf_resolve_struct_type();
 	return;
 }
 
@@ -339,14 +335,12 @@ void dwarf_register_data_type(DwarfDataType *entry)
 }
 
 
-void dwarf_add_struct_member(DwarfDataStructType *obj, char *name, uint32 off, DwarfDataType *ref)
+void dwarf_add_struct_member(DwarfDataStructType *obj, DwarfDataStructMember *org_mem)
 {
 	DwarfDataStructMember *member;
 
 	member = (DwarfDataStructMember*)elf_obj_alloc(sizeof(DwarfDataStructMember));
-	member->name = name;
-	member->off = off;
-	member->ref = ref;
+	*member = *org_mem;
 	if (obj->members == NULL) {
 		obj->members = elf_array_alloc();
 	}

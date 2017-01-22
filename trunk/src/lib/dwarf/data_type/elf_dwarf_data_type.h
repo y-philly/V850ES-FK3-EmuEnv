@@ -85,9 +85,10 @@ typedef struct {
 	char				*name;
 	uint32				off;
 	DwarfDataType		*ref;
+	bool				is_valid_ref_debug_info_offset;
 	uint32				ref_debug_info_offset;
 } DwarfDataStructMember;
-extern void dwarf_add_struct_member(DwarfDataStructType *obj, char *name, uint32 off, DwarfDataType *ref);
+extern void dwarf_add_struct_member(DwarfDataStructType *obj, DwarfDataStructMember *member);
 
 
 typedef struct {
@@ -104,6 +105,8 @@ extern void dwarf_add_enum_member(DwarfDataEnumulatorType *obj, char *name, uint
 typedef struct {
 	DwarfDataType			info;
 	DwarfDataType			*ref;
+	bool					is_valid_ref_debug_info_offset;
+	uint32					ref_debug_info_offset;
 	uint32					dimension;
 	DwarfUint32ArrayType	*element_num;
 } DwarfDataArrayType;

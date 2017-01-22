@@ -66,10 +66,10 @@ void elf_dwarf_resolve_variable_type(void)
 		}
 		obj->ref = elf_dwarf_get_data_type(obj->ref_debug_info_offset);
 		if (obj->ref == NULL) {
-			printf("Not supported:unknown typeref(%s) debug_offset=0x%x\n", obj->info.typename, obj->ref_debug_info_offset);
+			//printf("Not supported:unknown typeref(%s) debug_offset=0x%x\n", obj->info.typename, obj->ref_debug_info_offset);
 		}
 		else {
-			printf("variable %s %s\n", obj->ref->typename, obj->info.typename);
+			//printf("variable %s %s\n", obj->ref->typename, obj->info.typename);
 		}
 	}
 

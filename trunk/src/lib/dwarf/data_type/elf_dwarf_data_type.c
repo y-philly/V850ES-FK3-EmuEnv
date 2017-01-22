@@ -6,6 +6,7 @@
 #include "elf_dwarf_pointer_type.h"
 #include "elf_dwarf_array_type.h"
 #include "elf_dwarf_enum_type.h"
+#include "elf_dwarf_variable_type.h"
 #include "assert.h"
 #include <string.h>
 
@@ -23,7 +24,6 @@ ElfPointerArrayType	*dwarf_get_data_types(DwarfDataEnumType type)
 	return dwarf_data_type_set[type];
 }
 
-static void parse_array_type(ElfDwarfDieType *die);
 
 typedef  void (*parse_func_table_t)(ElfDwarfDieType *die);
 
@@ -34,7 +34,8 @@ static parse_func_table_t parse_func_table[DATA_TYPE_NUM] = {
 		elf_dwarf_build_array_type,
 		elf_dwarf_build_pointer_type,
 		elf_dwarf_build_typedef_type,
-		elf_dwarf_build_enum_type
+		elf_dwarf_build_enum_type,
+		elf_dwarf_build_variable_type,
 };
 
 static DwarfDataEnumType get_dataType(DwTagType tag)
@@ -61,6 +62,9 @@ static DwarfDataEnumType get_dataType(DwTagType tag)
 		break;
 	case DW_TAG_enumeration_type:
 		ret = DATA_TYPE_ENUM;
+		break;
+	case DW_TAG_variable:
+		ret = DATA_TYPE_VARIABLE;
 		break;
 	default:
 		break;
@@ -228,6 +232,7 @@ static void resolve_reference(void)
 	elf_dwarf_resolve_pointer_type();
 	elf_dwarf_resolve_array_type();
 	elf_dwarf_resolve_struct_type();
+	elf_dwarf_resolve_variable_type();
 	return;
 }
 
@@ -267,6 +272,9 @@ void *dwarf_alloc_data_type(DwarfDataEnumType type)
 		break;
 	case DATA_TYPE_ENUM:
 		size = sizeof(DwarfDataEnumulatorType);
+		break;
+	case DATA_TYPE_VARIABLE:
+		size = sizeof(DwarfDataVariableType);
 		break;
 	default:
 		ASSERT(0);

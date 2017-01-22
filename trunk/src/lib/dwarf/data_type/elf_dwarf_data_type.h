@@ -13,6 +13,7 @@ typedef enum {
 	DATA_TYPE_POINTER,
 	DATA_TYPE_TYPEDEF,
 	DATA_TYPE_ENUM,
+	DATA_TYPE_VARIABLE,
 	DATA_TYPE_NUM,
 } DwarfDataEnumType;
 
@@ -110,4 +111,12 @@ typedef struct {
 	uint32					dimension;
 	DwarfUint32ArrayType	*element_num;
 } DwarfDataArrayType;
+
+typedef struct {
+	DwarfDataType			info;
+	DwarfDataType			*ref;
+	bool					is_valid_ref_debug_info_offset;
+	uint32					ref_debug_info_offset;
+} DwarfDataVariableType;
+
 #endif /* _ELF_DWARF_DATA_TYPE_H_ */

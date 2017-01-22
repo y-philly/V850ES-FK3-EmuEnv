@@ -8,9 +8,11 @@
 typedef enum {
 	DATA_TYPE_BASE = 0,
 	DATA_TYPE_STRUCT,
+	DATA_TYPE_UNION,
 	DATA_TYPE_ARRAY,
 	DATA_TYPE_POINTER,
 	DATA_TYPE_TYPEDEF,
+	DATA_TYPE_ENUM,
 	DATA_TYPE_NUM,
 } DwarfDataEnumType;
 
@@ -29,7 +31,7 @@ extern ElfPointerArrayType	*dwarf_get_data_types(DwarfDataEnumType type);
 extern void dwarf_build_data_type_set(void);
 extern DwarfDataType *elf_dwarf_get_data_type(uint32 debug_info_offset);
 
-extern uint32 dwarf_get_real_type_offset(uint32 offset);
+extern Std_ReturnType dwarf_get_real_type_offset(uint32 offset, uint32 *retp);
 
 /*
  * ex. uint32
@@ -53,6 +55,7 @@ typedef struct {
 typedef struct {
 	DwarfDataType	info;
 	DwarfDataType	*ref;
+	bool			is_valid_ref_debug_info_offset;
 	uint32			ref_debug_info_offset;
 } DwarfDataPointerType;
 
@@ -68,6 +71,7 @@ typedef struct {
 typedef struct {
 	DwarfDataType	info;
 	DwarfDataType	*ref;
+	bool			is_valid_ref_debug_info_offset;
 	uint32			ref_debug_info_offset;
 } DwarfDataTypedefType;
 
@@ -84,6 +88,18 @@ typedef struct {
 	uint32				ref_debug_info_offset;
 } DwarfDataStructMember;
 extern void dwarf_add_struct_member(DwarfDataStructType *obj, char *name, uint32 off, DwarfDataType *ref);
+
+
+typedef struct {
+	DwarfDataType		info;
+	ElfPointerArrayType	*members;
+} DwarfDataEnumulatorType;
+typedef struct {
+	char				*name;
+	uint32				const_value;
+} DwarfDataEnumMember;
+extern void dwarf_add_enum_member(DwarfDataEnumulatorType *obj, char *name, uint32 const_value);
+
 
 typedef struct {
 	DwarfDataType			info;

@@ -1,27 +1,17 @@
-#include "elf_dwarf_struct_type.h"
+#include "elf_dwarf_enum_type.h"
 #include "assert.h"
 
-void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
+void elf_dwarf_build_enum_type(ElfDwarfDieType *die)
 {
 	uint32 size;
 	int i;
 	int j;
-	DwarfDataStructType *obj;
+	DwarfDataEnumulatorType *obj = dwarf_alloc_data_type(DATA_TYPE_ENUM);
 	ElfDwarfAttributeType *attr;
 	ElfDwarfAbbrevType *abbrev;
 	DwAtType attr_type;
-	uint32 value;
 	ElfDwarfDieType *member;
 
-	if (die->abbrev_info->tag == DW_TAG_structure_type) {
-		obj = dwarf_alloc_data_type(DATA_TYPE_STRUCT);
-	}
-	else {
-		obj = dwarf_alloc_data_type(DATA_TYPE_UNION);
-	}
-
-
-	//printf("struct_type\n");
 	for (i = 0; i < die->attribute->current_array_size; i++) {
 		abbrev = (ElfDwarfAbbrevType *)die->abbrev_info;
 		attr = (ElfDwarfAttributeType*)die->attribute->data[i];
@@ -30,9 +20,6 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 		switch (attr_type) {
 		case DW_AT_name:
 			obj->info.typename = attr->encoded.string;
-			break;
-		case DW_AT_type:
-			value = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
 			break;
 		case DW_AT_byte_size:
 			obj->info.size = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
@@ -47,10 +34,10 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 	}
 
 	for (i = 0; i < die->children->current_array_size; i++) {
-		DwarfDataStructMember mem;
+		DwarfDataEnumMember mem;
 		member = (ElfDwarfDieType*)die->children->data[i];
 		abbrev = (ElfDwarfAbbrevType *)member->abbrev_info;
-		if (member->abbrev_info->tag != DW_TAG_member) {
+		if (member->abbrev_info->tag != DW_TAG_enumerator) {
 			continue;
 		}
 		for (j = 0; j < member->attribute->current_array_size; j++) {
@@ -61,29 +48,16 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 			case DW_AT_name:
 				mem.name = attr->encoded.string;
 				break;
-			case DW_AT_type:
-				//value = elf_dwarf_info_get_value(abbrev->attribute_form->data[j], attr, &size);
-				break;
-			case DW_AT_byte_size:
-				break;
-			case DW_AT_data_member_location:
-			case DW_AT_decl_file:
-			case DW_AT_decl_line:
+			case DW_AT_const_value:
+				mem.const_value = elf_dwarf_info_get_value(abbrev->attribute_form->data[j], attr, &size);
 				break;
 			default:
 				ASSERT(0);
 			}
 		}
-		dwarf_add_struct_member(obj, mem.name, 0, NULL);
-		//printf("mem=%s\n", mem.name);
+		dwarf_add_enum_member(obj, mem.name, mem.const_value);
 	}
 
 	obj->info.die = die;
-	//printf("struct_type=%s off=0x%x\n", obj->info.typename, die->offset);
-	//printf("struct_size=%u\n", obj->info.size);
-	//TODO
-	//printf("DW_AT_TYPE=0x%x\n", value);
 	dwarf_register_data_type(&obj->info);
-	return;
 }
-

@@ -4,6 +4,7 @@
 #include "elf_dwarf_struct_type.h"
 #include "elf_dwarf_typedef_type.h"
 #include "elf_dwarf_pointer_type.h"
+#include "elf_dwarf_enum_type.h"
 #include "assert.h"
 #include <string.h>
 
@@ -12,7 +13,9 @@ static ElfPointerArrayType	*dwarf_data_type_set[DATA_TYPE_NUM] = {
 		NULL,
 		NULL,
 		NULL,
-		NULL
+		NULL,
+		NULL,
+		NULL,
 };
 ElfPointerArrayType	*dwarf_get_data_types(DwarfDataEnumType type)
 {
@@ -26,9 +29,11 @@ typedef  void (*parse_func_table_t)(ElfDwarfDieType *die);
 static parse_func_table_t parse_func_table[DATA_TYPE_NUM] = {
 		elf_dwarf_build_base_type,
 		elf_dwarf_build_struct_type,
+		elf_dwarf_build_struct_type,
 		parse_array_type,
 		elf_dwarf_build_pointer_type,
-		elf_dwarf_build_typedef_type
+		elf_dwarf_build_typedef_type,
+		elf_dwarf_build_enum_type
 };
 
 static DwarfDataEnumType get_dataType(DwTagType tag)
@@ -47,8 +52,14 @@ static DwarfDataEnumType get_dataType(DwTagType tag)
 	case DW_TAG_structure_type:
 		ret = DATA_TYPE_STRUCT;
 		break;
+	case DW_TAG_union_type:
+		ret = DATA_TYPE_UNION;
+		break;
 	case DW_TAG_typedef:
 		ret = DATA_TYPE_TYPEDEF;
+		break;
+	case DW_TAG_enumeration_type:
+		ret = DATA_TYPE_ENUM;
 		break;
 	default:
 		break;
@@ -116,13 +127,19 @@ static void build_types(void)
 	return;
 }
 
-static uint32 get_DW_AT_type_value(ElfDwarfDieType *die)
+static Std_ReturnType get_DW_AT_type_value(ElfDwarfDieType *die, uint32 *retp)
 {
 	int i;
 	uint32 size;
 	ElfDwarfAttributeType *attr;
 	ElfDwarfAbbrevType *abbrev;
 	DwAtType attr_type;
+
+	if (die->attribute->current_array_size == 0) {
+		printf("get_DW_AT_type_value:not supported:off=0x%x die->attribute->current_array_size=%u\n", die->offset, die->attribute->current_array_size);
+		//ASSERT(0);
+		return STD_E_NOENT;
+	}
 
 	for (i = 0; i < die->attribute->current_array_size; i++) {
 		abbrev = (ElfDwarfAbbrevType *)die->abbrev_info;
@@ -131,17 +148,23 @@ static uint32 get_DW_AT_type_value(ElfDwarfDieType *die)
 		//printf("get_DW_AT_type_value:off=0x%x 0x%x\n", die->offset, attr_type);
 		switch (attr_type) {
 		case DW_AT_type:
-			return elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
+			*retp = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
+			return STD_E_OK;
+		case DW_AT_prototyped:
+			printf("Not Supported:get_DW_AT_type_value:off=0x%x 0x%x\n", die->offset, attr_type);
+			return STD_E_NOENT;
 		default:
+			printf("get_DW_AT_type_value:not supported attr=0x%x\n", attr_type);
 			break;
 		}
 	}
+	printf("get_DW_AT_type_value:not supported:off=0x%x die->attribute->current_array_size=%u\n", die->offset, die->attribute->current_array_size);
 	ASSERT(0);
-	return 0;
+	return STD_E_NOENT;
 }
 
 
-uint32 dwarf_get_real_type_offset(uint32 offset)
+Std_ReturnType dwarf_get_real_type_offset(uint32 offset, uint32 *retp)
 {
 	uint32 ret_offset;
 	int i_cu;
@@ -149,6 +172,7 @@ uint32 dwarf_get_real_type_offset(uint32 offset)
 	ElfDwarfCompilationUnitHeaderType	*cu;
 	ElfDwarfDieType						*die;
 	DwarfDataEnumType					type;
+	Std_ReturnType err;
 
 	ElfPointerArrayType *compilation_unit_set = elf_dwarf_info_get();
 
@@ -164,13 +188,21 @@ retry:
 			if (die->offset != offset) {
 				continue;
 			}
+			if (die->abbrev_info->tag == DW_TAG_subroutine_type) {
+				printf("Not supported:dwarf_get_real_type_offset(0x%x) DW_TAG_subroutine_type\n", die->offset);
+				return STD_E_NOENT;
+			}
 			type = get_dataType(die->abbrev_info->tag);
 			if (type == DATA_TYPE_NUM) {
-				ret_offset = get_DW_AT_type_value(die);
+				err = get_DW_AT_type_value(die, &ret_offset);
+				if (err != STD_E_OK) {
+					return err;
+				}
 				offset = ret_offset;
 				goto retry;
 			}
-			return die->offset;
+			*retp = die->offset;
+			return STD_E_OK;
 		}
 	}
 	ASSERT(0);
@@ -225,6 +257,9 @@ void *dwarf_alloc_data_type(DwarfDataEnumType type)
 	case DATA_TYPE_STRUCT:
 		size = sizeof(DwarfDataStructType);
 		break;
+	case DATA_TYPE_UNION:
+		size = sizeof(DwarfDataStructType);
+		break;
 	case DATA_TYPE_ARRAY:
 		size = sizeof(DwarfDataArrayType);
 		break;
@@ -233,6 +268,9 @@ void *dwarf_alloc_data_type(DwarfDataEnumType type)
 		break;
 	case DATA_TYPE_TYPEDEF:
 		size = sizeof(DwarfDataTypedefType);
+		break;
+	case DATA_TYPE_ENUM:
+		size = sizeof(DwarfDataEnumulatorType);
 		break;
 	default:
 		ASSERT(0);
@@ -317,3 +355,20 @@ void dwarf_add_struct_member(DwarfDataStructType *obj, char *name, uint32 off, D
 
 	return;
 }
+
+void dwarf_add_enum_member(DwarfDataEnumulatorType *obj, char *name, uint32 const_value)
+{
+	DwarfDataEnumMember *member;
+
+	member = (DwarfDataEnumMember*)elf_obj_alloc(sizeof(DwarfDataEnumMember));
+	member->name = name;
+	member->const_value = const_value;
+	if (obj->members == NULL) {
+		obj->members = elf_array_alloc();
+	}
+
+	elf_array_add_entry(obj->members, member);
+
+	return;
+}
+

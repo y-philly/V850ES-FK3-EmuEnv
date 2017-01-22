@@ -79,6 +79,10 @@ uint32 elf_dwarf_info_get_value(DwFormType form, ElfDwarfAttributeType *obj, uin
 		value = obj->encoded.sec_offset;
 		*size = 4;
 		break;
+	case DW_FORM_sdata:
+		value = (uint32)obj->encoded.scont64;
+		*size = 4;
+		break;
 	default:
 		printf("invalid form=0x%x\n", form);
 		ASSERT(0);

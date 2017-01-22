@@ -10,7 +10,9 @@ void elf_dwarf_build_typedef_type(ElfDwarfDieType *die)
 	ElfDwarfAbbrevType *abbrev;
 	DwAtType attr_type;
 	uint32 offset;
+	Std_ReturnType err;
 
+	//printf("elf_dwarf_build_typedef_type:off=0x%x\n", die->offset);
 	//printf("typedef_type\n");
 	for (i = 0; i < die->attribute->current_array_size; i++) {
 		abbrev = (ElfDwarfAbbrevType *)die->abbrev_info;
@@ -23,7 +25,10 @@ void elf_dwarf_build_typedef_type(ElfDwarfDieType *die)
 			break;
 		case DW_AT_type:
 			offset = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
-			obj->ref_debug_info_offset = dwarf_get_real_type_offset(offset);
+			 err = dwarf_get_real_type_offset(offset, &obj->ref_debug_info_offset);
+			 if (err == STD_E_OK) {
+				 obj->is_valid_ref_debug_info_offset = TRUE;
+			 }
 			break;
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
@@ -48,6 +53,9 @@ void elf_dwarf_resolve_typedef_type(void)
 	for (i = 0; i < my_types->current_array_size; i++) {
 		obj = (DwarfDataTypedefType *)my_types->data[i];
 		if (obj->ref != NULL) {
+			continue;
+		}
+		if (obj->is_valid_ref_debug_info_offset == FALSE) {
 			continue;
 		}
 		obj->ref = elf_dwarf_get_data_type(obj->ref_debug_info_offset);

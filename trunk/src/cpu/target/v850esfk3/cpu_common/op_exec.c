@@ -495,6 +495,7 @@ static int OpExec9(TargetCoreType *cpu)
 		default:
 			break;
 		}
+		break;
 	default:
 		printf("OpExec9 Error:Unknown OP:0x%x\n", cpu->decoded_code.type9.opcode);
 		break;

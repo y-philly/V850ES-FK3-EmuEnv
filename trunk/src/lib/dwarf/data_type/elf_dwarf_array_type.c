@@ -49,7 +49,9 @@ void elf_dwarf_resolve_array_type(void)
 	int i;
 	ElfPointerArrayType	*my_types = dwarf_get_data_types(DATA_TYPE_ARRAY);
 	DwarfDataTypedefType *obj;
-
+	if (my_types == NULL) {
+		return;
+	}
 	for (i = 0; i < my_types->current_array_size; i++) {
 		obj = (DwarfDataTypedefType *)my_types->data[i];
 		if (obj->ref != NULL) {

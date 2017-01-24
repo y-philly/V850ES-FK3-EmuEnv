@@ -6,8 +6,16 @@ then
 	exit 1
 fi
 
-IFLAGS="-I ./TestObject -I ./TestObject/target -I ./TestObject/item -I ./TestObjectFactory -I ./TestCodeGenerator -I ./util"
+if [ -z ${ATHRILL_PATH} ]
+then
+	echo "Please set env ATHRILL_PATH"
+	exit 1
+fi
+
+T_PATH=${ATHRILL_PATH}/test/tool
+
+IFLAGS="-I ${T_PATH}/TestObject -I ${T_PATH}/TestObject/target -I ${T_PATH}/TestObject/item -I ${T_PATH}/TestObjectFactory -I ${T_PATH}/TestCodeGenerator -I ${T_PATH}/util"
 
 
-ruby ${IFLAGS} TestCodeGenerator/TestCodeGenerator.rb ${1} ${2}
+ruby ${IFLAGS} ${T_PATH}/TestCodeGenerator/TestCodeGenerator.rb ${1} ${2} ${T_PATH}
 

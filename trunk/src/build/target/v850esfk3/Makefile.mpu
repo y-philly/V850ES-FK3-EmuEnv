@@ -26,8 +26,6 @@ OBJS	:=	mpu.o
 OBJS	+=	mpu_config.o
 OBJS	+=	loader.o
 
-.SUFFIXES:	.c .o
-
 all:	$(LIBTARGET)
 
 $(LIBTARGET):	$(OBJS)

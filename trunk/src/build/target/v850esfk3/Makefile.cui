@@ -38,9 +38,6 @@ OBJS	+= cui_ops.o
 OBJS	+= cui_ops_stdio.o
 OBJS	+= cui_ops_udp.o
 
-
-.SUFFIXES:	.c .o
-
 all:	$(LIBTARGET)
 
 $(LIBTARGET):	$(OBJS)

@@ -38,8 +38,6 @@ OBJS		+= dbg_cpu_callback.o
 OBJS		+= option.o
 
 
-.SUFFIXES:	.c .o
-
 all:	$(LIBTARGET)
 
 $(LIBTARGET):	$(OBJS)

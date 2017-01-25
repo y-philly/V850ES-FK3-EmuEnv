@@ -43,8 +43,6 @@ OBJS	+=	cpu_config.o
 OBJS	+=	dbg_log.o
 
 
-.SUFFIXES:	.c .o
-
 all:	$(LIBTARGET)
 
 $(LIBTARGET):	$(OBJS)

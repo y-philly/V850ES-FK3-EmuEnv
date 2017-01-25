@@ -47,10 +47,6 @@ OBJS	+=	dbg_target_cpu.o
 OBJS	+=	dbg_can.o
 OBJS	+=	intc.o
 
-
-
-.SUFFIXES:	.c .o
-
 all:	$(LIBTARGET)
 
 $(LIBTARGET):	$(OBJS)

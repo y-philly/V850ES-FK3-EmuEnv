@@ -22,7 +22,6 @@ OBJS	+=	file.o
 OBJS	+=	winsock_wrapper.o
 OBJS	+=	udp_comm.o
 
-.SUFFIXES:	.c .o
 
 all:	$(LIBTARGET)
 

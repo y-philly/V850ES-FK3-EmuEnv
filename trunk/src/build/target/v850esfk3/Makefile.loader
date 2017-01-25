@@ -34,9 +34,6 @@ OBJS	+= elf_dwarf_variable_type.o
 OBJS	+= file_address_mapping.o
 OBJS	+= symbol_ops.o
 
-
-.SUFFIXES:	.c .o
-
 all:	$(LIBTARGET)
 
 $(LIBTARGET):	$(OBJS)

@@ -37,6 +37,8 @@ build_all:
 	make -f Makefile.loader all
 	make -f Makefile.mpu all
 	make -f Makefile.std all
+	$(RANLIB) $(AROBJS)
+	$(GCC) -O3 $(LFLAGS) $(AROBJS) -o $(TARGET)  $(LIBS)
 	cp $(TARGET) $(ROOTDIR)/bin/
 
 $(LIBMAIN):

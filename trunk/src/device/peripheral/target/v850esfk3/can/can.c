@@ -299,7 +299,7 @@ void device_init_can(MpuAddressRegionType *region)
 	 */
 	result = dbg_can_ops.init(CAN_CHANNEL_ID_1);
 	if (result == FALSE) {
-		printf("device_init_can:err\n");
+		//printf("device_init_can:err\n");
 	}
 	return;
 }
@@ -470,7 +470,7 @@ static void send_can_data(uint32 channel,  uint32 msg_id)
 	uint8 dlc = *CanDevice.module.channel[channel].msg[msg_id].dlc;
 	uint32 canid = CanDevice.module.channel[channel].msg[msg_id].canid;
 	uint8 canid_type = (uint8)CanDevice.module.channel[channel].msg[msg_id].canid_type;
-
+	
 	(void)CanDevice.ops->send(channel, canid, CanDevice.module.channel[channel].msg[msg_id].buffer, dlc, canid_type);
 
 	//TRQ clr

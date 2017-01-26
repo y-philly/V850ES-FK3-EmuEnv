@@ -34,12 +34,14 @@ static OpDecoderType OpDecoder[OP_CODE_FORMAT_NUM] = {
 	{ OpDecode13 },
 };
 
+
 static OpCodeFormatId is_LD_HU(uint16 code[OP_DECODE_MAX])
 {
 	uint16 opcode = code[0] >> 5U;
 	uint16 reg2 = code[0] & 0xF800;
 	uint16 bit16 = code[1] & 0x0001;
 
+	opcode = opcode & 0x003F;
 	if (opcode != 0b111111) {
 		return OP_CODE_FORMAT_UNKNOWN;
 	}
@@ -50,10 +52,11 @@ static OpCodeFormatId is_LD_HU(uint16 code[OP_DECODE_MAX])
 }
 static OpCodeFormatId is_SLD_BU_HU(uint16 code[OP_DECODE_MAX])
 {
-	uint16 opcode = code[0] >> 5U;
+	uint16 opcode = code[0] >> 4U;
 	uint16 reg2 = code[0] & 0xF800;
 
-	if (opcode != 0b000011) {
+	opcode = opcode & 0x003E;
+	if (opcode != 0b0000110) {
 		return OP_CODE_FORMAT_UNKNOWN;
 	}
 	if ((reg2 == 0U)) {
@@ -66,15 +69,16 @@ static OpCodeFormatId is_CMOV(uint16 code[OP_DECODE_MAX])
 	uint16 opcode = code[0] >> 5U;
 	uint16 subop = ((code[1] >> 5U) & 0x003F);
 
+	opcode = opcode & 0x003F;
 	if (opcode != 0b111111) {
 		return OP_CODE_FORMAT_UNKNOWN;
 	}
 	switch (subop) {
 	case 0b011000:
-	case 0b011010:
+	//case 0b011010:
 		return OP_CODE_FORMAT_12;
 	case 0b011001:
-	case 0b011011:
+	//case 0b011011:
 		return OP_CODE_FORMAT_11;
 	default:
 		return OP_CODE_FORMAT_UNKNOWN;

@@ -35,7 +35,7 @@ def render path
   src = ERB.new(File.read(path), nil, '-').result(binding)
 end
 
-def main(test_item_file, csv_file)
+def main(test_item_file, csv_file, tpath)
   creator = TestObjectCreator.new(test_item_file)
   spec = creator.load()
   
@@ -44,24 +44,25 @@ def main(test_item_file, csv_file)
 
   #generate for each template
   parser.get.each { |entry|
-    src = render(entry.template)
-    open(entry.output, "w") { |f|
+    src = render(tpath + "/" + entry.template)
+    open(tpath + "/" + entry.output, "w") { |f|
       f.write(src)
       puts "### Created: " + entry.output
     }
   }
 end
 
-if ARGV.length != 2
-  printf("Usage: TestCodeGenerator.rb test_item_file template.csv")
+if ARGV.length != 3
+  printf("Usage: TestCodeGenerator.rb test_item_file template.csv tpath")
   exit(1)
 end
 
 test_item_file=ARGV[0]
 csv_file=ARGV[1]
+tpath=ARGV[2]
 
 begin
-  main(test_item_file, csv_file)
+  main(test_item_file, csv_file, tpath)
 rescue => e
   p e.message
   exit(1)

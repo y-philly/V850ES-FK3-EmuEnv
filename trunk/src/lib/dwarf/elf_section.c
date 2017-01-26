@@ -201,7 +201,7 @@ uint64 elf_get_data64(uint8 *elf_data, uint32 off)
 	uint64 *data;
 	uint8 array[8];
 
-	data = (uint16*)array;
+	data = (uint64*)array;
 	array[0] = elf_data[off + 0];
 	array[1] = elf_data[off + 1];
 	array[2] = elf_data[off + 2];

@@ -1,4 +1,4 @@
-#include "dbg_target_serial.h"
+#include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
 
 #define DBG_SERIAL_CHANNEL_NUM	4U

@@ -55,4 +55,8 @@ typedef struct {
 extern Std_ReturnType elf_dwarf_info_load(uint8 *elf_data);
 extern ElfDwarfCompilationUnitHeaderType *elf_dwarf_info_alloc_empty_ElfDwarfCompilationUnitHeader(void);
 
+extern ElfPointerArrayType *elf_dwarf_info_get(void);
+
+extern uint32 elf_dwarf_info_get_value(DwFormType form, ElfDwarfAttributeType *obj, uint32 *size);
+
 #endif /* _ELF_DWARF_INFO_H_ */

@@ -32,7 +32,8 @@ static void elf_dwarf_build_struct_member(DwarfDataStructType *obj, ElfDwarfDieT
 			}
 			break;
 		case DW_AT_data_member_location:
-			printf("struct location from=0x%x\n", abbrev->attribute_form->data[j]);
+			mem.off = elf_dwarf_info_get_value(abbrev->attribute_form->data[j], attr, &size);
+			//printf("struct location from=0x%x off=%u\n", abbrev->attribute_form->data[j], mem.off);
 			break;
 		case DW_AT_accessibility:
 		case DW_AT_byte_size:

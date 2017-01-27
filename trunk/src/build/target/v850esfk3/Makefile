@@ -26,7 +26,7 @@ AROBJS		+= $(LIBSTD)
 all: $(AROBJS)
 	$(RANLIB) $(AROBJS)
 	$(GCC) -O3 $(LFLAGS) $(AROBJS) -o $(TARGET)  $(LIBS)
-	cp $(TARGET) $(ROOTDIR)/bin/
+	$(CP) $(TARGET).exe $(ROOTDIR)/bin/
 
 build_all:
 	make -f Makefile.main all
@@ -39,7 +39,7 @@ build_all:
 	make -f Makefile.std all
 	$(RANLIB) $(AROBJS)
 	$(GCC) -O3 $(LFLAGS) $(AROBJS) -o $(TARGET)  $(LIBS)
-	cp $(TARGET) $(ROOTDIR)/bin/
+	$(CP) $(TARGET).exe $(ROOTDIR)/bin/
 
 $(LIBMAIN):
 	make -f Makefile.main all
@@ -74,5 +74,5 @@ clean:
 	make -f Makefile.mpu clean
 	make -f Makefile.std clean
 	make -f Makefile.main clean
-	rm -f $(TARGET).exe $(ROOTDIR)/bin/$(TARGET).exe
+	$(RM) -f $(TARGET).exe $(ROOTDIR)/bin/$(TARGET).exe
 		

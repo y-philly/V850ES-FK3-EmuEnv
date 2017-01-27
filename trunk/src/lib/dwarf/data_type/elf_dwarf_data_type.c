@@ -288,8 +288,10 @@ void *dwarf_alloc_data_type(DwarfDataEnumType type)
 void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filename, char *typename)
 {
 	int i;
+#if 0
 	int dirlen = strlen(dirname);
 	int filelen = strlen(filename);
+#endif
 	int typelen = strlen(typename);
 
 	if (type >= DATA_TYPE_NUM) {
@@ -310,6 +312,7 @@ void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filena
 		if (strncmp(typename, entry->typename, len) == 0) {
 			continue;
 		}
+#if 0
 		len = strlen(entry->dirname);
 		if (dirlen != len) {
 			continue;
@@ -324,6 +327,7 @@ void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filena
 		if (strncmp(filename, entry->filename, len) == 0) {
 			continue;
 		}
+#endif
 
 		return entry;
 	}

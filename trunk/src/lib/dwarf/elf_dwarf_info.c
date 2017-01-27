@@ -1,4 +1,5 @@
 #include "elf_dwarf_info.h"
+#include "elf_dwarf_info_ops.h"
 #include "elf_section.h"
 #include "assert.h"
 #include <string.h>
@@ -82,6 +83,13 @@ uint32 elf_dwarf_info_get_value(DwFormType form, ElfDwarfAttributeType *obj, uin
 	case DW_FORM_sdata:
 		value = (uint32)obj->encoded.scont64;
 		*size = 4;
+		break;
+	case DW_FORM_block1:
+		//printf("block1:len=%u op[0]=%x, op[1]=%x\n", obj->encoded.op.len,
+		//		obj->encoded.op.ops[0], obj->encoded.op.ops[1]);
+		elf_dwarf_info_ops_push(0);
+		elf_dwarf_info_ops_DW_OP(obj->encoded.op.ops[0], &obj->encoded.op.ops[1]);
+		value = elf_dwarf_info_ops_pop();
 		break;
 	default:
 		printf("invalid form=0x%x\n", form);
@@ -270,6 +278,8 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 	int i;
 	uint32 level;
 	ElfDwarfDieType *parent = NULL;
+
+	elf_dwarf_info_ops_init();
 
 	compilation_unit_headers = elf_array_alloc();
 

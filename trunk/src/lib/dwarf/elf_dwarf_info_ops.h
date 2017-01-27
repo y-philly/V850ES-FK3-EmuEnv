@@ -1,6 +1,8 @@
 #ifndef _ELF_DWARF_INFO_OPS_H_
 #define _ELF_DWARF_INFO_OPS_H_
 
+#include "elf_dwarf_util.h"
+
 typedef enum {
 	DW_OP_addr                      = 0x03,
 	DW_OP_deref                     = 0x06,
@@ -168,6 +170,15 @@ typedef enum {
 	DW_OP_reinterpret               = 0xa9,
 } ElfDwarfInfoOpsType;
 
+typedef struct {
+	uint32				stack_size;
+	DwarfUint32ArrayType *stack;
+} ElfDwarfStackType;
 
+extern void elf_dwarf_info_ops_init(void);
+extern uint32 elf_dwarf_info_ops_pop(void);
+extern void elf_dwarf_info_ops_push(uint32 data);
+extern void elf_dwarf_info_ops_DW_OP(ElfDwarfInfoOpsType optype, uint8 *data);
+extern void elf_dwarf_info_ops_DW_OP_plus_uconst(uint8 *data);
 
 #endif /* _ELF_DWARF_INFO_OPS_H_ */

@@ -44,7 +44,7 @@ $(LIBTARGET):	$(OBJS)
 	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
 
 clean:
-	rm -f $(OBJS) $(LIBTARGET)
+	$(RM) -f $(OBJS) $(LIBTARGET)
 
 
 

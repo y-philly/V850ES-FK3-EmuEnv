@@ -141,10 +141,15 @@ static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *
 	printf("}\n");
 	return;
 }
+static void print_typedef_type_data(PrintControlType *ctrl, DwarfDataTypedefType *type, uint8 *top_addr, uint32 size, uint32 off)
+{
+	printf("(typedef %s )", type->info.typename);
+	print_any_data_type(ctrl, type->ref, top_addr, size, off);
+	return;
+}
 static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size, uint32 off)
 {
 	bool ret = FALSE;
-	ctrl->level++;
 
 	switch (obj->type) {
 	case DATA_TYPE_BASE:
@@ -158,10 +163,13 @@ static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint
 		//TODO
 		break;
 	case DATA_TYPE_TYPEDEF:
-		//TODO
+		print_typedef_type_data(ctrl, (DwarfDataTypedefType *)obj, top_addr, size, off);
+		ret = TRUE;
 		break;
 	case DATA_TYPE_STRUCT:
+		ctrl->level++;
 		print_struct_type_data(ctrl, (DwarfDataStructType *)obj, top_addr, size, off);
+		ctrl->level--;
 		ret = TRUE;
 		break;
 	case DATA_TYPE_ARRAY:
@@ -172,7 +180,6 @@ static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint
 	default:
 		break;
 	}
-	ctrl->level--;
 
 	return ret;
 }

@@ -59,4 +59,6 @@ extern ElfPointerArrayType *elf_dwarf_info_get(void);
 
 extern uint32 elf_dwarf_info_get_value(DwFormType form, ElfDwarfAttributeType *obj, uint32 *size);
 
+
+
 #endif /* _ELF_DWARF_INFO_H_ */

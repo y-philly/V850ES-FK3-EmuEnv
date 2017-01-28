@@ -294,6 +294,7 @@ void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filena
 #endif
 	int typelen = strlen(typename);
 
+	//printf("type=%u name=%s\n", type, typename);
 	if (type >= DATA_TYPE_NUM) {
 		return NULL;
 	}
@@ -305,11 +306,16 @@ void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filena
 		int len;
 		DwarfDataType *entry = (DwarfDataType *)dwarf_data_type_set[type]->data[i];
 
+		//printf("entry(0x%p\n", entry);
+		if (entry->typename == NULL) {
+			continue;
+		}
 		len = strlen(entry->typename);
+		//printf("in_len=%u chk_len=%u in_name=%s chk_name=%s\n", typelen, len, typename, entry->typename);
 		if (typelen != len) {
 			continue;
 		}
-		if (strncmp(typename, entry->typename, len) == 0) {
+		if (strncmp(typename, entry->typename, len) != 0) {
 			continue;
 		}
 #if 0
@@ -341,6 +347,7 @@ void dwarf_register_data_type(DwarfDataType *entry)
 	if (dwarf_data_type_set[entry->type] == NULL) {
 		dwarf_data_type_set[entry->type] = elf_array_alloc();
 	}
+	//printf("type=%u reg data=%s\n", entry->type, entry->typename);
 
 	elf_array_add_entry(dwarf_data_type_set[entry->type], entry);
 	return;

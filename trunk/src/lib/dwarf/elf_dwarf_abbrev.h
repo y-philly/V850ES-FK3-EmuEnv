@@ -166,6 +166,19 @@ typedef enum {
 	DW_FORM_ENC_UNKNOWN,
 } DwFormEncodingType;
 
+
+typedef enum {
+	DW_ATE_address = 0x1, //linear machine address
+	DW_ATE_boolean = 0x2, //true or false
+	DW_ATE_complex_float = 0x3, //complex floating-point number
+	DW_ATE_float = 0x4, //floating-point number
+	DW_ATE_signed = 0x5, //signed binary integer
+	DW_ATE_signed_char = 0x6, // signed character
+	DW_ATE_unsigned = 0x7, //unsigned binary integer
+	DW_ATE_unsigned_char = 0x8,
+	DW_ATE_unknown = 0xFF,
+} DwAteType;
+
 typedef struct {
 	uint32	index;
 	uint32	offset;

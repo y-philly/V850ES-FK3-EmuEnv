@@ -8,6 +8,7 @@
 #include "dbg_log.h"
 #include "assert.h"
 #include "concrete_executor/target/dbg_target_serial.h"
+#include "concrete_executor/util/dbg_print_data_type.h"
 #include "symbol_ops.h"
 #include "cui/cui_ops.h"
 #include "dbg_target_cpu.h"
@@ -384,8 +385,15 @@ static void print_memory(uint32 vaddr, uint8 *top_addr, uint32 size)
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x\n", *top_addr));
 	return;
 }
-static void print_memory_type(uint32 vaddr, uint8 *top_addr, uint32 size)
+static void print_memory_type(char *variable_name, uint32 vaddr, uint8 *top_addr, uint32 size)
 {
+	if (variable_name != NULL) {
+		bool ret = print_variable_with_data_type(variable_name, vaddr, top_addr, size);
+		if (ret == TRUE) {
+			return;
+		}
+	}
+
 	if (size == 2) {
 		uint16 *data = (uint16*)top_addr;
 		printf("size=%u byte\n", size);
@@ -422,7 +430,7 @@ void dbg_std_executor_print(void *executor)
 		 }
 		 else {
 			 cpuemu_get_addr_pointer(addr, &data);
-			 print_memory_type(addr, data, size);
+			 print_memory_type((char*)(parsed_args->symbol.str), addr, data, size);
 		 }
 	 }
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR) {
@@ -431,7 +439,7 @@ void dbg_std_executor_print(void *executor)
 	 }
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR_SIZE) {
 		 cpuemu_get_addr_pointer(parsed_args->addr, &data);
-		 print_memory_type(parsed_args->addr, data, parsed_args->size);
+		 print_memory_type(NULL, parsed_args->addr, data, parsed_args->size);
 	 }
 	 return;
 }

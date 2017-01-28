@@ -23,7 +23,8 @@ void elf_dwarf_build_base_type(ElfDwarfDieType *die)
 			obj->info.typename = attr->encoded.string;
 			break;
 		case DW_AT_encoding:
-			//sign or unsigned nop.
+			obj->encoding = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
+			//printf("encoding=0x%x\n", obj->encoding);
 			break;
 		default:
 			ASSERT(0);

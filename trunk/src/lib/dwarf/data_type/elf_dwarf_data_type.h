@@ -43,6 +43,7 @@ extern Std_ReturnType dwarf_get_real_type_offset(uint32 offset, uint32 *retp);
  */
 typedef struct {
 	DwarfDataType	info;
+	DwAteType		encoding;
 } DwarfDataBaseType;
 
 /*

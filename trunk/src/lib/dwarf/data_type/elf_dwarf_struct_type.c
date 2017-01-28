@@ -79,6 +79,7 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 		switch (attr_type) {
 		case DW_AT_name:
 			obj->info.typename = attr->encoded.string;
+			//printf("0x%p struct typename=%s\n", obj, obj->info.typename);
 			break;
 		case DW_AT_byte_size:
 			obj->info.size = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);

@@ -147,6 +147,41 @@ static void print_typedef_type_data(PrintControlType *ctrl, DwarfDataTypedefType
 	print_any_data_type(ctrl, type->ref, top_addr, size, off);
 	return;
 }
+
+static void print_enum_type_data(PrintControlType *ctrl, DwarfDataEnumulatorType *type, uint8 *top_addr, uint32 size, uint32 off)
+{
+	int i;
+	DwarfDataEnumMember *memp = NULL;
+	uint32 value;
+
+	switch (size) {
+	case 1:
+		value = elf_get_data8(top_addr, 0);
+		break;
+	case 2:
+		value = elf_get_data16(top_addr, 0);
+		break;
+	case 4:
+		value = elf_get_data32(top_addr, 0);
+		break;
+	default:
+		printf("unknown enum\n");
+		return;
+	}
+
+	for (i = 0; i < type->members->current_array_size; i++) {
+		memp = (DwarfDataEnumMember *)type->members->data[i];
+		if (memp->const_value == value) {
+			printf("%s.%s(%d)", type->info.typename, memp->name, memp->const_value);
+			printf("  @ 0x%x(0x%x)\n", ctrl->current_addr + off, off);
+			return;
+		}
+	}
+	printf("unknown enum\n");
+
+	return;
+}
+
 static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size, uint32 off)
 {
 	bool ret = FALSE;
@@ -157,7 +192,7 @@ static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint
 		ret = TRUE;
 		break;
 	case DATA_TYPE_ENUM:
-		//TODO
+		print_enum_type_data(ctrl, (DwarfDataEnumulatorType *)obj, top_addr, size, off);
 		break;
 	case DATA_TYPE_POINTER:
 		//TODO

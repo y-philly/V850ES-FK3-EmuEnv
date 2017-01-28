@@ -10,7 +10,7 @@ typedef struct {
 	uint32 level;
 } PrintControlType;
 
-static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size);
+static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size, uint32 off);
 
 static void print_base_type_address(uint8 *addr, uint32 size)
 {
@@ -82,9 +82,9 @@ static void print_base_type_unsigned(uint8 *addr, uint32 size)
 	return;
 }
 
-static void print_base_type_data(DwAteType type, uint8 *addr, uint32 size)
+static void print_base_type_data(PrintControlType *ctrl, DwarfDataBaseType *obj, uint8 *addr, uint32 size, uint32 off)
 {
-	switch (type) {
+	switch (obj->encoding) {
 	case DW_ATE_address:
 		print_base_type_address(addr, size);
 		break;
@@ -105,6 +105,7 @@ static void print_base_type_data(DwAteType type, uint8 *addr, uint32 size)
 		printf("Unknown base type");
 		break;
 	}
+	printf(" (%s:%u) @ 0x%x(0x%x)\n", obj->info.typename, size, ctrl->current_addr + off, off);
 	return;
 }
 static void print_space(PrintControlType *ctrl)
@@ -116,9 +117,10 @@ static void print_space(PrintControlType *ctrl)
 	return;
 }
 
-static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *type, uint8 *top_addr, uint32 size)
+static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *type, uint8 *top_addr, uint32 size, uint32 off)
 {
 	int i;
+
 	printf("struct %s { \n", type->info.typename);
 	for (i = 0; i < type->members->current_array_size; i++) {
 		DwarfDataStructMember *memp = (DwarfDataStructMember *)type->members->data[i];
@@ -126,13 +128,12 @@ static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *
 		printf("%s = ", memp->name);
 		if (memp->ref->type == DATA_TYPE_BASE) {
 			DwarfDataBaseType *basetype = (DwarfDataBaseType *)memp->ref;
-			print_base_type_data(basetype->encoding, &top_addr[memp->off], memp->ref->size);
-			printf(" (%s:%u) @ 0x%x(0x%x)\n", memp->ref->typename, memp->ref->size, ctrl->current_addr + memp->off, memp->off);
+			print_base_type_data(ctrl, basetype, &top_addr[memp->off], memp->ref->size, memp->off);
 		}
 		else {
 			uint32 org_addr = ctrl->current_addr;
 			ctrl->current_addr += memp->off;
-			(void)print_any_data_type(ctrl, memp->ref, &top_addr[memp->off], memp->ref->size);
+			(void)print_any_data_type(ctrl, memp->ref, &top_addr[memp->off], memp->ref->size, memp->off);
 			ctrl->current_addr = org_addr;
 		}
 	}
@@ -140,13 +141,15 @@ static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *
 	printf("}\n");
 	return;
 }
-static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size)
+static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size, uint32 off)
 {
 	bool ret = FALSE;
 	ctrl->level++;
 
 	switch (obj->type) {
 	case DATA_TYPE_BASE:
+		print_base_type_data(ctrl, (DwarfDataBaseType *)obj, top_addr, size, off);
+		ret = TRUE;
 		break;
 	case DATA_TYPE_ENUM:
 		//TODO
@@ -158,7 +161,7 @@ static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint
 		//TODO
 		break;
 	case DATA_TYPE_STRUCT:
-		print_struct_type_data(ctrl, (DwarfDataStructType *)obj, top_addr, size);
+		print_struct_type_data(ctrl, (DwarfDataStructType *)obj, top_addr, size, off);
 		ret = TRUE;
 		break;
 	case DATA_TYPE_ARRAY:
@@ -192,7 +195,7 @@ bool print_variable_with_data_type(char *variable_name, uint32 vaddr, uint8 *top
 	ctrl.vaddr = vaddr;
 	ctrl.current_addr = vaddr;
 	ctrl.level = 0;
-	printf("vaddr=0x%x\n", vaddr);
-	return print_any_data_type(&ctrl, type, top_addr, size);
+	printf("%s = ", variable_name);
+	return print_any_data_type(&ctrl, type, top_addr, size, 0);
 }
 

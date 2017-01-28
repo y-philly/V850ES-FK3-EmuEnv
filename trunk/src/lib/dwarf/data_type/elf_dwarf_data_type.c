@@ -339,6 +339,26 @@ void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filena
 	}
 	return NULL;
 }
+void *dwarf_search_data_type_from_die(DwarfDataEnumType type, uint32 die_off)
+{
+	int i;
+
+	if (type >= DATA_TYPE_NUM) {
+		return NULL;
+	}
+	if (dwarf_data_type_set[type] == NULL) {
+		return NULL;
+	}
+
+	for (i = 0; i < dwarf_data_type_set[type]->current_array_size; i++) {
+		DwarfDataType *entry = (DwarfDataType *)dwarf_data_type_set[type]->data[i];
+		if (entry->die->offset == die_off) {
+			return entry;
+		}
+	}
+	return NULL;
+}
+
 void dwarf_register_data_type(DwarfDataType *entry)
 {
 	if (entry->type >= DATA_TYPE_NUM) {

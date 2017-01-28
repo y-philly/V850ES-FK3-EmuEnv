@@ -19,6 +19,7 @@ typedef enum {
 
 extern void *dwarf_alloc_data_type(DwarfDataEnumType type);
 extern void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filename, char *typename);
+extern void *dwarf_search_data_type_from_die(DwarfDataEnumType type, uint32 die_off);
 typedef struct {
 	ElfDwarfDieType		*die;
 	DwarfDataEnumType	type;

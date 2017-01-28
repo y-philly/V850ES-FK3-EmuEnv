@@ -33,6 +33,7 @@ void elf_dwarf_build_pointer_type(ElfDwarfDieType *die)
 			 if (err == STD_E_OK) {
 				 obj->is_valid_ref_debug_info_offset = TRUE;
 			 }
+			//printf("ref_debug_info_offset:off=0x%x\n", obj->ref_debug_info_offset);
 			break;
 		default:
 			printf("die=0x%x attr=0x%x\n", die->offset, attr_type);
@@ -63,6 +64,7 @@ void elf_dwarf_resolve_pointer_type(void)
 			continue;
 		}
 		obj->ref = elf_dwarf_get_data_type(obj->ref_debug_info_offset);
+		//printf("pointer(0x%x):off=0x%x ref_off=0x%x\n", obj->info.die->offset, obj->ref_debug_info_offset, obj->ref->die->offset);
 		if (obj->ref == NULL) {
 			//printf("Not supported:unknown typeref(%s) debug_offset=0x%x\n", obj->info.typename, obj->ref_debug_info_offset);
 		}

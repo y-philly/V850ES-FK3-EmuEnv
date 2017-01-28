@@ -216,6 +216,55 @@ static void print_ref_typename(PrintControlType *ctrl, DwarfDataType *type)
 	}
 	return;
 }
+static uint32 get_ref_typesize(PrintControlType *ctrl, DwarfDataType *type);
+
+static uint32 get_ref_base_typesize(PrintControlType *ctrl, DwarfDataBaseType *type)
+{
+	return type->info.size;
+}
+static uint32 get_ref_enum_typesize(PrintControlType *ctrl, DwarfDataEnumulatorType *type)
+{
+	return type->info.size;
+}
+static uint32 get_ref_pointer_typesize(PrintControlType *ctrl, DwarfDataPointerType *type)
+{
+	return type->info.size;
+}
+static uint32 get_ref_typedef_typesize(PrintControlType *ctrl, DwarfDataTypedefType *type)
+{
+	return get_ref_typesize(ctrl, type->ref);
+}
+static uint32 get_ref_struct_typesize(PrintControlType *ctrl, DwarfDataStructType *type)
+{
+	return type->info.size;
+}
+static uint32 get_ref_array_typesize(PrintControlType *ctrl, DwarfDataArrayType *type)
+{
+	return type->info.size;
+}
+static uint32 get_ref_typesize(PrintControlType *ctrl, DwarfDataType *type)
+{
+	switch (type->type) {
+	case DATA_TYPE_BASE:
+		return get_ref_base_typesize(ctrl, (DwarfDataBaseType *)type);
+	case DATA_TYPE_ENUM:
+		return get_ref_enum_typesize(ctrl, (DwarfDataEnumulatorType *)type);
+	case DATA_TYPE_POINTER:
+		return get_ref_pointer_typesize(ctrl, (DwarfDataPointerType *)type);
+	case DATA_TYPE_TYPEDEF:
+		return get_ref_typedef_typesize(ctrl, (DwarfDataTypedefType *)type);
+	case DATA_TYPE_STRUCT:
+		return get_ref_struct_typesize(ctrl, (DwarfDataStructType *)type);
+	case DATA_TYPE_ARRAY:
+		return get_ref_array_typesize(ctrl, (DwarfDataArrayType *)type);
+	case DATA_TYPE_UNION:
+		//TODO
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
 
 static void print_pointer_type_data(PrintControlType *ctrl, DwarfDataPointerType *type, uint8 *top_addr, uint32 size, uint32 off)
 {
@@ -261,6 +310,64 @@ static void print_enum_type_data(PrintControlType *ctrl, DwarfDataEnumulatorType
 	return;
 }
 
+static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *type, uint8 *top_addr, uint32 size, uint32 off)
+{
+	uint32 roff;
+	int i;
+	int j;
+	int dim_size;
+	int total_num = 1;
+	int typesize;
+	static DwarfUint32ArrayType *dims = NULL;
+
+	if (dims == NULL) {
+		dims = dwarf_uint32_array_alloc();
+	}
+	/*
+	 * 初期化
+	 */
+	typesize = get_ref_typesize(ctrl, type->ref);
+	dim_size = type->dimension->current_array_size;
+	dims->current_array_size = 0;
+	for (i = 0; i < dim_size; i++) {
+		dwarf_uint32_array_add_entry(dims, 0);
+		total_num *= type->dimension->data[i];
+	}
+
+	print_space(ctrl);
+	printf("( ");
+	print_ref_typename(ctrl, type->ref);
+	printf(" ) = { \n");
+
+	for (j = 0; j < total_num; j++) {
+		roff = (j * typesize);
+		//インデックス表示
+		print_space(ctrl);
+		printf("  ");
+		for (i = 0; i < dim_size; i++) {
+			printf("[%u]", dims->data[i]);
+		}
+		printf(" = ");
+		//値表示
+		print_any_data_type(ctrl, type->ref, top_addr + off + roff, type->ref->size, off + roff);
+		//ctrl->current_addr += type->ref->size;
+
+		//桁上げ計算
+		for (i = dim_size - 1; i >= 0; i--) {
+			dims->data[i]++;
+			if (dims->data[i] >= type->dimension->data[i]) {
+				dims->data[i] = 0;
+			}
+			else {
+				break;
+			}
+		}
+
+	}
+	print_space(ctrl);
+	printf("}\n");
+	return;
+}
 static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size, uint32 off)
 {
 	bool ret = FALSE;
@@ -288,7 +395,8 @@ static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint
 		ret = TRUE;
 		break;
 	case DATA_TYPE_ARRAY:
-		//TODO
+		print_array_type_data(ctrl, (DwarfDataArrayType *)obj, top_addr, size, off);
+		ret = TRUE;
 		break;
 	case DATA_TYPE_UNION:
 		//TODO

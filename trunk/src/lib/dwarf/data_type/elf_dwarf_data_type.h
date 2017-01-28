@@ -110,8 +110,7 @@ typedef struct {
 	DwarfDataType			*ref;
 	bool					is_valid_ref_debug_info_offset;
 	uint32					ref_debug_info_offset;
-	uint32					dimension;
-	DwarfUint32ArrayType	*element_num;
+	DwarfUint32ArrayType	*dimension;
 } DwarfDataArrayType;
 
 typedef struct {

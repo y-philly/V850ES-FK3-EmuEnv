@@ -312,11 +312,21 @@ static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *ty
 	int dim_size;
 	int total_num = 1;
 	int typesize;
-	static DwarfUint32ArrayType *dims = NULL;
+	static int stack_level = 0;
+	static ElfPointerArrayType *stack = NULL;
+	DwarfUint32ArrayType *dims;
 
-	if (dims == NULL) {
-		dims = dwarf_uint32_array_alloc();
+	if (stack == NULL) {
+		stack = elf_array_alloc();
 	}
+	if (stack_level >= stack->current_array_size) {
+		dims = dwarf_uint32_array_alloc();
+		elf_array_add_entry(stack, dims);
+	}
+	else {
+		dims = stack->data[stack_level];
+	}
+
 	/*
 	 * 初期化
 	 */
@@ -344,14 +354,19 @@ static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *ty
 		printf(" = ");
 		//値表示
 		ctrl->level++;
+		stack_level++;
 		print_any_data_type(ctrl, type->ref, top_addr, off + roff);
+		stack_level--;
 		ctrl->level--;
 		//ctrl->current_addr += type->ref->size;
 
 		//桁上げ計算
 		for (i = dim_size - 1; i >= 0; i--) {
 			dims->data[i]++;
-			if (dims->data[i] >= type->dimension->data[i]) {
+			if (i == 0) {
+				break;
+			}
+			else if (dims->data[i] >= type->dimension->data[i]) {
 				dims->data[i] = 0;
 			}
 			else {

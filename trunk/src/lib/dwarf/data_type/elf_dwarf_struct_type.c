@@ -62,6 +62,11 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 	DwAtType attr_type;
 	ElfDwarfDieType *member;
 
+	if (die->children == NULL) {
+		// no member;
+		return;
+	}
+
 	if (die->abbrev_info->tag == DW_TAG_structure_type) {
 		obj = dwarf_alloc_data_type(DATA_TYPE_STRUCT);
 	}
@@ -87,8 +92,10 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 		case DW_AT_sibling:
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
+		case DW_AT_declaration:
 			break;
 		default:
+			printf("attr_type=0x%x\n", attr_type);
 			ASSERT(0);
 		}
 	}

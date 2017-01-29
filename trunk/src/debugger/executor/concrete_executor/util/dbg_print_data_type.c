@@ -6,12 +6,12 @@
 
 typedef struct {
 	uint32 vaddr;
-	uint32 current_addr;
 	uint32 level;
 } PrintControlType;
 
-static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size, uint32 off);
+static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 off);
 static void print_ref_typename(PrintControlType *ctrl, DwarfDataType *type);
+static uint32 get_ref_typesize(PrintControlType *ctrl, DwarfDataType *type);
 
 static void print_base_type_address(uint8 *addr, uint32 size)
 {
@@ -83,30 +83,32 @@ static void print_base_type_unsigned(uint8 *addr, uint32 size)
 	return;
 }
 
-static void print_base_type_data(PrintControlType *ctrl, DwarfDataBaseType *obj, uint8 *addr, uint32 size, uint32 off)
+static void print_base_type_data(PrintControlType *ctrl, DwarfDataBaseType *obj, uint8 *addr, uint32 off)
 {
+	uint32 type_size = obj->info.size;
 	switch (obj->encoding) {
 	case DW_ATE_address:
-		print_base_type_address(addr, size);
+		print_base_type_address(&addr[off], type_size);
 		break;
 	case DW_ATE_boolean:
-		print_base_type_boolean(addr, size);
+		print_base_type_boolean(&addr[off], type_size);
 		break;
 	case DW_ATE_signed:
 	case DW_ATE_signed_char:
-		print_base_type_signed(addr, size);
+		print_base_type_signed(&addr[off], type_size);
 		break;
 	case DW_ATE_unsigned:
 	case DW_ATE_unsigned_char:
-		print_base_type_unsigned(addr, size);
+		print_base_type_unsigned(&addr[off], type_size);
 		break;
-	case DW_ATE_complex_float:
 	case DW_ATE_float:
+		//TODO
+	case DW_ATE_complex_float:
 	default:
 		printf("Unknown base type");
 		break;
 	}
-	printf(" (%s:%u) @ 0x%x(0x%x)\n", obj->info.typename, size, ctrl->current_addr + off, off);
+	printf(" (%s:%u) @ 0x%x(0x%x)\n", obj->info.typename, type_size, ctrl->vaddr + off, off);
 	return;
 }
 static void print_space(PrintControlType *ctrl)
@@ -118,7 +120,7 @@ static void print_space(PrintControlType *ctrl)
 	return;
 }
 
-static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *type, uint8 *top_addr, uint32 size, uint32 off)
+static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *type, uint8 *top_addr, uint32 off)
 {
 	int i;
 
@@ -127,25 +129,16 @@ static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *
 		DwarfDataStructMember *memp = (DwarfDataStructMember *)type->members->data[i];
 		print_space(ctrl);
 		printf("%s = ", memp->name);
-		if (memp->ref->type == DATA_TYPE_BASE) {
-			DwarfDataBaseType *basetype = (DwarfDataBaseType *)memp->ref;
-			print_base_type_data(ctrl, basetype, &top_addr[memp->off], memp->ref->size, memp->off);
-		}
-		else {
-			uint32 org_addr = ctrl->current_addr;
-			ctrl->current_addr += memp->off;
-			(void)print_any_data_type(ctrl, memp->ref, &top_addr[memp->off], memp->ref->size, memp->off);
-			ctrl->current_addr = org_addr;
-		}
+		(void)print_any_data_type(ctrl, memp->ref, top_addr, off + memp->off);
 	}
 	print_space(ctrl);
 	printf("}\n");
 	return;
 }
-static void print_typedef_type_data(PrintControlType *ctrl, DwarfDataTypedefType *type, uint8 *top_addr, uint32 size, uint32 off)
+static void print_typedef_type_data(PrintControlType *ctrl, DwarfDataTypedefType *type, uint8 *top_addr, uint32 off)
 {
 	printf("(typedef %s )", type->info.typename);
-	print_any_data_type(ctrl, type->ref, top_addr, size, off);
+	print_any_data_type(ctrl, type->ref, top_addr, off);
 	return;
 }
 
@@ -216,7 +209,7 @@ static void print_ref_typename(PrintControlType *ctrl, DwarfDataType *type)
 	}
 	return;
 }
-static uint32 get_ref_typesize(PrintControlType *ctrl, DwarfDataType *type);
+
 
 static uint32 get_ref_base_typesize(PrintControlType *ctrl, DwarfDataBaseType *type)
 {
@@ -266,31 +259,32 @@ static uint32 get_ref_typesize(PrintControlType *ctrl, DwarfDataType *type)
 	return 0;
 }
 
-static void print_pointer_type_data(PrintControlType *ctrl, DwarfDataPointerType *type, uint8 *top_addr, uint32 size, uint32 off)
+static void print_pointer_type_data(PrintControlType *ctrl, DwarfDataPointerType *type, uint8 *top_addr, uint32 off)
 {
 	printf("(");
 	print_ref_typename(ctrl, (DwarfDataType *)type);
-	printf(")");
-	printf(" 0x%x", elf_get_data32(top_addr, 0));
-	printf("  @ 0x%x(0x%x)\n", ctrl->current_addr + off, off);
+	printf(": %u )", type->info.size);
+	printf(" 0x%x", elf_get_data32(&top_addr[off], 0));
+	printf("  @ 0x%x(0x%x)\n", ctrl->vaddr + off, off);
 	return;
 }
 
-static void print_enum_type_data(PrintControlType *ctrl, DwarfDataEnumulatorType *type, uint8 *top_addr, uint32 size, uint32 off)
+static void print_enum_type_data(PrintControlType *ctrl, DwarfDataEnumulatorType *type, uint8 *top_addr, uint32 off)
 {
 	int i;
 	DwarfDataEnumMember *memp = NULL;
 	uint32 value;
+	uint32 type_size = type->info.size;
 
-	switch (size) {
+	switch (type_size) {
 	case 1:
-		value = elf_get_data8(top_addr, 0);
+		value = elf_get_data8(&top_addr[off], 0);
 		break;
 	case 2:
-		value = elf_get_data16(top_addr, 0);
+		value = elf_get_data16(&top_addr[off], 0);
 		break;
 	case 4:
-		value = elf_get_data32(top_addr, 0);
+		value = elf_get_data32(&top_addr[off], 0);
 		break;
 	default:
 		printf("unknown enum\n");
@@ -301,7 +295,7 @@ static void print_enum_type_data(PrintControlType *ctrl, DwarfDataEnumulatorType
 		memp = (DwarfDataEnumMember *)type->members->data[i];
 		if (memp->const_value == value) {
 			printf("%s.%s(%d)", type->info.typename, memp->name, memp->const_value);
-			printf("  @ 0x%x(0x%x)\n", ctrl->current_addr + off, off);
+			printf("  @ 0x%x(0x%x)\n", ctrl->vaddr + off, off);
 			return;
 		}
 	}
@@ -310,7 +304,7 @@ static void print_enum_type_data(PrintControlType *ctrl, DwarfDataEnumulatorType
 	return;
 }
 
-static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *type, uint8 *top_addr, uint32 size, uint32 off)
+static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *type, uint8 *top_addr, uint32 off)
 {
 	uint32 roff;
 	int i;
@@ -349,7 +343,9 @@ static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *ty
 		}
 		printf(" = ");
 		//値表示
-		print_any_data_type(ctrl, type->ref, top_addr + off + roff, type->ref->size, off + roff);
+		ctrl->level++;
+		print_any_data_type(ctrl, type->ref, top_addr, off + roff);
+		ctrl->level--;
 		//ctrl->current_addr += type->ref->size;
 
 		//桁上げ計算
@@ -368,34 +364,36 @@ static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *ty
 	printf("}\n");
 	return;
 }
-static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 size, uint32 off)
+static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 off)
 {
 	bool ret = FALSE;
 
 	switch (obj->type) {
 	case DATA_TYPE_BASE:
-		print_base_type_data(ctrl, (DwarfDataBaseType *)obj, top_addr, size, off);
+		print_base_type_data(ctrl, (DwarfDataBaseType *)obj, top_addr, off);
 		ret = TRUE;
 		break;
 	case DATA_TYPE_ENUM:
-		print_enum_type_data(ctrl, (DwarfDataEnumulatorType *)obj, top_addr, size, off);
+		print_enum_type_data(ctrl, (DwarfDataEnumulatorType *)obj, top_addr, off);
 		break;
 	case DATA_TYPE_POINTER:
-		print_pointer_type_data(ctrl, (DwarfDataPointerType *)obj, top_addr, size, off);
+		print_pointer_type_data(ctrl, (DwarfDataPointerType *)obj, top_addr, off);
 		ret = TRUE;
 		break;
 	case DATA_TYPE_TYPEDEF:
-		print_typedef_type_data(ctrl, (DwarfDataTypedefType *)obj, top_addr, size, off);
+		print_typedef_type_data(ctrl, (DwarfDataTypedefType *)obj, top_addr, off);
 		ret = TRUE;
 		break;
 	case DATA_TYPE_STRUCT:
 		ctrl->level++;
-		print_struct_type_data(ctrl, (DwarfDataStructType *)obj, top_addr, size, off);
+		print_struct_type_data(ctrl, (DwarfDataStructType *)obj, top_addr, off);
 		ctrl->level--;
 		ret = TRUE;
 		break;
 	case DATA_TYPE_ARRAY:
-		print_array_type_data(ctrl, (DwarfDataArrayType *)obj, top_addr, size, off);
+		//ctrl->level++;
+		print_array_type_data(ctrl, (DwarfDataArrayType *)obj, top_addr, off);
+		//ctrl->level--;
 		ret = TRUE;
 		break;
 	case DATA_TYPE_UNION:
@@ -423,9 +421,8 @@ bool print_variable_with_data_type(char *variable_name, uint32 vaddr, uint8 *top
 		return FALSE;
 	}
 	ctrl.vaddr = vaddr;
-	ctrl.current_addr = vaddr;
 	ctrl.level = 0;
 	printf("%s = ", variable_name);
-	return print_any_data_type(&ctrl, type, top_addr, size, 0);
+	return print_any_data_type(&ctrl, type, top_addr, 0);
 }
 

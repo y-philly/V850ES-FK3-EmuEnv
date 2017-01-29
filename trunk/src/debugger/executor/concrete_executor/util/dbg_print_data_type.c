@@ -61,6 +61,9 @@ static void print_base_type_signed(uint8 *addr, uint32 size)
 		break;
 	}
 	printf("%d", value);
+	if (size == 1) {
+		printf("(%c)", value);
+	}
 	return;
 }
 static void print_base_type_unsigned(uint8 *addr, uint32 size)

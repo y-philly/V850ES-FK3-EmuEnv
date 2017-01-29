@@ -166,6 +166,10 @@ static void print_ref_enum_typename(PrintControlType *ctrl, DwarfDataEnumulatorT
 
 static void print_ref_pointer_typename(PrintControlType *ctrl, DwarfDataPointerType *type)
 {
+	if (type->ref == NULL) {
+		printf("Unknown type");
+		return;
+	}
 	print_ref_typename(ctrl, type->ref);
 	printf(" *");
 	return;

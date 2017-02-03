@@ -31,6 +31,10 @@ static void file_address_mapping_build(void)
 	ElfDwarfLineStateMachineRegisterType machine;
 	ElfDwarfLineType *edl = elf_dwarf_line_get_ElfDwarfLine();
 
+	if (edl == NULL) {
+		return;
+	}
+	//printf("edl=0x%p\n", edl);
 	//printf("file_address_mapping_build:enter:size=%u\n", edl->entries->current_array_size);
 	for (entry_inx = 0; entry_inx < edl->entries->current_array_size; entry_inx++) {
 		ElfDwarfLineEntryType *entry = (ElfDwarfLineEntryType *)edl->entries->data[entry_inx];

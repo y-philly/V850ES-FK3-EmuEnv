@@ -6,7 +6,10 @@
 
 #if 0
 #include <stdio.h>
+#define DBG_PRINTF_DEFINED
 #define DBG_PRINTF(arg)	printf arg
+static void printCompilationUnitHeader(ElfDwarfCompilationUnitHeaderType *cu);
+static void printAll(void);
 #else
 #define DBG_PRINTF(arg)
 #endif
@@ -15,8 +18,6 @@
 static char *debug_str = NULL;
 static ElfPointerArrayType *compilation_unit_headers = NULL;
 
-static void printCompilationUnitHeader(ElfDwarfCompilationUnitHeaderType *cu);
-static void printAll(void);
 
 static ElfDwarfAttributeType *elf_dwarf_alloc_empty_ElfDwarfAttribute(void)
 {
@@ -371,6 +372,7 @@ Std_ReturnType elf_dwarf_info_load(uint8 *elf_data)
 	//printAll();
 	return STD_E_OK;
 }
+#ifdef DBG_PRINTF_DEFINED
 
 static void printOps(ElfDwarfAttributeType *obj)
 {
@@ -516,3 +518,4 @@ static void printAll(void)
 		printCompilationUnitHeader(compilation_unit_headers->data[i]);
 	}
 }
+#endif

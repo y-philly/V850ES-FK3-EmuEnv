@@ -35,6 +35,8 @@ void elf_dwarf_build_enum_type(ElfDwarfDieType *die)
 
 	for (i = 0; i < die->children->current_array_size; i++) {
 		DwarfDataEnumMember mem;
+		mem.name = NULL;
+		mem.const_value = 0;
 		member = (ElfDwarfDieType*)die->children->data[i];
 		abbrev = (ElfDwarfAbbrevType *)member->abbrev_info;
 		if (member->abbrev_info->tag != DW_TAG_enumerator) {

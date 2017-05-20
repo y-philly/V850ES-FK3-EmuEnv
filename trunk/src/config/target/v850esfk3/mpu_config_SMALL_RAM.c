@@ -4,7 +4,7 @@
 #define MPU_ADDRESS_REGION_MASK_PH		0x03FFFFFF
 
 #define MPU_ADDRESS_REGION_SIZE_INX_ROM		(1024U * 512U)
-#define MPU_ADDRESS_REGION_SIZE_INX_RAM		(1024U * 1024U)
+#define MPU_ADDRESS_REGION_SIZE_INX_RAM		(1024U * 60U)
 #define MPU_ADDRESS_REGION_SIZE_INX_INTC	(0xFFFFF1FB - 0xFFFFF100)
 #define MPU_ADDRESS_REGION_SIZE_INX_SERIAL	(0xFFFFFA78 - 0xFFFFFA00)
 #define MPU_ADDRESS_REGION_SIZE_INX_COMM	(0xFFFFF590 - 0xFFFFF560)
@@ -48,7 +48,7 @@ MpuAddressMapType mpu_address_map = {
 				{
 						.type		= GLOBAL_MEMORY,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
-						.start		= 0x05FF0000,
+						.start		= 0x03FF0000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_RAM,
 						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
 						.data		= memory_data_RAM,
@@ -112,8 +112,8 @@ MpuAddressMapType mpu_address_map = {
 						.start		= CPU_CONFIG_DEBUG_REGISTER_ADDR,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_CPU,
 						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
-						.data		= memory_data_RAM,
-						.ops		= &default_memory_operation
+						.data		= NULL,
+						.ops		= &cpu_register_operation
 				},
 
 				/*

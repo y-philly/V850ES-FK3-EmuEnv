@@ -392,6 +392,8 @@ Std_ReturnType cpuemu_load_devcfg(const char *path)
 		cpuemu_devcfg.param[cpuemu_devcfg.param_num].key = devcfg_token_container.array[0];
 		cpuemu_devcfg.param[cpuemu_devcfg.param_num].value = devcfg_token_container.array[1];
 		cpuemu_devcfg.param_num++;
+		//printf("param=%s\n", devcfg_token_container.array[0].body.str.str);
+		//printf("value=%s\n", devcfg_token_container.array[1].body.str.str);
 	}
 
 	file_close(&devcfg_file);

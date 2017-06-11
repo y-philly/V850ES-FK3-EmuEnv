@@ -67,6 +67,7 @@ static char *search_filepath(char *dir, char *file)
 	static char buffer[4096];
 	static char parameter[4096];
 
+	//printf("%s\n", dir);
 	snprintf(buffer, sizeof(buffer), "%s/%s", dir, file);
 	if (file_exist(buffer) == TRUE) {
 		return buffer;
@@ -84,6 +85,10 @@ static char *search_filepath(char *dir, char *file)
 			return NULL;
 		}
 		snprintf(buffer, sizeof(buffer), "%s/%s/%s", candiate_path, dir, file);
+		if (candiate_path[0] == '/') {
+			candiate_path[0] = candiate_path[1];
+			candiate_path[1] = ':';
+		}
 		//printf("%s = %s %s\n", parameter, candiate_path, buffer);
 		if (file_exist(buffer) == TRUE) {
 			return buffer;

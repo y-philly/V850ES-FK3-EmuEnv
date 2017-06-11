@@ -263,7 +263,7 @@ static void add_map(KeyValueMappingType *map, ElfDwarfLineParsedOpCodeType *op, 
 		dir = (char*)op->hdr->include_directories->data[dir_inx -1];
 	}
 #if 0
-	printf("%s %u 0x%x- 0x%x\n", file, map->value.line, map->key.address_start, map->key.address_end);
+	printf("%s %u 0x%x dir=%s\n", file, map->value.line, map->key.addr, dir);
 #endif
 
 	map->value.file = file;

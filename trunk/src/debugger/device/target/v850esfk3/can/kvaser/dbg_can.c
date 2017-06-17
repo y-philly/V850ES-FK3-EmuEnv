@@ -35,11 +35,6 @@ static DbgKvaserType dbg_kvaser = {
 	canOK
 };
 
-void dbg_do_can_recvbuf(DbgCmdType *cmd)
-{
-	//nothing to do.
-	return;
-}
 
 static bool dbg_kavaser_can_init(uint32 ch)
 {

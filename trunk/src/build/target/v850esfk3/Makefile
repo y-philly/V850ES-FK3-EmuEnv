@@ -1,5 +1,4 @@
 ROOTDIR		:= ../../..
-TARGET		:= athrill
 
 include Makefile.env
 
@@ -74,5 +73,5 @@ clean:
 	make -f Makefile.mpu clean
 	make -f Makefile.std clean
 	make -f Makefile.main clean
-	$(RM) -f $(TARGET).exe $(ROOTDIR)/bin/$(TARGET).exe
+	$(RM) -f $(TARGET).exe 
 		

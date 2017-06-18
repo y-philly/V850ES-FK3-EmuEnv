@@ -120,11 +120,23 @@ void cpuemu_get_register(CoreIdType core_id, TargetCoreType *cpu)
 	return;
 }
 
-
 void *cpuemu_thread_run(void* arg)
 {
 	CoreIdType i;
 	Std_ReturnType err;
+	DbgCpuCallbackFuncEnableType enable_dbg;
+
+	enable_dbg.enable_bt = TRUE;
+	enable_dbg.enable_ft = TRUE;
+	enable_dbg.enable_watch = TRUE;
+	enable_dbg.enable_prof = TRUE;
+
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_BT", &enable_dbg.enable_bt);
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_FT", &enable_dbg.enable_ft);
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_PROF", &enable_dbg.enable_watch);
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_WATCH", &enable_dbg.enable_prof);
+
+
 
 	while (TRUE) {
 		if (cpuemu_dev_clock.clock >= cpuemu_get_cpu_end_clock()) {
@@ -165,13 +177,11 @@ void *cpuemu_thread_run(void* arg)
 			/**
 			 * CPU 実行完了通知
 			 */
-			dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core);
+			dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core, &enable_dbg);
 		}
 
-
-		//Sleep(100);
-
 	}
+
 	return NULL;
 }
 

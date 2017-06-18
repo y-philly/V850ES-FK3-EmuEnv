@@ -52,12 +52,18 @@ void device_supply_clock(DeviceClockType *dev_clock)
 {
 
 	device_supply_clock_timer(dev_clock);
+#ifndef DISABLE_DEVICE_TIMER_M
 	device_supply_clock_timer_m(dev_clock);
+#endif /* DISABLE_DEVICE_TIMER_M */
 	device_supply_clock_serial(dev_clock);
+#ifndef DISABLE_DEVICE_CAN
 	device_supply_clock_can(dev_clock);
+#endif /* DISABLE_DEVICE_CAN */
 	//device_supply_clock_adc(dev_clock);
 	//device_supply_clock_wdg(dev_clock);
+#ifndef DISABLE_DEVICE_COMM
 	device_supply_clock_comm(dev_clock);
+#endif /* DISABLE_DEVICE_COMM */
 	device_supply_clock_intc(dev_clock);
 	return;
 }

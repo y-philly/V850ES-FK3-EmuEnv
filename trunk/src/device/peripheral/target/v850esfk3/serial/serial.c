@@ -106,6 +106,9 @@ void device_do_serial(SerialDeviceType *serial)
 
 void device_supply_clock_serial(DeviceClockType *dev_clock)
 {
+#if 1
+	device_do_serial(&SerialDevice[0U]);
+#else
 	int i = 0;
 
 	for (i = 0; i < UDnChannelNum; i++) {
@@ -115,6 +118,7 @@ void device_supply_clock_serial(DeviceClockType *dev_clock)
 		device_do_serial(&SerialDevice[i]);
 	}
 	return;
+#endif
 }
 
 

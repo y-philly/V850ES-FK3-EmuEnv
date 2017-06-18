@@ -158,8 +158,21 @@ static void device_timer_do_interrupt(DeviceClockType *device, int ch)
 	return;
 }
 
+#define INLINE_device_supply_clock_timer(dev_clock, ch)	\
+do {	\
+	if ((dev_clock->clock % TimerDevice[ch].fd) == 0) {	\
+		device_timer_do_mode(dev_clock, ch);	\
+		device_timer_do_update(dev_clock, ch);	\
+		device_timer_do_interrupt(dev_clock, ch);	\
+	}	\
+} while(0)
+
 void device_supply_clock_timer(DeviceClockType *dev_clock)
 {
+#if 1
+	INLINE_device_supply_clock_timer(dev_clock, 2);
+	INLINE_device_supply_clock_timer(dev_clock, 3);
+#else
 	int ch;
 
 
@@ -176,5 +189,6 @@ void device_supply_clock_timer(DeviceClockType *dev_clock)
 		//割込み生成
 		device_timer_do_interrupt(dev_clock, ch);
 	}
+#endif
 	return;
 }

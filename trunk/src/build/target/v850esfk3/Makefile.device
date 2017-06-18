@@ -2,6 +2,7 @@ ROOTDIR		:= ../../..
 ARCH		:= v850esfk3
 
 include Makefile.env
+include make_conf/disable_device.def
 
 LIBTARGET	:= libdevice.a
 

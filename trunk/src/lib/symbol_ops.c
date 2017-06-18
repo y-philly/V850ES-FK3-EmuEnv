@@ -77,6 +77,15 @@ char * symbol_pc2func(uint32 pc)
 int symbol_pc2funcid(uint32 pc, uint32 *funcaddr)
 {
 	int i;
+	static int last_funcid = -1;
+
+	if (last_funcid > 0) {
+		if ((pc >= symbol_func[last_funcid].addr) &&
+				(pc < (symbol_func[last_funcid].addr + symbol_func[last_funcid].size))) {
+			*funcaddr = symbol_func[last_funcid].addr;
+			return last_funcid;
+		}
+	}
 
 	for (i = 0; i < symbol_func_size; i++) {
 		if (pc < symbol_func[i].addr) {
@@ -86,6 +95,7 @@ int symbol_pc2funcid(uint32 pc, uint32 *funcaddr)
 			continue;
 		}
 		*funcaddr = symbol_func[i].addr;
+		last_funcid = i;
 		return  i;
 	}
 	return -1;

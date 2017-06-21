@@ -47,6 +47,7 @@ static void print_base_type_boolean(uint8 *addr, uint32 size)
 static void print_base_type_signed(uint8 *addr, uint32 size)
 {
 	sint32 value = 0;
+	sint64 value64 = 0;
 	switch (size) {
 	case 1:
 		value = ((sint8)elf_get_data8(addr, 0));
@@ -57,6 +58,10 @@ static void print_base_type_signed(uint8 *addr, uint32 size)
 	case 4:
 		value = ((sint32)elf_get_data32(addr, 0));
 		break;
+	case 8:
+		value64 = ((sint64)elf_get_data64(addr, 0));
+		printf("%I64d", value64);
+		return;
 	default:
 		break;
 	}
@@ -69,6 +74,7 @@ static void print_base_type_signed(uint8 *addr, uint32 size)
 static void print_base_type_unsigned(uint8 *addr, uint32 size)
 {
 	sint32 value = 0;
+	uint64 value64 = 0;
 	switch (size) {
 	case 1:
 		value = ((uint8)elf_get_data8(addr, 0));
@@ -79,6 +85,10 @@ static void print_base_type_unsigned(uint8 *addr, uint32 size)
 	case 4:
 		value = ((uint32)elf_get_data32(addr, 0));
 		break;
+	case 8:
+		value64 = ((uint64)elf_get_data64(addr, 0));
+		printf("%I64u", value64);
+		return;
 	default:
 		break;
 	}

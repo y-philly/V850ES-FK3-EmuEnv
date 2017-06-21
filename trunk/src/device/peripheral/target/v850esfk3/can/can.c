@@ -395,7 +395,7 @@ static uint64 get_priopoint_snd_msg(uint32 channel, uint32 msg_id)
 		uint32 tmp = (tmph << 16) | tmpl;
 		CanDevice.module.channel[channel].msg[msg_id].canid = tmp;
 	}
-	printf("channel=%d msg_id=%d canid=0x%x\n", channel, msg_id,  CanDevice.module.channel[channel].msg[msg_id].canid);
+	//printf("channel=%d msg_id=%d canid=0x%x\n", channel, msg_id,  CanDevice.module.channel[channel].msg[msg_id].canid);
 
 	point <<= 18U;
 	point |= idl;

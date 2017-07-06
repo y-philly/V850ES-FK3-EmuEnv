@@ -8,6 +8,7 @@
 typedef struct {
 	uint16 id;
 	uint16 fd;
+	uint32 last_raised_counter;
 	uint32 count;
 	uint32 bitrate;
 	uint32 count_base;
@@ -27,6 +28,7 @@ static Std_ReturnType serial_get_data32(MpuAddressRegionType *region, CoreIdType
 static Std_ReturnType serial_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data);
 static Std_ReturnType serial_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data);
 static Std_ReturnType serial_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data);
+static Std_ReturnType serial_get_pointer(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 **data);
 
 MpuAddressRegionOperationType	serial_memory_operation = {
 		.get_data8 		= 	serial_get_data8,
@@ -37,7 +39,7 @@ MpuAddressRegionOperationType	serial_memory_operation = {
 		.put_data16		=	serial_put_data16,
 		.put_data32		=	serial_put_data32,
 
-		.get_pointer	= NULL
+		.get_pointer	= serial_get_pointer,
 };
 
 
@@ -58,6 +60,8 @@ void device_init_serial(MpuAddressRegionType *region)
 //		SerialDevice[i].count_base = CLOCK_PER_SEC / (SerialDevice[i].bitrate / 8);
 		SerialDevice[i].count_base = 1;
 		SerialDevice[i].ops = NULL;
+
+		SerialDevice[i].last_raised_counter = 0;
 	}
 	serial_region = region;
 
@@ -79,13 +83,20 @@ void device_do_serial(SerialDeviceType *serial)
 	 * 受信データチェック：存在している場合は，割り込みを上げる．
 	 */
 	if (serial_isset_str_ssf() == FALSE) {
-		ret = serial->ops->getchar(serial->id, &data);
-		if (ret == TRUE) {
-			serial_set_str_ssf();
-			//受信データをセットする．
-			(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
-			//受信割込みを上げる
-			device_raise_int(INTNO_INTUD0R);
+		if (serial->last_raised_counter == 0U) {
+			ret = serial->ops->getchar(serial->id, &data);
+			if (ret == TRUE) {
+				serial_set_str_ssf();
+				//受信データをセットする．
+				(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
+				//受信割込みを上げる
+				//printf("serial interrupt\n");
+				device_raise_int(INTNO_INTUD0R);
+				serial->last_raised_counter = 1000U;
+			}
+		}
+		else {
+			serial->last_raised_counter--;
 		}
 	}
 
@@ -153,6 +164,7 @@ static void serial_set_str_ssf(void)
 	(void)serial_get_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnSTR(UDnCH0) & serial_region->mask), &str);
 	str |= 0x10;
 	(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnSTR(UDnCH0) & serial_region->mask), str);
+	//printf("str=0x%x\n", str);
 	return;
 }
 
@@ -160,6 +172,8 @@ static Std_ReturnType serial_get_data8(MpuAddressRegionType *region, CoreIdType 
 {
 	uint32 off = (addr - region->start);
 	*data = *((uint8*)(&region->data[off]));
+	//if (addr ==  (UDnSTR(UDnCH0) & serial_region->mask))
+	//	printf("serial_get_data8:str=0x%x\n", *data);
 	return STD_E_OK;
 }
 static Std_ReturnType serial_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data)
@@ -178,6 +192,9 @@ static Std_ReturnType serial_put_data8(MpuAddressRegionType *region, CoreIdType 
 {
 	uint32 off = (addr - region->start);
 	*((uint8*)(&region->data[off])) = data;
+
+	//if (addr ==  (UDnSTR(UDnCH0) & serial_region->mask))
+	//	printf("serial_put_data8:addr=0x%x str=0x%x\n", addr, data);
 
 	if (addr == (UDnTX(UDnCH0) & region->mask)) {
 		(void)SerialDevice[UDnCH0].ops->putchar(SerialDevice[UDnCH0].id, data);
@@ -199,6 +216,12 @@ static Std_ReturnType serial_put_data32(MpuAddressRegionType *region, CoreIdType
 {
 	uint32 off = (addr - region->start);
 	*((uint32*)(&region->data[off])) = data;
+	return STD_E_OK;
+}
+static Std_ReturnType serial_get_pointer(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 **data)
+{
+	uint32 off = (addr - region->start);
+	*data = &region->data[off];
 	return STD_E_OK;
 }
 

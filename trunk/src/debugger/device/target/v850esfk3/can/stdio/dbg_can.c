@@ -28,6 +28,7 @@ typedef struct {
 
 static DbgCmdCanRcvDataType dbg_can_rcvinfo;
 
+#if 0 //TODO
 void dbg_do_can_recvbuf(DbgCmdType *cmd)
 {
 	int fd;
@@ -53,7 +54,7 @@ void dbg_do_can_recvbuf(DbgCmdType *cmd)
 	close(fd);
 	return;
 }
-
+#endif
 
 static bool dbg_stdio_can_init(uint32 ch)
 {
@@ -96,6 +97,7 @@ static bool dbg_stdio_can_recv(uint32 *ch, uint32 *canid, uint32 *ex_canid, uint
 }
 static bool dbg_stdio_can_send(uint32 ch, uint32 can_id, uint8 *data, uint8 dlc, uint8 canid_type)
 {
+#if 0
 	uint8 i;
 	printf("\n");
 	printf("#########################CAN DEBUG INFO########################\n");
@@ -110,5 +112,6 @@ static bool dbg_stdio_can_send(uint32 ch, uint32 can_id, uint8 *data, uint8 dlc,
 	printf("\n");
 	printf("#########################CAN DEBUG INFO########################\n");
 	fflush(stdout);
+#endif
 	return TRUE;
 }

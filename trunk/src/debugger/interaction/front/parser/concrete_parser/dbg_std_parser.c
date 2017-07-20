@@ -516,7 +516,47 @@ DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContaine
 
 	return NULL;
 }
+/************************************************************************************
+ * memset コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType memset_string = {
+		.len = 3,
+		.str = { 's', 'e', 't', '\0' },
+};
+static const TokenStringType memset_string_short = {
+		.len = 1,
+		.str = { 's', '\0' },
+};
+DbgCmdExecutorType *dbg_parse_memset(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorMemsetType *parsed_args = (DbgCmdExecutorMemsetType *)arg->parsed_args;
 
+	if ((token_container->num != 3)) {
+		return NULL;
+	}
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &memset_string) == FALSE) &&
+			(token_strcmp(&token_container->array[0].body.str, &memset_string_short) == FALSE)) {
+		return NULL;
+	}
+
+	if (token_container->array[1].type != TOKEN_TYPE_VALUE_HEX) {
+		return NULL;
+	}
+	if (token_container->array[2].type != TOKEN_TYPE_VALUE_DEC) {
+		return NULL;
+	}
+
+	parsed_args->addr = token_container->array[1].body.hex.value;
+	parsed_args->value = token_container->array[2].body.dec.value;
+	arg->run = dbg_std_executor_memset;
+	return arg;
+}
 
 /************************************************************************************
  * quit コマンド
@@ -946,6 +986,17 @@ static const DbgCmdHelpType help_list = {
 							{
 									.semantics = "print <addr(hex)> <size>",
 									.description = "show memory information from <addr> to (<addr> + <size>)",
+							},
+					},
+			},
+			{
+					.name = &memset_string,
+					.name_shortcut = &memset_string_short,
+					.opt_num = 1,
+					.opts = {
+							{
+									.semantics = "set <addr(hex)> <value>",
+									.description = "set <value> on memory <addr> by byte",
 							},
 					},
 			},

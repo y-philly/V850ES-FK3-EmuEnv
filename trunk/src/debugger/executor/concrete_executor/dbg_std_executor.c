@@ -444,6 +444,27 @@ void dbg_std_executor_print(void *executor)
 	 return;
 }
 
+void dbg_std_executor_memset(void *executor)
+{
+	Std_ReturnType ret;
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorMemsetType *parsed_args = (DbgCmdExecutorMemsetType *)(arg->parsed_args);
+	uint8 *data;
+	uint32 addr;
+	uint8 value;
+
+	addr = parsed_args->addr;
+	value = parsed_args->value;
+
+	ret = cpuemu_get_addr_pointer(addr, &data);
+	if (ret == STD_E_OK) {
+		*data = value;
+	} else {
+		printf("ERROR:can not find addr:0x%x\n", addr);
+	}
+
+	 return;
+}
 void dbg_std_executor_serialin(void *executor)
 {
 	uint32 i;

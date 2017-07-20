@@ -16,6 +16,7 @@ extern void dbg_std_executor_exit(void *executor);
 extern void dbg_std_executor_elaps(void *executor);
 extern void dbg_std_executor_view(void *executor);
 extern void dbg_std_executor_print(void *executor);
+extern void dbg_std_executor_memset(void *executor);
 
 extern void dbg_std_executor_serialin(void *executor);
 extern void dbg_std_executor_info_cpu(void *executor);

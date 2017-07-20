@@ -12,6 +12,7 @@ DbgCmdParserTableType dbg_cmd_parser_std_table[DBG_CMD_STD_ID_NUM] = {
 		{ dbg_parse_return, },
 		{ dbg_parse_view, },
 		{ dbg_parse_print, },
+		{ dbg_parse_memset, },
 		{ dbg_parse_quit, },
 		{ dbg_parse_exit, },
 		{ dbg_parse_serialin, },

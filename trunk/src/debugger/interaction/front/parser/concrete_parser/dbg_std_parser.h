@@ -54,6 +54,11 @@ typedef struct {
 	uint32 				size;
 } DbgCmdExecutorPrintType;
 extern DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+typedef struct {
+	uint32 				addr;
+	uint8 				value;
+} DbgCmdExecutorMemsetType;
+extern DbgCmdExecutorType *dbg_parse_memset(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_quit(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_exit(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 

@@ -61,7 +61,7 @@ endif
 #
 #  GNU開発環境のターゲットアーキテクチャの定義
 #
-#CC_TARGET = arm-rz-eabi-gcc
+GCC_TARGET = arm-rz-eabi
 #GCC_TARGET = arm-none-eabi
 #GCC_TARGET = arm-atollic-eabi
 

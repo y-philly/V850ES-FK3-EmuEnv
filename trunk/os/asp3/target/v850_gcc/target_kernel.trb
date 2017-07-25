@@ -7,3 +7,4 @@
 #  生成スクリプトのチップ依存部
 #
 
+IncludeTrb("chip_kernel.trb")

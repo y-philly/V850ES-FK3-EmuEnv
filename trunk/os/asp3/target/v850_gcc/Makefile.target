@@ -1,0 +1,29 @@
+#
+#		Makefile のターゲット依存部（V850ES/FK3用）
+#
+#  $Id:  $
+# 
+
+#
+#  コンパイルオプションとリンカスクリプトの定義
+#
+COPTS := $(COPTS) -mv850e -mdisable-callt
+CDEFS := $(CDEFS) -DLABEL_ASM
+LDSCRIPT = $(TARGETDIR)/v850es_fk3.ld
+
+LDFLAGS := -nostartfiles -lgcc -lc $(LDFLAGS)
+CFG1_OUT_LDFLAGS := -nostdlib
+
+#
+#  コンパイルオプション
+#
+INCLUDES := $(INCLUDES) -I$(TARGETDIR)
+INCLUDES += -I$(SRCDIR)/arch/gcc
+
+#
+#  v850開発環境のターゲットアーキテクチャの定義
+#
+TOOL := gcc
+GCC_TARGET := v850-elf
+
+

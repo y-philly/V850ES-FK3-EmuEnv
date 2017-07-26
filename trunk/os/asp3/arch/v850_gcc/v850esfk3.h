@@ -39,6 +39,12 @@
 
 #define DEFAULT_STK_TOP		((STK_T *const)0xFFFF0000)
 #define STACKTOP			0x05FFEFFF
+/*
+ *  型キャストを行うマクロの定義
+ */
+#ifndef CAST
+#define CAST(type, val)		((type)(val))
+#endif /* CAST */
 
 /* I/Oアドレス(必要なもののみ) */
 
@@ -129,8 +135,8 @@
 	{ INTF3 , INTR3 , 1 } 		/* INT7 */
 
 #define SCIF2_BASE			0xe8008000
-#define TMIN_INTPRI		(-31)		/* 割込み優先度の最小値（最高値）*/
-#define TMAX_INTPRI		(-1)		/* 割込み優先度の最大値（最低値）*/
+
+
 #define INTNO_SCIF0_BRI		221		/* SCIF0 ブレーク割込み */
 #define INTNO_SCIF0_ERI		222		/* SCIF0 エラー割込み */
 #define INTNO_SCIF0_RXI		223		/* SCIF0 受信割込み */

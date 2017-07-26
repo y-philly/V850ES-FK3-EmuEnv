@@ -19,6 +19,8 @@ INCLUDES += -I$(SRCDIR)/arch/gcc
 #  カーネルに関する定義
 #
 KERNEL_DIRS := $(KERNEL_DIRS) $(CHIPDIR)
+#KERNEL_ASMOBJS := $(KERNEL_ASMOBJS) gic_support.o
+KERNEL_COBJS := $(KERNEL_COBJS) prc_config.o
 
 #
 #  コンフィギュレータ関係の変数の定義

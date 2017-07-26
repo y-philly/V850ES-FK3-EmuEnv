@@ -53,9 +53,9 @@
 /*
  *  ターゲットのハードウェア資源の定義
  */
-//TODO include chip
 #include <sil.h>
 #include "v850esfk3.h"
+#include "prc_config.h"
 
 /*
  *  割込み番号・割込みハンドラ番号
@@ -91,13 +91,7 @@
  */
 #define VALID_EXCNO_DEFEXC(excno) (1)
 
-/*
- *  割込みハンドラの設定
- *
- *	TFファイルで生成するため，空にしている
- */
 
-#define x_define_inh(inhno, int_entry)
 
 /*
  *  割込みハンドラの出入口処理の生成マクロ

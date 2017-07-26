@@ -10,7 +10,7 @@
  *
  *  Copyright (C) 2010-2011 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation 
+ *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -57,6 +57,7 @@
  */
 #include "prc_insn.h"
 #include <sil.h>
+#include "prc_kernel.h"
 
 /*
  *  非タスクコンテキスト用のスタック初期値
@@ -189,18 +190,20 @@ Inline void
 x_lock_cpu(void)
 {
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
-	disable_int();
+	disable_int_all();
 	
 	save_imr();	/* 現在のIMRを退避 */
 	set_intpri(INTPRI_LOCK);
 	lock_flag = true;
 	
 	/* 割込み解除 */
-	enable_int();
+	enable_int_all();
 }
 
 #define t_lock_cpu()    x_lock_cpu()
 #define i_lock_cpu()    x_lock_cpu()
+#define lock_cpu()		x_lock_cpu()
+#define lock_cpu_dsp()		x_lock_cpu()
 
 /*
  *  CPUロック状態の解除
@@ -209,18 +212,20 @@ Inline void
 x_unlock_cpu(void)
 {
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
-	disable_int();
+	disable_int_all();
 	
 	restore_imr();	/* IMRを復帰 */
 	set_intpri(current_intpri);
 	lock_flag = false;
 	
 	/* 割込み解除 */
-	enable_int();
+	enable_int_all();
 }
 
 #define t_unlock_cpu()    x_unlock_cpu()
 #define i_unlock_cpu()    x_unlock_cpu()
+#define unlock_cpu()	  x_unlock_cpu()
+#define unlock_cpu_dsp()	  x_unlock_cpu()
 
 /*
  *  CPUロック状態の参照
@@ -233,6 +238,7 @@ x_sense_lock(void)
 
 #define t_sense_lock()    x_sense_lock()
 #define i_sense_lock()    x_sense_lock()
+#define sense_lock()    x_sense_lock()
 
 /* ena_int/disintで有効な割込み番号の範囲の判定 */
 #define VALID_INTNO_CFGINT(intno)	(((7u <= (intno)) && ((intno) <= 116u))	\
@@ -339,7 +345,13 @@ extern void    start_r(void);
  */
 extern void initialize_exception(void);
 
+/*
+ *  割込みハンドラの設定
+ *
+ *	TFファイルで生成するため，空にしている
+ */
 
+#define define_inh(inhno, int_entry)
 /*
  *  割込み要求禁止フラグのセット
  *
@@ -367,6 +379,7 @@ x_disable_int(INTNO intno)
 
 #define t_disable_int(intno) x_disable_int(intno)
 #define i_disable_int(intno) x_disable_int(intno)
+#define disable_int(intno) x_disable_int(intno)
 
 /*
  *  割込み要求禁止フラグの解除
@@ -396,6 +409,7 @@ x_enable_int(INTNO intno)
 
 #define t_enable_int(intno) x_enable_int(intno)
 #define i_enable_int(intno) x_enable_int(intno)
+#define enable_int(intno) x_enable_int(intno)
 
 
 /*
@@ -452,7 +466,7 @@ x_probe_int(INTNO intno)
  *  として与えることができる値は-7～0が標準である．
  */
 extern void x_config_int(INTNO intno, ATR intatr, PRI intpri);
-
+#define config_int	x_config_int
 /*
  *  割込みハンドラ入口で必要なIRC操作
  *

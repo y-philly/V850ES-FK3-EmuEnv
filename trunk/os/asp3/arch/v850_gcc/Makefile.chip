@@ -1,0 +1,29 @@
+#
+#		Makefile のチップ依存部（V850用）
+#
+#  $Id:  $
+# 
+
+#
+#  チップ依存部ディレクトリ名の定義
+#
+CHIPDIR = $(SRCDIR)/arch/$(CORE)_$(TOOL)
+
+#
+#  コンパイルオプション
+#
+INCLUDES := $(INCLUDES) -I$(CHIPDIR)
+INCLUDES += -I$(SRCDIR)/arch/gcc
+
+#
+#  カーネルに関する定義
+#
+KERNEL_DIRS := $(KERNEL_DIRS) $(CHIPDIR)
+
+#
+#  コンフィギュレータ関係の変数の定義
+#
+
+#
+#  コア依存部
+#

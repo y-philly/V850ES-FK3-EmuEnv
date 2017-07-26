@@ -10,7 +10,7 @@
  *
  *  Copyright (C) 2010 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation 
+ *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -123,6 +123,14 @@ struct _int_pol_table const int_pol_table[] =
 	INT_POLREG_TABLE
 };
 
+static uint8_t intcfg_table[TNUM_INTNO];
+
+bool_t
+check_intno_cfg(INTNO intno)
+{
+	return(intcfg_table[intno] != 0U);
+}
+
 void
 x_config_int(INTNO intno, ATR intatr, PRI intpri)
 {
@@ -140,7 +148,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	(void)x_disable_int(intno);
 	
 	if(((7u <= (intno)) && ((intno) <= 15u)) || (intno == 1u))
-	{	
+	{
 		/* INT端子の場合は割込み検知方法を設定する */
 		if((intatr & TA_POSEDGE) != 0U)
 		{
@@ -151,6 +159,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
 					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
 						| (1U << int_pol_table[intno].bitpos)));
+			intcfg_table[intno] = true;
 		}
 		else if((intatr & TA_NEGEDGE) != 0U)
 		{
@@ -161,6 +170,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
 					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
 						& ~(1U << int_pol_table[intno].bitpos)));
+			intcfg_table[intno] = true;
 		}
 		else if((intatr & TA_BOTHEDGE) != 0U)
 		{
@@ -171,6 +181,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
 					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
 						| (1U << int_pol_table[intno].bitpos)));
+			intcfg_table[intno] = true;
 		}
 	}
 	

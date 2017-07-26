@@ -98,7 +98,13 @@ extern uint16_t saved_imr[];
 extern uint16_t disint_table[];
 /* 割込みネスト回数 */
 extern uint8_t intnest;
-
+/*
+ *  割込みを受け付けるための遅延処理
+ */
+Inline void
+delay_for_interrupt(void)
+{
+}
 /*
  *  コンテキストの参照
  */

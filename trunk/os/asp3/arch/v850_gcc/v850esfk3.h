@@ -167,4 +167,7 @@
  *  割込みタイミングに指定する最大値
  */
 #define HRTCNT_BOUND		4000000002U
+
+#define TNUM_INTNO		UINT_C(587) //TODO dummy
+
 #endif	/* TOPPERS_V850ESFK3_H */

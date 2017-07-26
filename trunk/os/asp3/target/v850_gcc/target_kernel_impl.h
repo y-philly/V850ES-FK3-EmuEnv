@@ -55,10 +55,8 @@
  */
 //TODO include chip
 #include <sil.h>
-#define TMIN_INTPRI		(-31)		/* 割込み優先度の最小値（最高値）*/
-#define TMAX_INTPRI		(-1)		/* 割込み優先度の最大値（最低値）*/
-#define INTNO_SCIF2_RXI		231		/* SCIF2 受信割込み */
-#define INTNO_SCIF2_TXI		232		/* SCIF2 送信割込み */
+#include "v850esfk3.h"
+
 /*
  *  トレースログに関する設定
  */
@@ -85,7 +83,8 @@ typedef struct task_context_block {
 #define SIL_DLY_TIM1    352
 #define SIL_DLY_TIM2    200
 
-
+#define INT_ENTRY(inhno, inthdr)	inthdr
+#define INTHDR_ENTRY(inhno, inthdr, intpri)
 
 #ifndef TOPPERS_MACRO_ONLY
 

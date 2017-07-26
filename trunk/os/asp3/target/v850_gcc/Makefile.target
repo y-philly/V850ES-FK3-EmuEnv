@@ -3,6 +3,12 @@
 #
 #  $Id:  $
 # 
+#
+#  カーネルに関する定義
+#
+KERNEL_DIRS := $(KERNEL_DIRS) $(TARGETDIR)
+#KERNEL_COBJS := $(KERNEL_COBJS) target_kernel_impl.o pl310.o
+#KERNEL_ASMOBJS := $(KERNEL_ASMOBJS) target_support.o
 
 #
 #  コンパイルオプションとリンカスクリプトの定義

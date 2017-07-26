@@ -5,7 +5,7 @@
  * 
  *  Copyright (C) 2010 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation 
+ *  上記著作権者は，以下の (1)～(4) の条件か，Free Software Foundation
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -34,8 +34,8 @@
  * 
  */
 
-#ifndef TOPPERS_V850JG2_H
-#define TOPPERS_V850JG2_H
+#ifndef TOPPERS_V850ESFK3_H
+#define TOPPERS_V850ESFK3_H
 
 #define DEFAULT_STK_TOP		((STK_T *const)0xFFFF0000)
 #define STACKTOP			0x05FFEFFF
@@ -128,4 +128,37 @@
 	{ INTF9H , INTR9H , 7 } , 	/* INT6 */							\
 	{ INTF3 , INTR3 , 1 } 		/* INT7 */
 
-#endif	/* TOPPERS_V850JG2_H */
+#define SCIF2_BASE			0xe8008000
+#define TMIN_INTPRI		(-31)		/* 割込み優先度の最小値（最高値）*/
+#define TMAX_INTPRI		(-1)		/* 割込み優先度の最大値（最低値）*/
+#define INTNO_SCIF0_BRI		221		/* SCIF0 ブレーク割込み */
+#define INTNO_SCIF0_ERI		222		/* SCIF0 エラー割込み */
+#define INTNO_SCIF0_RXI		223		/* SCIF0 受信割込み */
+#define INTNO_SCIF0_TXI		224		/* SCIF0 送信割込み */
+#define INTNO_SCIF1_BRI		225		/* SCIF1 ブレーク割込み */
+#define INTNO_SCIF1_ERI		226		/* SCIF1 エラー割込み */
+#define INTNO_SCIF1_RXI		227		/* SCIF1 受信割込み */
+#define INTNO_SCIF1_TXI		228		/* SCIF1 送信割込み */
+#define INTNO_SCIF2_BRI		229		/* SCIF2 ブレーク割込み */
+#define INTNO_SCIF2_ERI		230		/* SCIF2 エラー割込み */
+#define INTNO_SCIF2_RXI		231		/* SCIF2 受信割込み */
+#define INTNO_SCIF2_TXI		232		/* SCIF2 送信割込み */
+#define INTNO_SCIF3_BRI		233		/* SCIF3 ブレーク割込み */
+#define INTNO_SCIF3_ERI		234		/* SCIF3 エラー割込み */
+#define INTNO_SCIF3_RXI		235		/* SCIF3 受信割込み */
+#define INTNO_SCIF3_TXI		236		/* SCIF3 送信割込み */
+#define INTNO_SCIF4_BRI		237		/* SCIF4 ブレーク割込み */
+#define INTNO_SCIF4_ERI		238		/* SCIF4 エラー割込み */
+#define INTNO_SCIF4_RXI		239		/* SCIF4 受信割込み */
+#define INTNO_SCIF4_TXI		240		/* SCIF4 送信割込み */
+
+/*
+ *  高分解能タイマのカウント値の進み幅
+ */
+#define TSTEP_HRTCNT	1U
+
+/*
+ *  割込みタイミングに指定する最大値
+ */
+#define HRTCNT_BOUND		4000000002U
+#endif	/* TOPPERS_V850ESFK3_H */

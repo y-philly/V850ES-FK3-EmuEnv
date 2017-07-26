@@ -1,11 +1,12 @@
 /*
- *  TOPPERS Software
- *      Toyohashi Open Platform for Embedded Real-Time Systems
- *
- *  Copyright (C) 2007-2015 by Embedded and Real-Time Systems Laboratory
+ *  TOPPERS/ASP Kernel
+ *      Toyohashi Open Platform for Embedded Real-Time Systems/
+ *      Advanced Standard Profile Kernel
+ * 
+ *  Copyright (C) 2007-2016 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
- *
- *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
+ * 
+ *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -27,37 +28,44 @@
  *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
  *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
  *      免責すること．
- *
+ * 
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
  *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
- *
+ * 
  *  $Id:  $
  */
 
 /*
- *		sil.hのチップ依存部（GR-PEACH用）
+ *		システムログの低レベル出力
+ */
+
+#include "tPutLogV850ESFK3_tecsgen.h"
+
+/*
+ *  システムログの低レベル出力のための初期化
  *
- *  このヘッダファイルは，sil.hからインクルードされる．他のファイルから
- *  直接インクルードすることはない．このファイルをインクルードする前に，
- *  t_stddef.hがインクルードされるので，それに依存してもよい．
+ *  初期化ルーチンを呼び出すより前に初期化するために，カーネルのターゲッ
+ *  ト依存部から直接呼び出すための関数．
  */
-
-#ifndef TOPPERS_TARGET_SIL_H
-#define TOPPERS_TARGET_SIL_H
+void
+tPutLogGRPeach_initialize(void)
+{
+	cSIOPort_open();
+}
 
 /*
- *  プロセッサのエンディアン
+ *  システムログの低レベル出力のための文字出力（受け口関数）
+ *
+ *  SIOポートに文字が送信できるまでポーリングする．
  */
-#define SIL_ENDIAN_LITTLE
-
-/*
- *  全割込みロック状態の制御
- */
-#define SIL_PRE_LOC
-#define SIL_LOC_INT()
-#define SIL_UNL_INT()
-
-#endif /* TOPPERS_TARGET_SIL_H */
+void
+ePutLog_putChar(char c)
+{
+	if(c == '\n'){
+		while(!cSIOPort_putChar('\r'));
+	}
+	while(!cSIOPort_putChar(c));
+}

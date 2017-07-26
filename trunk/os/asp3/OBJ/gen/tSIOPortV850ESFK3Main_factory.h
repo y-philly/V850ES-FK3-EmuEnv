@@ -1,3 +1,0 @@
-#ifndef tSIOPortV850ESFK3Main_FACTORY_H
-#define tSIOPortV850ESFK3Main_FACTORY_H
-#endif /* tSIOPortV850ESFK3Main_FACTORY_H */

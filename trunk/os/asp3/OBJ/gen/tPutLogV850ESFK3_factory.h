@@ -1,3 +1,0 @@
-#ifndef tPutLogV850ESFK3_FACTORY_H
-#define tPutLogV850ESFK3_FACTORY_H
-#endif /* tPutLogV850ESFK3_FACTORY_H */

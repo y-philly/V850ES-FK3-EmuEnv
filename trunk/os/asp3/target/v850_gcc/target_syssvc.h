@@ -1,8 +1,11 @@
 /*
- *  TOPPERS Software
- *      Toyohashi Open Platform for Embedded Real-Time Systems
+ *  TOPPERS/ASP Kernel
+ *      Toyohashi Open Platform for Embedded Real-Time Systems/
+ *      Advanced Standard Profile Kernel
  *
- *  Copyright (C) 2007-2015 by Embedded and Real-Time Systems Laboratory
+ *  Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+ *                              Toyohashi Univ. of Technology, JAPAN
+ *  Copyright (C) 2005-2016 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
  *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
@@ -38,26 +41,22 @@
  */
 
 /*
- *		sil.hのチップ依存部（GR-PEACH用）
+ *		システムサービスのターゲット依存部（GR-PEACH用）
  *
- *  このヘッダファイルは，sil.hからインクルードされる．他のファイルから
- *  直接インクルードすることはない．このファイルをインクルードする前に，
- *  t_stddef.hがインクルードされるので，それに依存してもよい．
+ *  システムサービスのターゲット依存部のヘッダファイル．システムサービ
+ *  スのターゲット依存の設定は，できる限りコンポーネント記述ファイルで
+ *  記述し，このファイルに記述するものは最小限とする．
  */
 
-#ifndef TOPPERS_TARGET_SIL_H
-#define TOPPERS_TARGET_SIL_H
+#ifndef TOPPERS_TARGET_SYSSVC_H
+#define TOPPERS_TARGET_SYSSVC_H
 
 /*
- *  プロセッサのエンディアン
+ *  トレースログに関する設定
  */
-#define SIL_ENDIAN_LITTLE
+#ifdef TOPPERS_ENABLE_TRACE
+#include "arch/tracelog/trace_log.h"
+#endif /* TOPPERS_ENABLE_TRACE */
 
-/*
- *  全割込みロック状態の制御
- */
-#define SIL_PRE_LOC
-#define SIL_LOC_INT()
-#define SIL_UNL_INT()
 
-#endif /* TOPPERS_TARGET_SIL_H */
+#endif /* TOPPERS_TARGET_SYSSVC_H */

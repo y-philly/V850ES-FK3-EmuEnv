@@ -58,6 +58,57 @@
 #include "v850esfk3.h"
 
 /*
+ *  割込み番号・割込みハンドラ番号
+ *
+ *  割込みハンドラ番号(inhno)と割込み番号(intno)は，ベクタ番号を用いる．
+ *
+ *  ベクタ番号は64から始まるため，そのままの値を優先度管理等のテーブルの
+ *  インデックスに用いると，無駄な領域が発生する．そのため，カーネル内部
+ *  では，-64した値を用いる．
+ *
+ *  内部表現の名前は，iintno,iinhnoとする．
+ */
+
+/*
+ * 割込みハンドラ番号の内部・外部表現相互変換
+ */
+/* 内部表現を外部表現に */
+#define EXT_INHNO(iintno) (iintno)
+/* 外部表現を内部表現に */
+#define INT_INHNO(intno)  (intno)
+
+/*
+ * 割込み番号の内部・外部表現相互変換
+ */
+/* 内部表現を外部表現に */
+#define EXT_INTNO(iintno)   (iintno)
+/* 外部表現を内部表現に */
+#define INT_INTNO(intno)    (intno)
+
+/*
+ *  CPU例外ハンドラ番号
+ *
+ */
+#define VALID_EXCNO_DEFEXC(excno) (1)
+
+/*
+ *  割込みハンドラの設定
+ *
+ *	TFファイルで生成するため，空にしている
+ */
+
+#define x_define_inh(inhno, int_entry)
+
+/*
+ *  割込みハンドラの出入口処理の生成マクロ
+ *
+ */
+#define _INT_ENTRY(inhno, inthdr)    _kernel_##inthdr##_##inhno
+#define INT_ENTRY(inhno, inthdr)     _INT_ENTRY(inhno, inthdr)
+
+#define _INTHDR_ENTRY(inhno, inthdr) extern void _kernel_##inthdr##_##inhno(void);
+#define INTHDR_ENTRY(inhno, inhno_num, inthdr)  _INTHDR_ENTRY(inhno, inthdr)
+/*
  *  トレースログに関する設定
  */
 #ifdef TOPPERS_ENABLE_TRACE
@@ -69,22 +120,12 @@
  */
 #define DEFAULT_ISTKSZ  0x2000U		/* 8KB */
 
-/*
- *  タスクコンテキストブロックの定義
- */
-typedef struct task_context_block {
-	void		*sp;			/* スタックポインタ */
-	void		*pc;			/* 実行再開番地 */
-} TSKCTXB;
 
 /*
  *  微少時間待ちのための定義（本来はSILのターゲット依存部）
  */
 #define SIL_DLY_TIM1    352
 #define SIL_DLY_TIM2    200
-
-#define INT_ENTRY(inhno, inthdr)	inthdr
-#define INTHDR_ENTRY(inhno, inthdr, intpri)
 
 #ifndef TOPPERS_MACRO_ONLY
 

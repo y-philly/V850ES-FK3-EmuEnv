@@ -137,26 +137,26 @@
 #define SCIF2_BASE			0xe8008000
 
 
-#define INTNO_SCIF0_BRI		221		/* SCIF0 ブレーク割込み */
-#define INTNO_SCIF0_ERI		222		/* SCIF0 エラー割込み */
-#define INTNO_SCIF0_RXI		223		/* SCIF0 受信割込み */
-#define INTNO_SCIF0_TXI		224		/* SCIF0 送信割込み */
-#define INTNO_SCIF1_BRI		225		/* SCIF1 ブレーク割込み */
-#define INTNO_SCIF1_ERI		226		/* SCIF1 エラー割込み */
-#define INTNO_SCIF1_RXI		227		/* SCIF1 受信割込み */
-#define INTNO_SCIF1_TXI		228		/* SCIF1 送信割込み */
-#define INTNO_SCIF2_BRI		229		/* SCIF2 ブレーク割込み */
-#define INTNO_SCIF2_ERI		230		/* SCIF2 エラー割込み */
-#define INTNO_SCIF2_RXI		231		/* SCIF2 受信割込み */
-#define INTNO_SCIF2_TXI		232		/* SCIF2 送信割込み */
-#define INTNO_SCIF3_BRI		233		/* SCIF3 ブレーク割込み */
-#define INTNO_SCIF3_ERI		234		/* SCIF3 エラー割込み */
-#define INTNO_SCIF3_RXI		235		/* SCIF3 受信割込み */
-#define INTNO_SCIF3_TXI		236		/* SCIF3 送信割込み */
-#define INTNO_SCIF4_BRI		237		/* SCIF4 ブレーク割込み */
-#define INTNO_SCIF4_ERI		238		/* SCIF4 エラー割込み */
-#define INTNO_SCIF4_RXI		239		/* SCIF4 受信割込み */
-#define INTNO_SCIF4_TXI		240		/* SCIF4 送信割込み */
+#define INTNO_SCIF0_BRI		10		/* SCIF0 ブレーク割込み */
+#define INTNO_SCIF0_ERI		11		/* SCIF0 エラー割込み */
+#define INTNO_SCIF0_RXI		12		/* SCIF0 受信割込み */
+#define INTNO_SCIF0_TXI		13		/* SCIF0 送信割込み */
+#define INTNO_SCIF1_BRI		14		/* SCIF1 ブレーク割込み */
+#define INTNO_SCIF1_ERI		15		/* SCIF1 エラー割込み */
+#define INTNO_SCIF1_RXI		16		/* SCIF1 受信割込み */
+#define INTNO_SCIF1_TXI		17		/* SCIF1 送信割込み */
+#define INTNO_SCIF2_BRI		18		/* SCIF2 ブレーク割込み */
+#define INTNO_SCIF2_ERI		19		/* SCIF2 エラー割込み */
+#define INTNO_SCIF2_RXI		20		/* SCIF2 受信割込み */
+#define INTNO_SCIF2_TXI		21		/* SCIF2 送信割込み */
+#define INTNO_SCIF3_BRI		22		/* SCIF3 ブレーク割込み */
+#define INTNO_SCIF3_ERI		23		/* SCIF3 エラー割込み */
+#define INTNO_SCIF3_RXI		24		/* SCIF3 受信割込み */
+#define INTNO_SCIF3_TXI		25		/* SCIF3 送信割込み */
+#define INTNO_SCIF4_BRI		26		/* SCIF4 ブレーク割込み */
+#define INTNO_SCIF4_ERI		27		/* SCIF4 エラー割込み */
+#define INTNO_SCIF4_RXI		28		/* SCIF4 受信割込み */
+#define INTNO_SCIF4_TXI		29		/* SCIF4 送信割込み */
 
 /*
  *  高分解能タイマのカウント値の進み幅

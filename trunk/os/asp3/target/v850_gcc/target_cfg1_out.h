@@ -4,7 +4,7 @@
  *  $Id:  $
  */
 
-
+#include <kernel.h>
 /*
  *  offset.hを生成するための定義
  */

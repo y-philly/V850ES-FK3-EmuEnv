@@ -57,7 +57,6 @@
  */
 #include "prc_insn.h"
 #include <sil.h>
-#include "prc_kernel.h"
 
 /*
  *  非タスクコンテキスト用のスタック初期値
@@ -67,6 +66,7 @@
 
 
 #endif /* TOPPERS_MACRO_ONLY */
+#include "prc_kernel.h"
 
 /*
  *  割込み優先度マスク操作ライブラリ

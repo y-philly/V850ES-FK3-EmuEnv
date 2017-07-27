@@ -29,3 +29,14 @@ KERNEL_COBJS := $(KERNEL_COBJS) prc_config.o
 #
 #  コア依存部
 #
+#
+#  スタートアップモジュールに関する定義
+#
+#  START_OBJSをstart.oに設定し，LDFLAGSに-nostdlibを追加する．
+#
+START_OBJS = start.o
+
+$(START_OBJS): %.o: %.S
+	$(CC) -c $(CFLAGS) $(KERNEL_CFLAGS) $<
+
+LDFLAGS := -nostdlib $(LDFLAGS)

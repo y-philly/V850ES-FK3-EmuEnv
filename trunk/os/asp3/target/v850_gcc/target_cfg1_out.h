@@ -5,6 +5,8 @@
  */
 
 #include <kernel.h>
+
+void sta_ker(void){}
 /*
  *  offset.hを生成するための定義
  */

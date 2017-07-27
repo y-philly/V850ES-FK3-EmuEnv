@@ -43,15 +43,16 @@
  *	プロセッサ依存モジュール アセンブリ言語部（V850用）
  */
 
-#include "v850asm.inc"
 
-#define	TOPPERS_MACRO_ONLY
+#define TOPPERS_MACRO_ONLY
+#define TOPPERS_ASM_MACRO
 #define UINT_C(val)			(val)		/* uint_t型の定数を作るマクロ */
 #define ULONG_C(val)		(val)		/* ulong_t型の定数を作るマクロ */
 #define CAST(type, val)		(val)		/* 型キャストを行うマクロ */
-#define TOPPERS_LABEL_ASM
 #include "kernel_impl.h"
 #include "offset.h"
+#include "v850asm.inc"
+
 
 /* 外部参照宣言 */
 	.globl	_set_intpri
@@ -104,7 +105,7 @@ _dispatch:
 	sst.w	r31,  4[ep]
 	
 	/* スタックと次の起動番地を保存 */
-	Lea		_p_runtsk, ep
+	Lea		__kernel_p_runtsk, ep
 	sld.w	0[ep], ep
 	sst.w	sp, TCB_sp[ep]
 	Lea		dispatch_r, r10
@@ -118,12 +119,12 @@ _dispatch:
 	 */
 _exit_and_dispatch:
 dispatcher:
-	Lea		_p_runtsk, r21
+	Lea		__kernel_p_runtsk, r21
 #ifdef LOG_DSP_ENTER
 	ld.w		0[r21] , r6		/* 引数にp_runtskを指定 */
 	jarl	_log_dsp_enter , lp
 #endif	/* LOG_DSP_ENTER */
-	Lea		_p_schedtsk, r20
+	Lea		__kernel_p_schedtsk, r20
 	ld.w	0[r20], r22
 	st.w	r22, 0[r21]
 	cmp		r22 , r0
@@ -189,7 +190,7 @@ idle_loop:
 	
 	/* ディスパッチャの復帰ルーチン */
 dispatch_r:
-	Lea		_p_runtsk, r10
+	Lea		__kernel_p_runtsk, r10
 	ld.w	0[r10], r10
 	/* TODO ld.w	TCB_enatex[r10], r11 */
 	/* TODO mov		(1 << TCB_enatex_bit) , r12 */
@@ -239,7 +240,7 @@ _start_r:
 	Lea		_lock_flag , r6
 	st.w	r0 , 0[r6]
 	
-	Lea		_p_runtsk, ep
+	Lea		__kernel_p_runtsk, ep
 	ld.w	0[ep], ep
 	ld.w	TCB_p_tinib[ep], ep
 	ld.w	TINIB_exinf[ep], r6
@@ -459,9 +460,9 @@ return_to_task:
 	*/
 
 	/* タスク切り替えの必要があるかチェック */
-	Lea		_p_schedtsk, r10
+	Lea		__kernel_p_schedtsk, r10
 	ld.w	0[r10], r10
-	Lea		_p_runtsk, r11
+	Lea		__kernel_p_runtsk, r11
 	ld.w	0[r11], r11
 	cmp		r10,r11
 	bne		ret_int
@@ -469,7 +470,7 @@ return_to_task:
 	
 check_texrtn_cond:
 	/* 実行中タスクをロード */
-	Lea		_p_runtsk, r11
+	Lea		__kernel_p_runtsk, r11
 	ld.w	0[r11], r11
 
 check_texrtn_cond_1:
@@ -528,7 +529,7 @@ ret_int:
 	sst.w	r29 , 0[ep]
 	
 	/* TCBに復帰先の情報を設定 */
-	Lea		_p_runtsk, r10
+	Lea		__kernel_p_runtsk, r10
 	ld.w	0[r10], r10
 	st.w	sp , TCB_sp[r10]
 	Lea		ret_int_r, r11

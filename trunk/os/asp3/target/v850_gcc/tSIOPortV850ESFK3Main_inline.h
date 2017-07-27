@@ -39,7 +39,6 @@
  * 
  *  $Id:  $
  */
-
 /*
  *		シリアルインタフェースドライバのターゲット依存部（GR-PEACH用）
  */
@@ -50,18 +49,7 @@
 Inline void
 eSIOPort_open(CELLIDX idx)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
-	/*
-	 *  デバイス依存のオープン処理
-	 */
-	cSIOPort_open();
-
-	/*
-	 *  SIOの割込みマスクを解除する．
-	 */
-	cRxInterruptRequest_enable();
-	cTxInterruptRequest_enable();
 }
 
 /*
@@ -70,18 +58,6 @@ eSIOPort_open(CELLIDX idx)
 Inline void
 eSIOPort_close(CELLIDX idx)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
-
-	/*
-	 *  デバイス依存のクローズ処理
-	 */
-	cSIOPort_close();
-
-	/*
-	 *  SIOの割込みをマスクする．
-	 */
-	cRxInterruptRequest_disable();
-	cTxInterruptRequest_disable();
 }
 
 /*
@@ -90,9 +66,8 @@ eSIOPort_close(CELLIDX idx)
 Inline bool_t
 eSIOPort_putChar(CELLIDX idx, char c)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
-	return(cSIOPort_putChar(c));
+	return true;
 }
 
 /*
@@ -101,9 +76,7 @@ eSIOPort_putChar(CELLIDX idx, char c)
 Inline int_t
 eSIOPort_getChar(CELLIDX idx)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
-
-	return(cSIOPort_getChar());
+	return 0;
 }
 
 /*
@@ -112,9 +85,7 @@ eSIOPort_getChar(CELLIDX idx)
 Inline void
 eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
-	cSIOPort_enableCBR(cbrtn);
 }
 
 /*
@@ -123,9 +94,7 @@ eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 Inline void
 eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
-	cSIOPort_disableCBR(cbrtn);
 }
 
 /*
@@ -134,11 +103,7 @@ eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 Inline void
 eiSIOCBR_readySend(CELLIDX idx)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
-	if (is_ciSIOCBR_joined()) {
-		ciSIOCBR_readySend();
-	}
 }
 
 /*
@@ -147,9 +112,5 @@ eiSIOCBR_readySend(CELLIDX idx)
 Inline void
 eiSIOCBR_readyReceive(CELLIDX idx)
 {
-	CELLCB	*p_cellcb = GET_CELLCB(idx);
-	
-	if (is_ciSIOCBR_joined()) {
-		ciSIOCBR_readyReceive();
-	}
+
 }

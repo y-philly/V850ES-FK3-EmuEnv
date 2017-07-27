@@ -56,6 +56,16 @@ bool_t lock_flag;
 uint16_t saved_imr[IMR_SIZE];
 uint16_t disint_table[IMR_SIZE];
 
+//TODO
+void _kernel__kernel_inthdr_231_231(void)
+{
+
+}
+//TODO
+void _kernel__kernel_inthdr_232_232(void)
+{
+
+}
 /*
  *  プロセッサ依存の初期化
  */

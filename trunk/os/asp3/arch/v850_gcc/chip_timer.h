@@ -50,4 +50,48 @@
 
 #include <sil.h>
 
+/*
+ *  高分解能タイマの起動処理
+ */
+extern void	target_hrt_initialize(intptr_t exinf);
+
+/*
+ *  高分解能タイマの停止処理
+ */
+extern void	target_hrt_terminate(intptr_t exinf);
+
+/*
+ *  高分解能タイマの現在のカウント値の読出し
+ */
+Inline HRTCNT
+target_hrt_get_current(void)
+{
+	//TODO
+	return 0;
+}
+
+/*
+ *  高分解能タイマへの割込みタイミングの設定
+ *
+ *  高分解能タイマを，hrtcntで指定した値カウントアップしたら割込みを発
+ *  生させるように設定する．
+ */
+Inline void
+target_hrt_set_event(HRTCNT hrtcnt)
+{
+	//TODO
+}
+
+/*
+ *  高分解能タイマ割込みの要求
+ *
+ *  暫定的に，1μ秒後に高分解能タイマ割込みがかかるように設定しているが，
+ *  即座に割込みを要求する方法がわかれば（Set-pending Registerが使える
+ *  と思われる），それに差し換える．
+ */
+Inline void target_hrt_raise_event(void)
+{
+	//TODO
+}
+
 #endif /* TOPPERS_CHIP_TIMER_H */

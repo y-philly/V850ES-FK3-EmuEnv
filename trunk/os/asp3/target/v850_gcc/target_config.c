@@ -8,6 +8,8 @@
 
 static void target_fput_initialize(void);
 
+//TODO dummy
+const uint16_t imr_table[2][IMR_SIZE];
 
 void
 target_initialize(void)

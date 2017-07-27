@@ -67,7 +67,10 @@
 
 #endif /* TOPPERS_MACRO_ONLY */
 #include "prc_kernel.h"
-
+/*
+ *  非タスクコンテキストからのディスパッチ要求
+ */
+#define request_dispatch()
 /*
  *  割込み優先度マスク操作ライブラリ
  *

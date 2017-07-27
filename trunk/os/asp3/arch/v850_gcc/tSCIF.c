@@ -43,3 +43,23 @@
  */
 
 #include <sil.h>
+#include "tSCIF_tecsgen.h"
+
+
+/*
+ *  シリアルI/Oポートに対する受信割込み処理
+ */
+void
+eiRxISR_main(CELLIDX idx)
+{
+
+}
+
+/*
+ *  シリアルI/Oポートに対する送信割込み処理
+ */
+void
+eiTxISR_main(CELLIDX idx)
+{
+
+}

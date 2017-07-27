@@ -3,7 +3,6 @@
 OUTPUT_FORMAT("elf32-v850-rh850","elf32-v850-rh850","elf32-v850-rh850")
 OUTPUT_ARCH(v850-rh850)
 
-/* V850/SG2 uPD70F3281Y(32KB-RAM)ﾍﾑ､ﾎ･皈筵� */
 
 MEMORY
 {

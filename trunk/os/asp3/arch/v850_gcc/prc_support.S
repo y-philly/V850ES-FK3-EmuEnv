@@ -263,7 +263,8 @@ _start_r:
 	jarl	_x_unlock_cpu, lp
 
 	/* 自タスク（p_runtsk）の起動番地を，拡張情報をパラメータとして呼び出す */
-	mov		r21, ep
+	mov		r21, ep		/* ep = p_runtsk */
+	ld.w	0[ep], ep 	/* ep = *p_runtsk */
 	ld.w	TCB_p_tinib[ep], ep
 	ld.w	TINIB_exinf[ep], r6
 	ld.w	TINIB_task[ep], r10

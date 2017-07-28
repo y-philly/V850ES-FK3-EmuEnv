@@ -75,29 +75,32 @@ _start_dispatch:
 	 * タスクコンテキストに切り替える
 	 * intnestを0にする
 	 */
-	Lea		_intnest, r20
-	st.b	r0, 0[r20]
+	Lea		_intnest, r17
+	st.b	r0, 0[r17]
 
 	/*
 	 * スタックをIDが1のタスクのスタック領域に切り換える
 	 */
 	 /* tcb_table[0].p_tinib → ep */
 	Lea		__kernel_tcb_table, ep
-	sld.w	TCB_p_tinib[ep], r20
-	mov		r20, ep
+	sld.w	TCB_p_tinib[ep], r18
+	mov		r18, ep
 
 	/* tcb_table[0].p_tinib->stk → sp */
 	sld.w	TINIB_stk[ep], sp
 
-	/* tcb_table[0].p_tinib->stksz → r21 */
-	sld.w	TINIB_stksz[ep], r21
+	/* tcb_table[0].p_tinib->stksz → r19 */
+	sld.w	TINIB_stksz[ep], r19
 
-	add		r21, sp
+	add		r19, sp
 
 	/*
 	 * CPUロック状態にする
 	 */
-	 /* nothing to do(see prc_initialize()) */
+	/* nothing to do.
+	 *  di (see _start)
+	 *  lock_flag(see prc_initialize())
+	 */
 
 	/*
 	 * 割込み優先度マスク全解除状態にする
@@ -114,6 +117,16 @@ _start_dispatch:
  	.globl	_dispatch
  	.globl	_exit_and_dispatch
 _dispatch:
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	addi	-8, sp, sp
+	st.w	ep , 0[sp]
+	st.w	lp , 4[sp]
+	jarl	__kernel_ovrtimer_stop , lp
+	mov		sp, ep
+	sld.w	4[ep], lp
+	sld.w	0[ep], ep
+	addi	8, ep, sp
+#endif	/* TOPPERS_SUPPORT_OVRHDR */
 	/*
 	 * コンテキストの退避
 	 */
@@ -142,6 +155,40 @@ _dispatch:
 	Lea		dispatch_r, r10
 	sst.w	r10, TCB_pc[ep]
 	
+	/* dispatcherに分岐する */
+	br		dispatcher
+
+	/* ディスパッチャの復帰ルーチン */
+dispatch_r:
+	mov		sp, ep
+	sld.w	56[ep], r2
+	sld.w	52[ep], r10
+	sld.w	48[ep], r11
+	sld.w	44[ep], r20
+	sld.w	40[ep], r21
+	sld.w	36[ep], r22
+	sld.w	32[ep], r23
+	sld.w	28[ep], r24
+	sld.w	24[ep], r25
+	sld.w	20[ep], r26
+	sld.w	16[ep], r27
+	sld.w	12[ep], r28
+	sld.w	 8[ep], r29
+	sld.w	 4[ep], r31
+	addi	60, ep, sp
+	ld.w	0[sp], ep
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	addi	-8, sp, sp
+	st.w	ep , 0[sp]
+	st.w	lp , 4[sp]
+	jarl	__kernel_ovrtimer_start , lp
+	mov		sp, ep
+	sld.w	4[ep], lp
+	sld.w	0[ep], ep
+	addi	8, ep, sp
+#endif	/* TOPPERS_SUPPORT_OVRHDR */
+	jmp		lp
+
 	/*
 	 *  タスクディスパッチャ
 	 *  
@@ -220,67 +267,32 @@ idle_loop:
 	/* ディスパッチャへ */
 	br	dispatcher
 	
-	/* ディスパッチャの復帰ルーチン */
-dispatch_r:
-	Lea		__kernel_p_runtsk, r10
-	ld.w	0[r10], r10
-	/* TODO ld.w	TCB_enatex[r10], r11 */
-	/* TODO mov		(1 << TCB_enatex_bit) , r12 */
-	tst		r11 , r12
-	bz		ret_to_task
-	/* TODO ld.w	TCB_texptn[r10], r11 */
-	cmp		r0, r11
-	be		ret_to_task
-	/* TODO 廃止
-	Lea		_ipmflg , r10
-	*/
-	ld.w	0[r10] , r10
-	cmp		r0 , r10
-	be		ret_to_task
-
-	/* タスク例外の呼び出し */
-	/* TODO jarl	_call_texrtn, lp */
-ret_to_task:
-	mov		sp, ep
-	sld.w	56[ep], r2
-	sld.w	52[ep], r10
-	sld.w	48[ep], r11
-	sld.w	44[ep], r20
-	sld.w	40[ep], r21
-	sld.w	36[ep], r22
-	sld.w	32[ep], r23
-	sld.w	28[ep], r24
-	sld.w	24[ep], r25
-	sld.w	20[ep], r26
-	sld.w	16[ep], r27
-	sld.w	12[ep], r28
-	sld.w	 8[ep], r29
-	sld.w	 4[ep], r31
-	addi	60, ep, sp
-	ld.w	0[sp], ep
-	jmp		lp
 
 /*
  *  タスク起動時処理
+ *  start_rには，dispatcherのみから分岐し，
+ *  その時の状態は，
+ *   タスクコンテキスト・CPUロック状態・割込み優先度マスク全解除状態・ディスパッチ許可状態
+ *  である．
+ *
+ *  ディスパッチャ本体から呼び出されるため，p_runtskはr6に入っている．
+ *
  */
  	.globl _start_r
 _start_r:
-	/* 割込みマスクレベルをCPUアンロック状態の値に設定 */
-	di
-	mov		INTPRI_ENAALL , r6
-	jarl	_set_intpri , lp
-	Lea		_lock_flag , r6
-	st.w	r0 , 0[r6]
-	
-	Lea		__kernel_p_runtsk, ep
-	ld.w	0[ep], ep
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	jarl	__kernel_ovrtimer_start , lp
+#endif	/* TOPPERS_SUPPORT_OVRHDR */
+	/* CPUロック解除状態にする */
+	ei		/* 割込み禁止状態を解除 */
+	/* 自タスク（p_runtsk）の起動番地を，拡張情報をパラメータとして呼び出す */
+	mov		r6, ep
 	ld.w	TCB_p_tinib[ep], ep
 	ld.w	TINIB_exinf[ep], r6
 	ld.w	TINIB_task[ep], r10
+	/* タスク本体から復帰した場合にext_tskに分岐する設定を行う */
 	Lea		_ext_tsk, lp
-	
 	/* タスク本体へ */
-	ei		/* 割込み禁止状態を解除 */
 	jmp		r10
 
 /*

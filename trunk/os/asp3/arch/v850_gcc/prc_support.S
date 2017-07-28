@@ -56,26 +56,57 @@
 
 /* 外部参照宣言 */
 	.globl	_set_intpri
-	/* TODO .globl	_call_texrtn */
-	/* TODO .globl	_ipmflg */
 	
 /*
  *	ディスパッチの開始
  *
- *	割込み禁止状態，lock_flag = trueでここへはやってくるが，
- *	割込みマスクレベルは0であるため，ここでCPUロック状態に
- *	設定して最初のディスパッチに移る．
- *	
+ * void
+ * start_dispatch(void)
+ * {
+ * 	タスクコンテキストに切り換える
+ * 	スタックをIDが1のタスクのスタック領域に切り換える
+ * 	CPUロック状態・割込み優先度マスク全解除状態にする
+ * 	dispatcher_0に分岐する
+ * }
  */
 	.globl	_start_dispatch
 _start_dispatch:
-	/* 割込みマスクレベルをCPUロック状態の値に設定 */
-	mov		INTPRI_LOCK , r6
+	/*
+	 * タスクコンテキストに切り替える
+	 * intnestを0にする
+	 */
+	Lea		_intnest, r20
+	st.b	r0, 0[r20]
+
+	/*
+	 * スタックをIDが1のタスクのスタック領域に切り換える
+	 */
+	 /* tcb_table[0].p_tinib → ep */
+	Lea		__kernel_tcb_table, ep
+	sld.w	TCB_p_tinib[ep], r20
+	mov		r20, ep
+
+	/* tcb_table[0].p_tinib->stk → sp */
+	sld.w	TINIB_stk[ep], sp
+
+	/* tcb_table[0].p_tinib->stksz → r21 */
+	sld.w	TINIB_stksz[ep], r21
+
+	add		r21, sp
+
+	/*
+	 * CPUロック状態にする
+	 */
+	 /* nothing to do(see prc_initialize()) */
+
+	/*
+	 * 割込み優先度マスク全解除状態にする
+	 */
+	mov		INTPRI_ENAALL , r6
 	jarl	_set_intpri , lp
-	/* 割込み禁止状態を解除 */
-	ei
-	/* ディスパッチャ本体へ */
-	br		dispatcher
+
+	/* dispatcher_0に分岐する */
+	br		dispatcher_0
 
 /*
  *  タスクディスパッチャ
@@ -119,11 +150,12 @@ _dispatch:
 	 */
 _exit_and_dispatch:
 dispatcher:
-	Lea		__kernel_p_runtsk, r21
 #ifdef LOG_DSP_ENTER
 	ld.w		0[r21] , r6		/* 引数にp_runtskを指定 */
 	jarl	_log_dsp_enter , lp
 #endif	/* LOG_DSP_ENTER */
+dispatcher_0:
+	Lea		__kernel_p_runtsk, r21
 	Lea		__kernel_p_schedtsk, r20
 	ld.w	0[r20], r22
 	st.w	r22, 0[r21]

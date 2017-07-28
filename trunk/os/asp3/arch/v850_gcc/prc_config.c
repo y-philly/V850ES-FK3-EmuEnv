@@ -98,6 +98,8 @@ prc_terminate(void)
 extern const uint16_t imr_table[][IMR_SIZE];
 
 /*
+ * TODO マスクテーブルの作成が必要
+ *
  *	現在の割込み優先度マスク(内部表現)の設定
  *
  *	インライン関数でないのは，アセンブラからも使用するためである．

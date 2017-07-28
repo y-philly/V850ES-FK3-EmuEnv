@@ -95,11 +95,15 @@
 #define INTF9H		(0xFFFFFC13)
 #define INTR9H		(0xFFFFFC33)
 
-#define IMR_SIZE	(4)
+#define IMR_SIZE	(8)
 #define IMR0		(0xFFFFF100)
 #define IMR1		(0xFFFFF102)
 #define IMR2		(0xFFFFF104)
 #define IMR3		(0xFFFFF106)
+#define IMR4		(0xFFFFF108)
+#define IMR5		(0xFFFFF10A)
+#define IMR6		(0xFFFFF10C)
+#define IMR7		(0xFFFFF10E)
 
 
 /*
@@ -168,6 +172,9 @@
  */
 #define HRTCNT_BOUND		4000000002U
 
-#define TNUM_INTNO		UINT_C(587) //TODO dummy
+#define TNUM_INT			117U
+#define TMIN_INTNO			0U
+#define TMAX_INTNO			116U
+#define TNUM_INTNO			TNUM_INT
 
 #endif	/* TOPPERS_V850ESFK3_H */

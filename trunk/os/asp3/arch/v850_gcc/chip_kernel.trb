@@ -3,10 +3,7 @@
 #		パス2の生成スクリプトのチップ依存部（RZ/A1用）
 # 
 
-
-
-
-$INTNO_VALID = [ *(0..537) ]
+$INTNO_VALID = [ *(0..116) ]
 $INHNO_VALID = $INTNO_VALID
 
 # 
@@ -31,4 +28,15 @@ $EXCNO_DEFEXC_VALID = [ 0, 1, 2, 3, 5 ]
 
 IncludeTrb("kernel/kernel.trb")
 
+$IMR_RANGE = [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+
+
+#
+#  kernel_cfg_asm.Sの生成
+#
+
+$kernelCfgAsm = GenFile.new("kernel_cfg_asm.S")
+#$kernelCfgAsm.add(<<EOS)
+#/* kernel_cfg_asm.S */
+#EOS
 

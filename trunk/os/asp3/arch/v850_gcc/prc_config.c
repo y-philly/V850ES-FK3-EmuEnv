@@ -84,6 +84,46 @@ prc_initialize(void)
 		disint_table[i] = 0x0000;
 	}
 }
+void
+x_lock_cpu(void)
+{
+	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
+	disable_int_all();
+
+	save_imr();	/* 現在のIMRを退避 */
+	set_intpri(INTPRI_LOCK);
+	lock_flag = true;
+
+	/* 割込み解除 */
+	enable_int_all();
+}
+
+void
+x_unlock_cpu(void)
+{
+	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
+	disable_int_all();
+
+	restore_imr();	/* IMRを復帰 */
+	set_intpri(current_intpri);
+	lock_flag = false;
+
+	/* 割込み解除 */
+	enable_int_all();
+}
+void
+x_unlock_cpu_all(void)
+{
+	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
+	disable_int_all();
+
+	restore_imr();	/* IMRを復帰 */
+	set_intpri(INTPRI_ENAALL);
+	lock_flag = false;
+
+	/* 割込み解除 */
+	enable_int_all();
+}
 
 /*
  *  プロセッサ依存の終了処理

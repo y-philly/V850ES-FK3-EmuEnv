@@ -97,22 +97,18 @@ _start_dispatch:
 	/*
 	 * CPUロック状態にする
 	 */
-	/* nothing to do.
-	 *  di (see _start)
-	 *  lock_flag(see prc_initialize())
-	 */
-
-	/*
-	 * 割込み優先度マスク全解除状態にする
-	 */
-	mov		INTPRI_ENAALL , r6
-	jarl	_set_intpri , lp
+	jarl	_x_lock_cpu, lp
 
 	/* dispatcher_0に分岐する */
 	br		dispatcher_0
 
 /*
- *  タスクディスパッチャ
+ *  タスクコンテキストから呼ばれたサービスコール処理において，タスク切換え
+ *  が必要になった場合には，タスクからの自発的なディスパッチ処理（dispatch）
+ *  が呼び出される．
+ *
+ *  dispatchは，タスクコンテキスト・CPUロック状態・割込み優先度マスク全解除
+ *  状態・ディスパッチ許可状態で呼び出される．
  */
  	.globl	_dispatch
  	.globl	_exit_and_dispatch
@@ -192,12 +188,13 @@ dispatch_r:
 	/*
 	 *  タスクディスパッチャ
 	 *  
-	 *  ここはCPUロック状態，ディスパッチ前の処理単位が
-	 *  コンテキスト退避済みある状態で来る必要がある.
+	 *  dispatcherは，タスクコンテキスト・CPUロック状態・割込み優先度マスク全解
+	 *  除状態・ディスパッチ許可状態で呼び出される．
 	 */
 _exit_and_dispatch:
 dispatcher:
 #ifdef LOG_DSP_ENTER
+	Lea		__kernel_p_runtsk, r21
 	ld.w		0[r21] , r6		/* 引数にp_runtskを指定 */
 	jarl	_log_dsp_enter , lp
 #endif	/* LOG_DSP_ENTER */
@@ -225,47 +222,26 @@ pre_idle:
 	/* 割り込みスタックに切り替え */
 	Lea		STACKTOP, sp
 	/* CPUロック状態の解除 */
-	Lea		_lock_flag , r10
-	st.w	r0 , 0[r10]
+	jarl	_x_unlock_cpu_all, lp
 	di
-	mov		INTPRI_ENAALL , r6
-	jarl	_set_intpri , lp
-	/* intnestを1にする */
-	mov		1, r10
-	Lea		_intnest, r11
-	st.b	r10, 0[r11]
-	/* reqflgのアドレスをロード */
-	/* TODO 廃止?
-	Lea		_reqflg , r20
-	*/
-idle_loop:	
+idle_loop:
 	/* 割り込み待ち */
-	ei
+	halt
+	/*
+	 * HALT命令後には，NOP命令を5命令以上挿入する必要がある
+	 * 4.3.3 スタンバイ機能の説明：注意1を参照のこと
+	 */
 	nop
-	di
-	
-	/* reqflgのチェック */
-	/* TODO 廃止？
-	ld.w	0[r20], r10
-	cmp		r10 , r0
-	be		idle_loop
-	*/
-	
-	/* reqflgのクリア */
-	/* TODO 廃止？
-	st.w	r0 , 0[r20]
-	*/
-	
-	/* intnestをクリアする */
-	Lea		_intnest, r10
-	st.b	r0, 0[r10]
-	/* CPUロック状態へ移行 */
-	di
-	mov		INTPRI_LOCK , r6
-	jarl	_set_intpri , lp
+	nop
+	nop
+	nop
+	nop
 	ei
+	
+	/* CPUロック状態へ移行 */
+	jarl	_x_lock_cpu, lp
 	/* ディスパッチャへ */
-	br	dispatcher
+	br	dispatcher_0
 	
 
 /*
@@ -275,7 +251,7 @@ idle_loop:
  *   タスクコンテキスト・CPUロック状態・割込み優先度マスク全解除状態・ディスパッチ許可状態
  *  である．
  *
- *  ディスパッチャ本体から呼び出されるため，p_runtskはr6に入っている．
+ *  ディスパッチャ本体から呼び出されるため，p_runtskはr21に入っている．
  *
  */
  	.globl _start_r
@@ -284,9 +260,10 @@ _start_r:
 	jarl	__kernel_ovrtimer_start , lp
 #endif	/* TOPPERS_SUPPORT_OVRHDR */
 	/* CPUロック解除状態にする */
-	ei		/* 割込み禁止状態を解除 */
+	jarl	_x_unlock_cpu, lp
+
 	/* 自タスク（p_runtsk）の起動番地を，拡張情報をパラメータとして呼び出す */
-	mov		r6, ep
+	mov		r21, ep
 	ld.w	TCB_p_tinib[ep], ep
 	ld.w	TINIB_exinf[ep], r6
 	ld.w	TINIB_task[ep], r10

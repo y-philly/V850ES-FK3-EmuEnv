@@ -195,19 +195,8 @@ Inline void restore_imr(void)
 /*
  *  CPUロック状態への移行
  */
-Inline void
-x_lock_cpu(void)
-{
-	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
-	disable_int_all();
-	
-	save_imr();	/* 現在のIMRを退避 */
-	set_intpri(INTPRI_LOCK);
-	lock_flag = true;
-	
-	/* 割込み解除 */
-	enable_int_all();
-}
+extern void x_lock_cpu(void);
+
 
 #define t_lock_cpu()    x_lock_cpu()
 #define i_lock_cpu()    x_lock_cpu()
@@ -217,19 +206,7 @@ x_lock_cpu(void)
 /*
  *  CPUロック状態の解除
  */
-Inline void
-x_unlock_cpu(void)
-{
-	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
-	disable_int_all();
-	
-	restore_imr();	/* IMRを復帰 */
-	set_intpri(current_intpri);
-	lock_flag = false;
-	
-	/* 割込み解除 */
-	enable_int_all();
-}
+extern void x_unlock_cpu(void);
 
 #define t_unlock_cpu()    x_unlock_cpu()
 #define i_unlock_cpu()    x_unlock_cpu()

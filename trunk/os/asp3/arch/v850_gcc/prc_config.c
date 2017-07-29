@@ -90,7 +90,7 @@ x_lock_cpu(void)
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int_all();
 
-	save_imr();	/* 現在のIMRを退避 */
+	//save_imr();	/* 現在のIMRを退避 */
 	set_intpri(INTPRI_LOCK);
 	lock_flag = true;
 
@@ -104,7 +104,7 @@ x_unlock_cpu(void)
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int_all();
 
-	restore_imr();	/* IMRを復帰 */
+	//restore_imr();	/* IMRを復帰 */
 	set_intpri(current_intpri);
 	lock_flag = false;
 
@@ -117,7 +117,7 @@ x_unlock_cpu_all(void)
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int_all();
 
-	restore_imr();	/* IMRを復帰 */
+	//restore_imr();	/* IMRを復帰 */
 	set_intpri(INTPRI_ENAALL);
 	lock_flag = false;
 
@@ -147,14 +147,14 @@ extern const uint16_t imr_table[][IMR_SIZE];
 void
 set_intpri(uint8_t intpri)
 {
-	uint_least8_t i;
-	
-	/* ISPRに書き込み */
-	for(i = 0 ; i < IMR_SIZE ; i++)
-	{
-		sil_wrh_mem((void *)(IMR0 + (i * 2)) , 
-			imr_table[intpri][i] | disint_table[i]);
-	}
+	sil_wrh_mem((void *)(IMR0) , imr_table[intpri][0] | disint_table[0]);
+	sil_wrh_mem((void *)(IMR1) , imr_table[intpri][1] | disint_table[1]);
+	sil_wrh_mem((void *)(IMR2) , imr_table[intpri][2] | disint_table[2]);
+	sil_wrh_mem((void *)(IMR3) , imr_table[intpri][3] | disint_table[3]);
+	sil_wrh_mem((void *)(IMR4) , imr_table[intpri][4] | disint_table[4]);
+	sil_wrh_mem((void *)(IMR5) , imr_table[intpri][5] | disint_table[5]);
+	sil_wrh_mem((void *)(IMR6) , imr_table[intpri][6] | disint_table[6]);
+	sil_wrb_mem((void *)(IMR7) , (uint8_t)( imr_table[intpri][7] | disint_table[7] ) );
 }
 
 
@@ -199,7 +199,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	 */
 	(void)x_disable_int(intno);
 	
-	if(((7u <= (intno)) && ((intno) <= 15u)) || (intno == 1u))
+	if(VALID_INTNO_DISINT(intno))
 	{
 		/* INT端子の場合は割込み検知方法を設定する */
 		if((intatr & TA_POSEDGE) != 0U)
@@ -247,9 +247,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	/*
 	 *  割込みのマスク解除
  	 */
-	if ((intatr & TA_ENAINT) != 0U) {
-		(void)x_enable_int(intno);
-	}
+	(void)x_enable_int(intno);
 }
 
 /*

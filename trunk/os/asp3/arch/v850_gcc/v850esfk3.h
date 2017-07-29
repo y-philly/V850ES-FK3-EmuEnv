@@ -114,7 +114,7 @@
  */
 
 #define INTREG_BASE				(0xFFFFF110)
-#define INTREG_ADDRESS(intno)	(INTREG_BASE + (((intno) - 8) * 2))
+#define INTREG_ADDRESS(intno)	(INTREG_BASE + ((intno) * 2U))
 
 /*
  *	外部割込み極性設定レジスタテーブル

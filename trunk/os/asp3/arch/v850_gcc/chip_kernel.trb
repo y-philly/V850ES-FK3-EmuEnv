@@ -36,6 +36,15 @@ IncludeTrb("kernel/kernel.trb")
 INTLVL_RANGE = [ 0, 1, 2, 3, 4, 5, 6, 7 ]
 IMR_RANGE = [ 0, 1, 2, 3, 4, 5, 6, 7 ]
 
+def hasIntno(ino)
+	$cfgData[:CFG_INT].each do |key, params|
+		intno = params[:intno]
+		if (intno == ino) then
+			return true
+		end
+	end
+	return false
+end
 
 def createMaskRange()
 	mask_range = Array.new()
@@ -80,9 +89,126 @@ $kernelCfgC.add("};")
 #
 #  kernel_cfg_asm.Sの生成
 #
+def add_nop(num)
+	i = 0
+	while i < num do
+		$kernelCfgAsm.add("\tnop")
+		i = i + 1
+	end
+end
+
+def add_block(label_name, handler_name)
+	$kernelCfgAsm.add()
+	$kernelCfgAsm.add(label_name + ":")
+	$kernelCfgAsm.add("\tjr "+ handler_name)
+	add_nop(6)
+end
+
+def get_handler_name(ino)
+	$cfgData[:DEF_INH].each do |key, params|
+		intno = key
+		if (intno == ino) then
+			return params[:inthdr]
+		end
+	end
+	return nil
+
+end
+
+def get_handler_label_name(intno)
+	return "_goto_kernel_int_handler_" + intno.to_s
+end
+
+
+
+
+def add_security_block()
+	$kernelCfgAsm.add("security_id:")
+	$kernelCfgAsm.add("\t.long \t0xFFFFFFFF")
+	$kernelCfgAsm.add("\t.long \t0xFFFFFFFF")
+	$kernelCfgAsm.add("\t.long \t0xFFFFFFFF")
+	$kernelCfgAsm.add("\t.long \t0xFFFFFFFF")
+end
 
 $kernelCfgAsm = GenFile.new("kernel_cfg_asm.S")
-#$kernelCfgAsm.add(<<EOS)
-#/* kernel_cfg_asm.S */
-#EOS
+$kernelCfgAsm.comment_header("割込みベクタと各割込み入口処理")
 
+$kernelCfgAsm.add("#define TOPPERS_LABEL_ASM")
+$kernelCfgAsm.add("#define TOPPERS_MACRO_ONLY")
+$kernelCfgAsm.add("#include <kernel_impl.h>")
+$kernelCfgAsm.add("#include <v850asm.inc>")
+
+$kernelCfgAsm.add2()
+
+$kernelCfgAsm.add("\t.section .vectors,\"ax\"")
+$kernelCfgAsm.add("\t.align	4")
+
+$kernelCfgAsm.comment_header("割込みベクタと各割込み入口処理")
+$kernelCfgAsm.add("\t.global _start")
+$kernelCfgAsm.add("\t.global interrupt")
+$kernelCfgAsm.add("\t.global _default_exc_handler")
+$kernelCfgAsm.add("\t.global _default_int_handler")
+$kernelCfgAsm.add("\t.global __reset")
+
+add_block("__reset", "_start")
+add_block("_ext_handler_1", "_goto_default_exc_handler")
+add_block("_ext_handler_2", "_goto_default_exc_handler")
+add_block("_ext_handler_3", "_goto_default_exc_handler")
+add_block("_ext_handler_4", "_goto_default_exc_handler")
+add_block("_ext_handler_5", "_goto_default_exc_handler")
+add_block("_ext_handler_6", "_goto_default_exc_handler")
+add_security_block()
+$INTNO_VALID.each do |ino|
+	if hasIntno(ino) == true then
+		handler_name = get_handler_name(ino)
+		add_block("_int_handler_"+ ino.to_s, get_handler_label_name(ino))
+	else
+		add_block("_int_handler_"+ ino.to_s, "_goto_default_int_handler")
+	end
+end
+$kernelCfgAsm.add2()
+$kernelCfgAsm.add("\t.section .text,\"ax\"")
+$kernelCfgAsm.add("\t.align	4")
+
+
+def add_int_func(ino, prio)
+	label_name = get_handler_label_name(ino)
+	$kernelCfgAsm.add()
+	handler_name = get_handler_name(ino)
+	$kernelCfgAsm.add("\t.global	" + handler_name)
+	$kernelCfgAsm.add("\t.global	" + label_name)
+	$kernelCfgAsm.add(label_name + ":")
+	$kernelCfgAsm.add("\taddi	-80 , sp , sp")
+	$kernelCfgAsm.add("\tst.w	r10 , 52[sp]")
+	$kernelCfgAsm.add("\tst.w	r11 , 48[sp]")
+	$kernelCfgAsm.add("\tst.w	r12 , 44[sp]")
+	$kernelCfgAsm.add("\tLea	"+ handler_name +" , r10")
+	$kernelCfgAsm.add("\tmov	" + prio.to_s + " , r11")
+	$kernelCfgAsm.add("\tmov	" + ino.to_s + " , r12")
+	$kernelCfgAsm.add("\tjr		interrupt")
+end
+
+$INTNO_VALID.each do |ino|
+	$cfgData[:CFG_INT].each do |key, params|
+		intno = params[:intno]
+		prio = -params[:intpri]
+		if (intno == ino) then
+			add_int_func(ino, prio)
+		end
+	end
+end
+
+$kernelCfgAsm.add2()
+$kernelCfgAsm.add("_goto_default_int_handler:")
+$kernelCfgAsm.add("\taddi	-80 , sp , sp")
+$kernelCfgAsm.add("\tst.w	r10 , 0[sp]")
+$kernelCfgAsm.add("\tLea	_default_int_handler , r10")
+$kernelCfgAsm.add("\tjr		interrupt")
+
+$kernelCfgAsm.add2()
+$kernelCfgAsm.add("_goto_default_exc_handler:")
+$kernelCfgAsm.add("\taddi	-80 , sp , sp")
+$kernelCfgAsm.add("\tst.w	r10 , 0[sp]")
+$kernelCfgAsm.add("\tLea	_default_exc_handler , r10")
+$kernelCfgAsm.add("\tjr		exception")
+$kernelCfgAsm.add("\t.end")

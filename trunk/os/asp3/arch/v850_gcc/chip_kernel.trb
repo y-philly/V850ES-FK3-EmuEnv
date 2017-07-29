@@ -108,7 +108,7 @@ def get_handler_name(ino)
 	$cfgData[:DEF_INH].each do |key, params|
 		intno = key
 		if (intno == ino) then
-			return params[:inthdr]
+			return "_" + params[:inthdr]
 		end
 	end
 	return nil
@@ -135,7 +135,6 @@ $kernelCfgAsm.comment_header("割込みベクタと各割込み入口処理")
 
 $kernelCfgAsm.add("#define TOPPERS_LABEL_ASM")
 $kernelCfgAsm.add("#define TOPPERS_MACRO_ONLY")
-$kernelCfgAsm.add("#include <kernel_impl.h>")
 $kernelCfgAsm.add("#include <v850asm.inc>")
 
 $kernelCfgAsm.add2()
@@ -160,7 +159,6 @@ add_block("_ext_handler_6", "_goto_default_exc_handler")
 add_security_block()
 $INTNO_VALID.each do |ino|
 	if hasIntno(ino) == true then
-		handler_name = get_handler_name(ino)
 		add_block("_int_handler_"+ ino.to_s, get_handler_label_name(ino))
 	else
 		add_block("_int_handler_"+ ino.to_s, "_goto_default_int_handler")

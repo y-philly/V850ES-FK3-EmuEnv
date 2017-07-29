@@ -28,8 +28,54 @@ $EXCNO_DEFEXC_VALID = [ 0, 1, 2, 3, 5 ]
 
 IncludeTrb("kernel/kernel.trb")
 
-$IMR_RANGE = [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+# 
+# 割込み処理モデル実現のためのデータ生成
+# 
+# 割込みマスクレベル毎のIMRレジスタ値を生成する．
+# 
+INTLVL_RANGE = [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+IMR_RANGE = [ 0, 1, 2, 3, 4, 5, 6, 7 ]
 
+
+def createMaskRange()
+	mask_range = Array.new()
+	IMR_RANGE.each do |range|
+		mask_range[IMR_RANGE.index(range)] = 0xFFFF
+	end
+	return mask_range
+end
+
+def updateMaskRange(mask_range, ino)
+	off = ino / 16
+	boff = ino % 16
+	mask_range[off] = ( mask_range[off] & ~(1 << boff) )
+	return mask_range
+end
+
+def getMaskRangeStr(mask_range)
+	str=""
+	mask_range.each do |mask|
+		if str == "" then
+			str = "0x" + mask.to_s(16)
+		else
+			str = str + ", 0x" + mask.to_s(16)
+		end
+	end
+	return str
+end
+
+$kernelCfgC.add("const uint16_t imr_table[][IMR_SIZE] = { ")
+	INTLVL_RANGE.each do |lvl|
+		mask_range = createMaskRange()
+		$cfgData[:CFG_INT].each do |key, params|
+			intpri = -params[:intpri]
+			if (intpri > lvl) then 
+				mask_range = updateMaskRange(mask_range, params[:intno])
+			end
+		end
+		$kernelCfgC.add("\t { " + getMaskRangeStr(mask_range) + " }, /* " + lvl.to_s + " */")
+	end
+$kernelCfgC.add("};")
 
 #
 #  kernel_cfg_asm.Sの生成

@@ -97,7 +97,16 @@ _start_dispatch:
 	/*
 	 * CPUロック状態にする
 	 */
-	jarl	_x_lock_cpu, lp
+	Lea		_lock_flag , r10
+	mov 	true, r6
+	st.w	r6, 0[r10]
+	/*
+	 * 割込み優先度マスク全解除状態にする
+	 */
+	mov 	INTPRI_ENAALL, r6
+	jarl 	_set_intpri, lp
+
+	ei
 
 	/* dispatcher_0に分岐する */
 	br		dispatcher_0
@@ -222,8 +231,9 @@ pre_idle:
 	/* 割り込みスタックに切り替え */
 	Lea		STACKTOP, sp
 	/* CPUロック状態の解除 */
-	jarl	_x_unlock_cpu_all, lp
-	di
+	Lea		_lock_flag , r20
+	st.w	r0, 0[r20]
+
 idle_loop:
 	/* 割り込み待ち */
 	halt
@@ -236,10 +246,13 @@ idle_loop:
 	nop
 	nop
 	nop
-	ei
 	
 	/* CPUロック状態へ移行 */
-	jarl	_x_lock_cpu, lp
+	Lea		_lock_flag , r20
+	mov		true, r21
+	st.w	r21, 0[r20]
+	ei
+
 	/* ディスパッチャへ */
 	br	dispatcher_0
 	
@@ -260,7 +273,8 @@ _start_r:
 	jarl	__kernel_ovrtimer_start , lp
 #endif	/* TOPPERS_SUPPORT_OVRHDR */
 	/* CPUロック解除状態にする */
-	jarl	_x_unlock_cpu, lp
+	Lea		_lock_flag , r10
+	st.w	r0, 0[r10]
 
 	/* 自タスク（p_runtsk）の起動番地を，拡張情報をパラメータとして呼び出す */
 	mov		r21, ep		/* ep = p_runtsk */
@@ -326,6 +340,8 @@ _start_r:
  *    |----------------|
  *  0 |     EIPSW      |
  *    |----------------|<- 割込み発生時のSP - 80
+ * -4 |     task_sp    |
+ *     ----------------
  */
 	.globl interrupt
 interrupt:
@@ -354,9 +370,7 @@ interrupt:
 	stsr	eipsw,  r6
 	sst.w	r6 ,   0[ep]
 	
-	Lea		_lock_flag , r7
-	ld.w	0[r7] , r7
-	
+	/* 割込み優先度マスクを，受け付けた割込みの割込み優先度に設定する */
 	/* 割込み発生前の割込みレベルを保存，発生中の割込みレベル(r11)に書き換え */
 	Lea		_current_intpri , r13
 	ld.bu	0[r13] , r14
@@ -372,42 +386,76 @@ interrupt:
 	bne		call_int_handler
 save_tsksp:
 	/* 初回割込みであればスタックをカーネルスタックへ切り替え */
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	addi	-20, sp, sp
+	st.w	ep , 0[sp]
+	st.w	lp , 4[sp]
+	st.w	r10 , 8[sp]
+	st.w	r11 , 12[sp]
+	st.w	r12 , 16[sp]
+	jarl	__kernel_ovrtimer_stop , lp
+	mov		sp, ep
+	sld.w	16[r], r12
+	sld.w	12[ep], r11
+	sld.w	8[ep], r10
+	sld.w	4[ep], lp
+	sld.w	0[ep], ep
+	addi	20, ep, sp
+#endif	/* TOPPERS_SUPPORT_OVRHDR */
 	mov		sp , r13
 	mov		STACKTOP , sp
 	add		-4 , sp
+	/*
+	 * タスクのスタックポインタを保存する
+	 */
 	st.w	r13 , 0[sp]
 call_int_handler:
+	/* CPUロック解除状態にする（受け付けた割込みよりも優先度の高い割込みを
+												受け付けるようにする） */
+	/*
+	 * lock_flag == false の時にしか
+	 * 割り込みは発生しないため lock_flagの変更は不要
+	 */
+	ei
 #ifdef LOG_INH_ENTER
 	/* 割込みハンドラアドレス，割込み優先度，割込み番号を退避 */
-	add		-8 , sp
-	st.w	r10 , 0[sp]
-	st.w	r12 , 4[sp]
-	mov		r12 , r6
+	addi	-20, sp, sp
+	st.w	ep , 0[sp]
+	st.w	lp , 4[sp]
+	st.w	r10 , 8[sp]
+	st.w	r11 , 12[sp]
+	st.w	r12 , 16[sp]
 	jarl	_log_inh_enter , lp
-	ld.w	0[sp] , r10
-	ld.w	4[sp] , r12
-	add		8 , sp
+	mov		sp, ep
+	sld.w	16[r], r12
+	sld.w	12[ep], r11
+	sld.w	8[ep], r10
+	sld.w	4[ep], lp
+	sld.w	0[ep], ep
+	addi	20, ep, sp
 #endif	/* LOG_INH_ENTER */
 #ifdef LOG_INH_LEAVE
+	/*
+	 * 割り込みハンドラ番号格納レジスタr12は
+	 * caller saved レジスタであるため，
+	 * 退避する
+	 */
 	add		-4 , sp
 	st.w	r12 , 0[sp]
 #endif	/* LOG_INH_LEAVE */
+
 	Lea		end_int_handler, lp
-	/* 割り込み許可 */
-	ei
-	/* ハンドラ起動 */
+	/* 割込みハンドラを呼び出す */
 	jmp		r10
+
 end_int_handler:
-	/* 割り込み禁止 */
-	di
 #ifdef LOG_INH_LEAVE
 	ld.w	0[sp] , r6
 	add		4 , sp
 	jarl	_log_inh_leave , lp
 #endif	/* LOG_INH_LEAVE */
-	/* CPUロック状態をアンロック状態に戻す */
-	Lea		_lock_flag , r10
-	st.w	r0 , 0[r10]
+	/* 割り込み禁止 */
+	di
 	/* intnestをデクリメント */
 	Lea		_intnest, r11
 	ld.bu	0[r11], r10
@@ -415,19 +463,22 @@ end_int_handler:
 	st.b	r10, 0[r11]
 	cmp		r0 , r10
 	be		return_to_task
+
+	/* 割り込みコンテキスト */
+	.globl return_from_int
 return_from_int:
 	/*
+	 * di 状態で呼び出されること
 	 * レジスタ復帰
 	 */
 	mov		sp , ep	/* EPへ切り替え */
+	/*
+	 * 少なくともカーネル管理の割込みを禁止した状態にする
+	 */
 	Lea		_current_intpri , r10
 	sld.w	76[ep] , r6
 	st.b	r6 , 0[r10]
-	di
-	jarl	_set_intpri , lp
-	/* CPUロックフラグの解除 */
-	Lea		_lock_flag , r6
-	st.w	r0 , 0[r6]
+
 	sld.w	 4[ep] , r10
 	ldsr	r10 , eipc
 	sld.w    0[ep] , r10
@@ -453,59 +504,65 @@ return_from_int:
 
 	reti	/* 割込み元へ */
 
+	.globl return_to_task
 return_to_task:
-	/* スタックの復帰 */
+	/*
+	 * di 状態で呼び出されること
+	 */
+	/* スタックをタスク用のスタックに戻し，タスクコンテキストに切り換える */
 	ld.w	0[sp], sp
-	
-	/* 遅延ディスパッチ及びタスク例外処理の処理要求があるかチェック */
-	/* TODO 廃止
-	Lea		_reqflg, r10
-	ld.w	0[r10], r11
-	cmp		r0, r11
-	be		return_from_int
-	st.w	r0, 0[r10]	*/		/* reqflgのクリア */
-	
-	/* ディスパッチ可能状態かチェック */
-	/* TODO 廃止？
-	Lea		_dspflg , r10
-	ld.w	0[r10], r10
-	cmp		r0, r10
-	bz		check_texrtn_cond
-	*/
 
-	/* 割込み全解除状態フラグのチェック */
-	/* TODO 廃止？
-	Lea		_ipmflg , r10
-	ld.w	0[r10], r10
-	cmp		r0, r10
-	bz		check_texrtn_cond
-	*/
+	Lea		__kernel_p_runtsk, r11
+	ld.w	0[r11], r11
+	/* p_runtsk == NULL */
+	cmp 	r0, r11
+	be 		return_to_idle
 
 	/* タスク切り替えの必要があるかチェック */
 	Lea		__kernel_p_schedtsk, r10
 	ld.w	0[r10], r10
-	Lea		__kernel_p_runtsk, r11
-	ld.w	0[r11], r11
 	cmp		r10,r11
 	bne		ret_int
-	br		check_texrtn_cond_1
-	
-check_texrtn_cond:
-	/* 実行中タスクをロード */
-	Lea		__kernel_p_runtsk, r11
-	ld.w	0[r11], r11
-
-check_texrtn_cond_1:
-	/* タスク例外が発生しているかのチェックとタスク例外処理ルーチンの実行 */
-	/* TODO ld.w	TCB_enatex[r11] , r13 */
-	/* TODO mov		(1 << TCB_enatex_bit) , r12 */
-	tst		r12 , r13
-	bz		return_from_int
-	/* TODO ld.w	TCB_texptn[r11] , r11 */
-	cmp		r0, r11
-	bz		return_from_int
-	/* TODO jarl	_call_texrtn , lp */
+return_to_task_0:
+	/* (p_runtsk == p_schedtsk) */
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	addi	-8, sp, sp
+	st.w	ep , 0[sp]
+	st.w	lp , 4[sp]
+	jarl	__kernel_ovrtimer_start , lp
+	mov		sp, ep
+	sld.w	4[ep], lp
+	sld.w	0[ep], ep
+	addi	8, ep, sp
+#endif /* TOPPERS_SUPPORT_OVRHDR */
 	br		return_from_int
+
+
+	.globl return_to_idle
+return_to_idle:
+	/*
+	 * di 状態で呼び出されること
+	 */
+	/* タスクのスタックに保存したスクラッチレジスタ等を捨てる */
+	mov		sp , ep	/* EPへ切り替え */
+	addi	84 , ep, sp /* +4 はtaskのsp分 */
+
+	/* CPUロック状態にする … (*h) */
+	Lea		_lock_flag , r10
+	mov		true, r11
+	st.w	r11 , 0[r10]
+
+	/* 割込み優先度マスクは，全解除状態（TIPM_ENAALL）になって
+							いなければならない … (*i) */
+	mov 	INTPRI_ENAALL, r6
+	jarl 	_set_intpri, lp
+
+	/* 割り込み禁止解除 */
+	ei
+
+	/*	dispatcher_0に分岐する */
+	br 		dispatcher_0
+
 
 /*
  *  さらに非スクラッチレジスタを退避する
@@ -536,6 +593,21 @@ check_texrtn_cond_1:
  */      
 	.globl	ret_int
 ret_int:
+	/* (p_runtsk != p_schedtsk) */
+	/*
+	 * di状態で呼び出される
+	 */
+	/* CPUロック状態にする … (*h) */
+	Lea		_lock_flag , r6			/* ロックフラグをtrueに */
+	mov		true , r7
+	st.w	r7 , 0[r6]
+
+	/* 割込み優先度マスクは，全解除状態（TIPM_ENAALL）になって
+										いなければならない … (*i) */
+	mov 	INTPRI_ENAALL, r6
+	jarl 	_set_intpri, lp
+
+	/* スクラッチレジスタを除くすべてのレジスタをスタックに保存する */
 	addi	-44, sp, sp
 	mov		sp , ep
 	sst.w	r2 ,  40[ep]
@@ -549,23 +621,18 @@ ret_int:
 	sst.w	r27 ,  8[ep]
 	sst.w	r28 ,  4[ep]
 	sst.w	r29 , 0[ep]
-	
+
+	/* スタックポインタを自タスク（p_runtsk）のTCBに保存する */
 	/* TCBに復帰先の情報を設定 */
 	Lea		__kernel_p_runtsk, r10
 	ld.w	0[r10], r10
 	st.w	sp , TCB_sp[r10]
+
+	/* ret_int_rを，実行再開番地として自タスクのTCBに保存する … (*a) */
 	Lea		ret_int_r, r11
 	st.w	r11 , TCB_pc[r10]
 	
-	/* CPUロック状態に設定 */
-	mov		INTPRI_LOCK , r6
-	jarl	_set_intpri , lp
-	Lea		_current_intpri , r6	/* 現在の仮想上の割込み優先度を0に */
-	st.b	r0 , 0[r6]
-	mov		1 , r7
-	Lea		_lock_flag , r6			/* ロックフラグをtrueに */
-	st.w	r7 , 0[r6]
-	
+	/* dispatcherに分岐する */
 	/* ディスパッチャへ */
 	ldsr	r0, eipsw	/* 割込みは許可状態でよい */
 	Lea		dispatcher, r10
@@ -574,6 +641,10 @@ ret_int:
 
 	.globl ret_int_r
 ret_int_r:
+	/*
+	 * タスクコンテキスト・CPUロック状態・割込み優先度マスク全解除
+	 * 状態・ディスパッチ許可状態
+	 */
 	/* 非スクラッチレジスタの復帰 */
 	mov		sp, ep
 	sld.w	40[ep], r2
@@ -590,7 +661,7 @@ ret_int_r:
 	addi	44 , ep, sp
 	
 	/* おおもとの復帰処理へ飛ばす */
-	br		check_texrtn_cond
+	br		return_to_task_0
 
 /*
  *  CPU例外処理

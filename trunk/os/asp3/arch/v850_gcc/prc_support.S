@@ -229,7 +229,8 @@ dispatcher_0:
 	 */
 pre_idle:
 	/* 割り込みスタックに切り替え */
-	Lea		STACKTOP, sp
+	Lea		__kernel_istkpt, sp
+	ld.w	0[sp], sp
 	/* CPUロック状態の解除 */
 	Lea		_lock_flag , r20
 	st.w	r0, 0[r20]
@@ -403,7 +404,8 @@ save_tsksp:
 	addi	20, ep, sp
 #endif	/* TOPPERS_SUPPORT_OVRHDR */
 	mov		sp , r13
-	mov		STACKTOP , sp
+	Lea		__kernel_istkpt, sp
+	ld.w	0[sp], sp
 	add		-4 , sp
 	/*
 	 * タスクのスタックポインタを保存する
@@ -714,7 +716,8 @@ exception:
 exc_save_tsksp:
 	/* 初回割込みであればスタックをカーネルスタックへ切り替え */
 	mov		sp , r13
-	mov		STACKTOP , sp
+	Lea		__kernel_istkpt, sp
+	ld.w	0[sp], sp
 	add		-4 , sp
 	st.w	r13 , 0[sp]
 	
@@ -812,7 +815,8 @@ end_exc_handler_1:
 	.globl _call_exit_kernel
 _call_exit_kernel:
 	/* 非タスクコンテキストに切り替え */
-	mov		STACKTOP , sp
+	Lea		__kernel_istkpt, sp
+	ld.w	0[sp], sp
 	/* TODO jarl	_exit_kernel , lp */
 	/* 戻ってくることはないが，万が一戻ってきた場合のため無限ループ */
 	di

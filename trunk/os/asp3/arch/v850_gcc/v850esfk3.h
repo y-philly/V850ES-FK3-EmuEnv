@@ -38,7 +38,6 @@
 #define TOPPERS_V850ESFK3_H
 
 #define DEFAULT_STK_TOP		((STK_T *const)0xFFFF0000)
-#define STACKTOP			0x05FFEFFF
 /*
  *  型キャストを行うマクロの定義
  */

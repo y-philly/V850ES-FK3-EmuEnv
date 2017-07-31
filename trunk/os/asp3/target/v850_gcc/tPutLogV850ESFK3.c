@@ -51,7 +51,7 @@
  *  ト依存部から直接呼び出すための関数．
  */
 void
-tPutLogGRPeach_initialize(void)
+tPutLogV850ESFK3_initialize(void)
 {
 	cSIOPort_open();
 }

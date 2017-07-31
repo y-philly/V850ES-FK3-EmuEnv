@@ -545,7 +545,6 @@ return_to_idle:
 	 */
 	/* タスクのスタックに保存したスクラッチレジスタ等を捨てる */
 	mov		sp , ep	/* EPへ切り替え */
-	addi	84 , ep, sp /* +4 はtaskのsp分 */
 
 	/* CPUロック状態にする … (*h) */
 	Lea		_lock_flag , r10

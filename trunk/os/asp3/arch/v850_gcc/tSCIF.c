@@ -52,7 +52,7 @@
 void
 eSIOPort_open(CELLIDX idx)
 {
-
+	//TODO
 }
 /*
  *  シリアルI/Oポートのクローズ
@@ -60,6 +60,7 @@ eSIOPort_open(CELLIDX idx)
 void
 eSIOPort_close(CELLIDX idx)
 {
+	//TODO
 }
 /*
  *  シリアルI/Oポートへの文字送信
@@ -67,6 +68,7 @@ eSIOPort_close(CELLIDX idx)
 bool_t
 eSIOPort_putChar(CELLIDX idx, char c)
 {
+	//TODO
 	return(false);
 }
 
@@ -76,6 +78,7 @@ eSIOPort_putChar(CELLIDX idx, char c)
 void
 eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 {
+	//TODO
 }
 
 /*
@@ -84,6 +87,7 @@ eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 void
 eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 {
+	//TODO
 
 }
 
@@ -93,6 +97,7 @@ eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 void
 eiRxISR_main(CELLIDX idx)
 {
+	//TODO
 
 }
 
@@ -102,5 +107,6 @@ eiRxISR_main(CELLIDX idx)
 void
 eiTxISR_main(CELLIDX idx)
 {
+	//TODO
 
 }

@@ -49,7 +49,18 @@
 Inline void
 eSIOPort_open(CELLIDX idx)
 {
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
+	/*
+	 *  デバイス依存のオープン処理
+	 */
+	cSIOPort_open();
+
+	/*
+	 *  SIOの割込みマスクを解除する．
+	 */
+	cRxInterruptRequest_enable();
+	cTxInterruptRequest_enable();
 }
 
 /*

@@ -56,7 +56,7 @@
  * 高分解能タイマのタイマ周期を，このマクロに定義する．タイマ周期が2^32の
  * 場合には，このマクロを定義しない．
  */
-#define TCYC_HRTCNT		65535U
+#define TCYC_HRTCNT		65535
 
 /*
  * (5-3-2) TSTEP_HRTCNT	高分解能タイマのカウント値の進み幅
@@ -65,7 +65,7 @@
  * 分解能タイマが，2マイクロ秒毎に2ずつカウントアップする場合には，
  * TSTEP_HRTCNTを2に定義する．
  */
-#define TSTEP_HRTCNT			1U		/* 1MHz */
+#define TSTEP_HRTCNT			1		/* 1MHz */
 
 /*
  * タイマ割込みの遅延時間よりも長い値
@@ -82,7 +82,7 @@
  * 10clockはバッファ時間とする
  *
  */
-#define TCYC_INT_DELAY_CNT	(50 + 10)U
+#define TCYC_INT_DELAY_CNT	(50 + 10)
 
 /*
  * (6-13-2-6) HRTCNT_BOUND

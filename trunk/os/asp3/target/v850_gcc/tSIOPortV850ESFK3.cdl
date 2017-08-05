@@ -114,7 +114,7 @@ composite tSIOPortV850ESFK3 {
 		INTNO		txInterruptNumber;			/* 送信割込み番号 */
 		PRI			isrPriority = 1;			/* ISR優先度 */
 		PRI			interruptPriority = -4;		/* 割込み優先度 */
-		uint32_t	baudRate = 115200;			/* ボーレートの設定値 */
+		uint32_t	baudRate = 38400;			/* ボーレートの設定値 */
 	};
 
 	/*

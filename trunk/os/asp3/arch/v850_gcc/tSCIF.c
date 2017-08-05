@@ -55,7 +55,12 @@
 Inline bool_t
 scif_getready(CELLCB *p_cellcb)
 {
-	return true;
+	uint8_t str = sil_reb_mem((void *)UDnSTR(UDnCH0));
+
+	if ((str & 0x10) == 0x10) {
+		return true;
+	}
+	return false;
 }
 
 /*
@@ -64,7 +69,12 @@ scif_getready(CELLCB *p_cellcb)
 Inline bool_t
 scif_putready(CELLCB *p_cellcb)
 {
-	return true;
+	uint8_t str = sil_reb_mem((void *)UDnSTR(UDnCH0));
+
+	if ((str & 0x80) == 0x00) {
+		return true;
+	}
+	return false;
 }
 
 /*
@@ -73,6 +83,17 @@ scif_putready(CELLCB *p_cellcb)
 Inline bool_t
 scif_getchar(CELLCB *p_cellcb, char *p_c)
 {
+	uint8_t dat;
+	uint8_t str;
+
+	str = sil_reb_mem((void *)UDnSTR(UDnCH0));
+	if ((str & 0x10) == 0x10) {
+		dat = sil_reb_mem((void *) UDnRX(UDnCH0)); /* 受信データを読み込み */
+		*p_c = dat;
+		str &= ~0x10;
+		sil_wrb_mem((void *)UDnSTR(UDnCH0), str);
+		return true;
+	}
 
 	return(false);
 }
@@ -83,6 +104,7 @@ scif_getchar(CELLCB *p_cellcb, char *p_c)
 Inline void
 scif_putchar(CELLCB *p_cellcb, char c)
 {
+	sil_wrb_mem((void *)UDnTX(UDnCH0), c);
 }
 
 /*
@@ -91,7 +113,60 @@ scif_putchar(CELLCB *p_cellcb, char c)
 void
 eSIOPort_open(CELLIDX idx)
 {
-	//TODO
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
+
+	if (VAR_initialized) {
+		/*
+		 *  既に初期化している場合は、二重に初期化しない．
+		 */
+		return;
+	}
+	/*
+	 * 通信設定
+	 *
+	 * UARTD0制御レジスタ0(UD0CTL0)
+	 * UARTD0動作許可、送受信禁止、転送方向：LSB、パリティ：なし、データ：８ビット、ストップビット：１ビット
+	 */
+	sil_wrb_mem((void *) UDnCTL0(UDnCH0), 0x92);
+
+	/*
+	 * ボーレート設定
+	 *
+	 * UARTD0制御レジスタ1(UD0CTL1)
+	 *  UARTD0クロック：fxx/2 (PRSI =0)
+	 *
+	 * UARTD0制御レジスタ2(UD0CTL2)
+	 *  規定値：130(0x82) 、シリアルクロック：fuclk/130
+	 */
+	sil_wrb_mem((void *) UDnCTL1(UDnCH0), 0x01);
+	sil_wrb_mem((void *) UDnCTL2(UDnCH0), 0x82);
+
+	/*
+	 * オプション設定
+	 *
+	 * UARTD0オプション制御レジスタ0(UD0OPT0)
+	 *  送信データ通常出力、受信データ通常入力
+	 *
+	 * UARTD0オプション制御レジスタ1(UD0OPT1)
+	 *  データ一貫性チェックなし
+	 */
+	sil_wrb_mem((void *) UDnOPT0(UDnCH0), 0x14);
+	sil_wrb_mem((void *) UDnOPT1(UDnCH0), 0x00);
+
+	/*
+	 * 割込み許可設定
+	 */
+	/* 本API終了後，OS側で割り込み許可するためNOP */
+
+	/*
+	 * 送受信の許可
+	 * UARTD0動作許可、送受信許可、転送方向：LSB、パリティ：なし、データ：８ビット、ストップビット：１ビット
+	 */
+	sil_wrb_mem((void *) UDnCTL0(UDnCH0), 0xF2);
+
+	VAR_initialized = true;
+
+
 }
 /*
  *  シリアルI/Oポートのクローズ
@@ -107,7 +182,12 @@ eSIOPort_close(CELLIDX idx)
 bool_t
 eSIOPort_putChar(CELLIDX idx, char c)
 {
-	//TODO
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
+
+	if (scif_putready(p_cellcb)){
+		scif_putchar(p_cellcb, c);
+		return(true);
+	}
 	return(false);
 }
 /*
@@ -151,7 +231,14 @@ eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 void
 eiRxISR_main(CELLIDX idx)
 {
-	//TODO
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
+
+	if (scif_getready(p_cellcb)) {
+		/*
+		 *  受信通知コールバックルーチンを呼び出す．
+		 */
+		ciSIOCBR_readyReceive();
+	}
 
 }
 
@@ -161,6 +248,13 @@ eiRxISR_main(CELLIDX idx)
 void
 eiTxISR_main(CELLIDX idx)
 {
-	//TODO
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
+
+	if (scif_putready(p_cellcb)) {
+		/*
+		 *  送信可能コールバックルーチンを呼び出す．
+		 */
+		ciSIOCBR_readySend();
+	}
 
 }

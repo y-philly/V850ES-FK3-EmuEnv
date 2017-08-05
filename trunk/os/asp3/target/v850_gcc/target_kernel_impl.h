@@ -92,11 +92,8 @@
  *  割込みハンドラの出入口処理の生成マクロ
  *
  */
-#define _INT_ENTRY(inhno, inthdr)    _kernel_##inthdr##_##inhno
-#define INT_ENTRY(inhno, inthdr)     _INT_ENTRY(inhno, inthdr)
-
-#define _INTHDR_ENTRY(inhno, inthdr) extern void _kernel_##inthdr##_##inhno(void);
-#define INTHDR_ENTRY(inhno, inhno_num, inthdr)  _INTHDR_ENTRY(inhno, inthdr)
+#define INT_ENTRY(inhno, inthdr)	inthdr
+#define INTHDR_ENTRY(inhno, inthdr, intpri)
 /*
  *  トレースログに関する設定
  */

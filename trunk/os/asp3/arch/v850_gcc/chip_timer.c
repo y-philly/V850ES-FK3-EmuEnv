@@ -2,11 +2,11 @@
  *  TOPPERS/ASP Kernel
  *      Toyohashi Open Platform for Embedded Real-Time Systems/
  *      Advanced Standard Profile Kernel
- *
- *  Copyright (C) 2007-2016 by Embedded and Real-Time Systems Laboratory
+ * 
+ *  Copyright (C) 2006-2017 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
- *
- *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
+ * 
+ *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -28,26 +28,109 @@
  *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
  *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
  *      免責すること．
- *
+ * 
  *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
  *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
  *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
- *
+ * 
  *  $Id:  $
  */
 
 /*
- *		タイマドライバ（GR-PEACH用）
+ *		タイマドライバ（RZ/A1 OSタイマ用）
+ *
+ *  RZ/A1は2チャンネルのOSタイマを持つが，その内の1つを用いて高分解能タ
+ *  イマを，もう1つを用いてオーバランタイマを実現する．
  */
 
-#ifndef TOPPERS_TARGET_TIMER_H
-#define TOPPERS_TARGET_TIMER_H
+#include "kernel_impl.h"
+#include "time_event.h"
+#ifdef TOPPERS_SUPPORT_OVRHDR
+#include "overrun.h"
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+#include "target_timer.h"
+#include <sil.h>
+#include <t_stddef.h>
 
 /*
- *  チップで共通な定義（V850ES/FK3用）
+ *  タイマの起動処理
  */
-#include "chip_timer.h"
+void
+target_hrt_initialize(intptr_t exinf)
+{
+	/*
+	 *  OSタイマをフリーランニングコンペアモードに設定する．
+	 */
 
-#endif /* TOPPERS_TARGET_TIMER_H */
+	/*
+	 *  OSタイマの設定値を最大値にしておく．
+	 */
+
+	/*
+	 *  OSタイマを動作開始する．
+	 */
+
+	/*
+	 *  タイマ割込み要求をクリアする．
+	 */
+}
+
+/*
+ *  タイマの停止処理
+ */
+void
+target_hrt_terminate(intptr_t exinf)
+{
+	/*
+	 *  OSタイマを停止する．
+	 */
+
+	/*
+	 *  タイマ割込み要求をクリアする．
+	 */
+}
+
+/*
+ *  高分解能タイマへの割込みタイミングの設定
+ */
+void
+target_hrt_set_event(HRTCNT hrtcnt)
+{
+	/*
+	 *  現在のカウント値を読み，hrtcnt後に割込みが発生するように設定する．
+	 */
+
+	/*
+	 *  上で現在のカウント値を読んで以降に，cnt以上カウントアップしてい
+	 *  た場合には，割込みを発生させる．
+	 */
+}
+
+/*
+ *  高分解能タイマ割込みの要求
+ */
+void
+target_hrt_raise_event(void)
+{
+
+}
+
+/*
+ *  タイマ割込みハンドラ
+ */
+void
+target_hrt_handler(void)
+{
+	/*
+	 *  高分解能タイマ割込みを処理する．
+	 */
+	signal_time();
+}
+
+HRTCNT target_hrt_get_current(void)
+{
+	return 0;
+}
+

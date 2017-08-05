@@ -51,6 +51,19 @@
 #include <sil.h>
 
 /*
+ *  割込み番号(INTTAA2CC0)
+ */
+#define TIMER_DTIM_INTNO  (22)
+
+/*
+ *  タイマ割込みハンドラ登録のための定数
+ */
+#define INHNO_TIMER		TIMER_DTIM_INTNO	/* 割込みハンドラ番号 */
+#define INTNO_TIMER		TIMER_DTIM_INTNO	/* 割込み番号 */
+#define INTPRI_TIMER	(TMAX_INTPRI - 1)	/* 割込み優先度 */
+#define INTATR_TIMER	TA_NULL				/* 割込み属性 */
+
+/*
  * (5-3-1) TCYC_HRTCNT		高分解能タイマのタイマ周期
  *
  * 高分解能タイマのタイマ周期を，このマクロに定義する．タイマ周期が2^32の
@@ -113,12 +126,7 @@ extern void	target_hrt_terminate(intptr_t exinf);
 /*
  *  高分解能タイマの現在のカウント値の読出し
  */
-Inline HRTCNT
-target_hrt_get_current(void)
-{
-	//TODO
-	return 0;
-}
+extern HRTCNT target_hrt_get_current(void);
 
 /*
  *  高分解能タイマへの割込みタイミングの設定
@@ -126,11 +134,7 @@ target_hrt_get_current(void)
  *  高分解能タイマを，hrtcntで指定した値カウントアップしたら割込みを発
  *  生させるように設定する．
  */
-Inline void
-target_hrt_set_event(HRTCNT hrtcnt)
-{
-	//TODO
-}
+extern void target_hrt_set_event(HRTCNT hrtcnt);
 
 /*
  *  高分解能タイマ割込みの要求
@@ -139,9 +143,11 @@ target_hrt_set_event(HRTCNT hrtcnt)
  *  即座に割込みを要求する方法がわかれば（Set-pending Registerが使える
  *  と思われる），それに差し換える．
  */
-Inline void target_hrt_raise_event(void)
-{
-	//TODO
-}
+extern void target_hrt_raise_event(void);
+
+/*
+ *  高分解能タイマ割込みハンドラ
+ */
+extern void	target_hrt_handler(void);
 
 #endif /* TOPPERS_CHIP_TIMER_H */

@@ -19,7 +19,7 @@
 #define log_exc_enter				_kernel_log_exc_enter
 #define log_exc_leave				_kernel_log_exc_leave
 
-
+#include "chip_rename.h"
 
 
 #endif /* TOPPERS_TARGET_RENAME_H */

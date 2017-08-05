@@ -47,6 +47,47 @@
 
 
 /*
+ *  シリアルI/Oポートのオープン
+ */
+void
+eSIOPort_open(CELLIDX idx)
+{
+
+}
+/*
+ *  シリアルI/Oポートのクローズ
+ */
+void
+eSIOPort_close(CELLIDX idx)
+{
+}
+/*
+ *  シリアルI/Oポートへの文字送信
+ */
+bool_t
+eSIOPort_putChar(CELLIDX idx, char c)
+{
+	return(false);
+}
+
+/*
+ *  シリアルI/Oポートからのコールバックの許可
+ */
+void
+eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
+{
+}
+
+/*
+ *  シリアルI/Oポートからのコールバックの禁止
+ */
+void
+eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
+{
+
+}
+
+/*
  *  シリアルI/Oポートに対する受信割込み処理
  */
 void

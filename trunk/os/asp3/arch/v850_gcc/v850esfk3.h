@@ -161,15 +161,6 @@
 #define INTNO_SCIF4_RXI		28		/* SCIF4 受信割込み */
 #define INTNO_SCIF4_TXI		29		/* SCIF4 送信割込み */
 
-/*
- *  高分解能タイマのカウント値の進み幅
- */
-#define TSTEP_HRTCNT	1U
-
-/*
- *  割込みタイミングに指定する最大値
- */
-#define HRTCNT_BOUND		4000000002U
 
 #define TNUM_INT			117U
 #define TMIN_INTNO			0U

@@ -45,6 +45,7 @@
  *		のコンポーネント記述
  */
 import_C("v850esfk3.h");
+import_C("uart.h");
 
 /*
  *  V850ES/FK3に関する定義
@@ -166,71 +167,11 @@ composite tSIOPortV850ESFK3 {
 /*
  *  シリアルインタフェースドライバのターゲット依存部のプロトタイプ
  *
- *  サンプルプログラムが使うポートが，SIOPortTarget1に固定されているた
- *  め，ポート1とポート3を入れ換えている．具体的には，SIOPortTarget1は
- *  SCIFのチャネル2（チャネル番号は0から始まるので，ポート3のこと）に，
- *  SIOPortTarget3はSCIFのチャネル0につながっている．
  */
 [prototype]
 cell tSIOPortV850ESFK3 SIOPortTarget1 {
 	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF2_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF2_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF2_TXI");
-};
-
-[prototype]
-cell tSIOPortV850ESFK3 SIOPortTarget2 {
-	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF1_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF1_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF1_TXI");
-};
-
-[prototype]
-cell tSIOPortV850ESFK3 SIOPortTarget3 {
-	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF0_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF0_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF0_TXI");
-};
-
-[prototype]
-cell tSIOPortV850ESFK3 SIOPortTarget4 {
-	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF3_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF3_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF3_TXI");
-};
-
-[prototype]
-cell tSIOPortV850ESFK3 SIOPortTarget5 {
-	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF4_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF4_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF4_TXI");
-};
-
-[prototype]
-cell tSIOPortV850ESFK3 SIOPortTarget6 {
-	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF5_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF5_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF5_TXI");
-};
-
-[prototype]
-cell tSIOPortV850ESFK3 SIOPortTarget7 {
-	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF6_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF6_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF6_TXI");
-};
-
-[prototype]
-cell tSIOPortV850ESFK3 SIOPortTarget8 {
-	/* 属性の設定 */
-	baseAddress       = C_EXP("SCIF7_BASE");
-	rxInterruptNumber = C_EXP("INTNO_SCIF7_RXI");
-	txInterruptNumber = C_EXP("INTNO_SCIF7_TXI");
+	baseAddress       = C_EXP("UDnCTL0_BASE");
+	rxInterruptNumber = C_EXP("INTNO_INTUD0R");
+	txInterruptNumber = C_EXP("INTNO_INTUD0T");
 };

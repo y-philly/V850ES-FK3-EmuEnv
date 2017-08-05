@@ -45,6 +45,45 @@
 #include <sil.h>
 #include "tSCIF_tecsgen.h"
 
+/*
+ *  プリミティブな送信／受信関数
+ */
+
+/*
+ *  受信バッファに文字があるか？
+ */
+Inline bool_t
+scif_getready(CELLCB *p_cellcb)
+{
+	return true;
+}
+
+/*
+ *  送信バッファに空きがあるか？
+ */
+Inline bool_t
+scif_putready(CELLCB *p_cellcb)
+{
+	return true;
+}
+
+/*
+ *  受信した文字の取出し
+ */
+Inline bool_t
+scif_getchar(CELLCB *p_cellcb, char *p_c)
+{
+
+	return(false);
+}
+
+/*
+ *  送信する文字の書込み
+ */
+Inline void
+scif_putchar(CELLCB *p_cellcb, char c)
+{
+}
 
 /*
  *  シリアルI/Oポートのオープン
@@ -71,7 +110,22 @@ eSIOPort_putChar(CELLIDX idx, char c)
 	//TODO
 	return(false);
 }
+/*
+ *  シリアルI/Oポートからの文字受信
+ */
+int_t
+eSIOPort_getChar(CELLIDX idx)
+{
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
+	char	c;
 
+	if (scif_getready(p_cellcb)) {
+		if (scif_getchar(p_cellcb, &c)) {
+			return((int_t) c);
+		}
+	}
+	return(-1);
+}
 /*
  *  シリアルI/Oポートからのコールバックの許可
  */

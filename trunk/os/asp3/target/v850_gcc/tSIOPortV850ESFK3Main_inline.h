@@ -69,6 +69,18 @@ eSIOPort_open(CELLIDX idx)
 Inline void
 eSIOPort_close(CELLIDX idx)
 {
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
+
+	/*
+	 *  デバイス依存のクローズ処理
+	 */
+	cSIOPort_close();
+
+	/*
+	 *  SIOの割込みをマスクする．
+	 */
+	cRxInterruptRequest_disable();
+	cTxInterruptRequest_disable();
 }
 
 /*
@@ -77,8 +89,9 @@ eSIOPort_close(CELLIDX idx)
 Inline bool_t
 eSIOPort_putChar(CELLIDX idx, char c)
 {
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
-	return true;
+	return(cSIOPort_putChar(c));
 }
 
 /*
@@ -87,7 +100,9 @@ eSIOPort_putChar(CELLIDX idx, char c)
 Inline int_t
 eSIOPort_getChar(CELLIDX idx)
 {
-	return 0;
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
+
+	return(cSIOPort_getChar());
 }
 
 /*
@@ -96,7 +111,9 @@ eSIOPort_getChar(CELLIDX idx)
 Inline void
 eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 {
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
+	cSIOPort_enableCBR(cbrtn);
 }
 
 /*
@@ -105,7 +122,9 @@ eSIOPort_enableCBR(CELLIDX idx, uint_t cbrtn)
 Inline void
 eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 {
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
+	cSIOPort_disableCBR(cbrtn);
 }
 
 /*
@@ -114,7 +133,11 @@ eSIOPort_disableCBR(CELLIDX idx, uint_t cbrtn)
 Inline void
 eiSIOCBR_readySend(CELLIDX idx)
 {
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
+	if (is_ciSIOCBR_joined()) {
+		ciSIOCBR_readySend();
+	}
 }
 
 /*
@@ -123,5 +146,9 @@ eiSIOCBR_readySend(CELLIDX idx)
 Inline void
 eiSIOCBR_readyReceive(CELLIDX idx)
 {
+	CELLCB	*p_cellcb = GET_CELLCB(idx);
 
+	if (is_ciSIOCBR_joined()) {
+		ciSIOCBR_readyReceive();
+	}
 }

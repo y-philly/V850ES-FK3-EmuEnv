@@ -53,6 +53,28 @@
 #include "target_timer.h"
 #include <sil.h>
 #include <t_stddef.h>
+/*
+ *  割込み要求のクリア
+ */
+Inline void
+HwcounterClearInterrupt(uint32_t intno)
+{
+	(void)x_clear_int(intno);
+}
+/*
+ *  割込み禁止／許可設定
+ */
+Inline void
+HwcounterDisableInterrupt(uint32_t intno)
+{
+	(void)x_disable_int(intno);
+}
+
+Inline void
+HwcounterEnableInterrupt(uint32_t intno)
+{
+	(void)x_enable_int(intno);
+}
 
  /*
  *  TAA タイマの動作開始／停止処理
@@ -75,6 +97,17 @@ SetTimerStopTAA(uint8_t ch)
 	);
 }
 
+/*
+ *  TAAハードウェアカウンタ現在ティック値取得
+ */
+Inline uint16_t
+GetCurrentTimeTAA(uint8_t ch)
+{
+	uint16_t	count;
+
+	count = sil_reh_mem((void *) (TAAnCNT(ch)));
+	return(count);
+}
 /*
  *  タイマの起動処理
  */
@@ -137,13 +170,13 @@ target_hrt_initialize(intptr_t exinf)
 void
 target_hrt_terminate(intptr_t exinf)
 {
-	/*
-	 *  OSタイマを停止する．
-	 */
+	/* 差分タイマ停止 */
+	SetTimerStopTAA(TIMER_DTIM_ID);
 
-	/*
-	 *  タイマ割込み要求をクリアする．
-	 */
+	/* 現在値タイマ停止 */
+	SetTimerStopTAA(TIMER_CTIM_ID);
+
+	return;
 }
 
 /*
@@ -152,14 +185,33 @@ target_hrt_terminate(intptr_t exinf)
 void
 target_hrt_set_event(HRTCNT hrtcnt)
 {
-	/*
-	 *  現在のカウント値を読み，hrtcnt後に割込みが発生するように設定する．
-	 */
+	uint32_t intcnt;
+	uint32_t curr;
+
+	SetTimerStopTAA(TIMER_DTIM_ID);
+
+	/* 差分タイマの割込み要求のクリア */
+	HwcounterClearInterrupt(TIMER_DTIM_INTNO);
 
 	/*
-	 *  上で現在のカウント値を読んで以降に，cnt以上カウントアップしてい
-	 *  た場合には，割込みを発生させる．
+	 *  hrtcnt後に割込みが発生するように設定する．
 	 */
+	curr = sil_reh_mem((void *) (TAAnCNT(TIMER_DTIM_ID)));
+
+	intcnt = (curr + ((uint32_t)hrtcnt));
+	if (intcnt > 0xFFFF) {
+		intcnt -= 0xFFFF;
+	}
+	intcnt = ( (curr + ((uint32_t)hrtcnt)) & 0x0000FFFF);
+
+	/* 差分タイマのタイマ値設定 */
+	sil_wrh_mem((void *) TAAnCCR0(TIMER_DTIM_ID), (uint16_t)intcnt);
+
+	/*
+	 * カウント開始
+	 */
+	SetTimerStartTAA(TIMER_DTIM_ID);
+	return;
 }
 
 /*
@@ -168,7 +220,29 @@ target_hrt_set_event(HRTCNT hrtcnt)
 void
 target_hrt_raise_event(void)
 {
+	uint32_t intcnt;
+	uint32_t curr;
 
+	SetTimerStopTAA(TIMER_DTIM_ID);
+
+	/* 差分タイマの割込み要求のクリア */
+	HwcounterDisableInterrupt(TIMER_DTIM_INTNO);
+
+	/*
+	 *  hrtcnt後に割込みが発生するように設定する．
+	 */
+	curr = sil_reh_mem((void *) (TAAnCNT(TIMER_DTIM_ID)));
+
+	intcnt = ( (curr + 1U) & 0x0000FFFF);
+
+	/* 差分タイマのタイマ値設定 */
+	sil_wrh_mem((void *) TAAnCCR0(TIMER_DTIM_ID), (uint16_t)intcnt);
+
+	/*
+	 * カウント開始
+	 */
+	SetTimerStartTAA(TIMER_DTIM_ID);
+	return;
 }
 
 /*
@@ -185,6 +259,6 @@ target_hrt_handler(void)
 
 HRTCNT target_hrt_get_current(void)
 {
-	return 0;
+	return GetCurrentTimeTAA(TIMER_CTIM_ID);
 }
 

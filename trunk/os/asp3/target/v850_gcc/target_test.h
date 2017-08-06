@@ -46,7 +46,7 @@
 #define TOPPERS_TARGET_TEST_H
 
 
-#define LOOP_REF		ULONG_C(1)	/* 速度計測用のループ回数 */
-#define TASK_LOOP		ULONG_C(1)
+#define LOOP_REF		ULONG_C(100)	/* 速度計測用のループ回数 */
+#define TASK_LOOP		ULONG_C(100)
 
 #endif /* TOPPERS_TARGET_TEST_H */

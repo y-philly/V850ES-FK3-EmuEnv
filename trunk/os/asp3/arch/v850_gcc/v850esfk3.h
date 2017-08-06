@@ -167,4 +167,21 @@
 #define TMAX_INTNO			116U
 #define TNUM_INTNO			TNUM_INT
 
+/*************************************************
+ * 16ビットタイマ／イベントカウンタAA(TAA)
+ *************************************************/
+
+#define TAAnChannelNum			UINT_C(8)
+#define TAAnCH0					UINT_C(0)
+#define TAAnCH1					UINT_C(1)
+#define TAAnCH2					UINT_C(2)
+#define TAAnCH3					UINT_C(3)
+#define TAAnCH4					UINT_C(4)
+#define TAAnCH5					UINT_C(5)
+#define TAAnCH6					UINT_C(6)
+#define TAAnCH7					UINT_C(7)
+
+
+
+
 #endif	/* TOPPERS_V850ESFK3_H */

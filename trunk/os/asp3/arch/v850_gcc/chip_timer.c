@@ -54,27 +54,81 @@
 #include <sil.h>
 #include <t_stddef.h>
 
+ /*
+ *  TAA タイマの動作開始／停止処理
+ */
+Inline void
+SetTimerStartTAA(uint8_t ch)
+{
+	/* タイマ開始処理 */
+	sil_wrb_mem((void *) TAAnCTL0(ch),
+		( sil_reb_mem((void *) TAAnCTL0(ch)) | (1U << 7U) )	//TAAnCEビットセット
+	);
+}
+
+Inline void
+SetTimerStopTAA(uint8_t ch)
+{
+	/* タイマ停止処理 */
+	sil_wrb_mem((void *) TAAnCTL0(ch),
+		( sil_reb_mem((void *) TAAnCTL0(ch)) & ~(1U << 7U) )	//TAAnCEビットクリア
+	);
+}
+
 /*
  *  タイマの起動処理
  */
 void
 target_hrt_initialize(intptr_t exinf)
 {
-	/*
-	 *  OSタイマをフリーランニングコンペアモードに設定する．
-	 */
+	uint8_t wk;
+	/********************************************************
+	 * 差分タイマ初期化
+	 ********************************************************/
+	/* 差分タイマのプリスケーラ設定 */
+	wk = sil_reb_mem((void *) TAAnCTL0(TIMER_DTIM_ID));
+	wk &= ~0x07;
+	wk |= 0x05;//PLK5
+	sil_wrb_mem((void *) TAAnCTL0(TIMER_DTIM_ID), wk);
 
+	/* 差分タイマのインターバルタイマモード設定 */
+	wk = sil_reb_mem((void *) TAAnCTL1(TIMER_DTIM_ID));
+	wk = 0x00;
+	sil_wrb_mem((void *) TAAnCTL1(TIMER_DTIM_ID), wk);
+
+
+	/*******************************************************
+	 * 現在値タイマ初期化
+	 *******************************************************/
+	/* 現在値タイマのプリスケーラ設定 */
+	wk = sil_reb_mem((void *) TAAnCTL0(TIMER_CTIM_ID));
+	wk &= ~0x07;
+	wk |= 0x05;//PLK5
+	sil_wrb_mem((void *) TAAnCTL0(TIMER_CTIM_ID), wk);
+
+	/* 現在値タイマのインターバルタイマモード設定 */
+	wk = sil_reb_mem((void *) TAAnCTL1(TIMER_CTIM_ID));
+	wk = 0x00;
+	sil_wrb_mem((void *) TAAnCTL1(TIMER_CTIM_ID), wk);
+
+	/* 現在値タイマカウント周期設定 */
+	/*
+	 * TAAnCCR1は未使用とするため，FFFFを設定する．
+	 */
 	/*
 	 *  OSタイマの設定値を最大値にしておく．
 	 */
+	sil_wrh_mem((void *) TAAnCCR0(TIMER_CTIM_ID), 0xFFFF);
+	sil_wrh_mem((void *) TAAnCCR1(TIMER_CTIM_ID), 0xFFFF);
 
 	/*
 	 *  OSタイマを動作開始する．
 	 */
-
+	SetTimerStartTAA(TIMER_CTIM_ID);
 	/*
 	 *  タイマ割込み要求をクリアする．
 	 */
+	return;
 }
 
 /*

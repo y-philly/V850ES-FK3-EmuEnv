@@ -414,10 +414,8 @@ save_tsksp:
 call_int_handler:
 	/* CPUロック解除状態にする（受け付けた割込みよりも優先度の高い割込みを
 												受け付けるようにする） */
-	/*
-	 * lock_flag == false の時にしか
-	 * 割り込みは発生しないため lock_flagの変更は不要
-	 */
+	Lea		_lock_flag , r13
+	st.w	r0, 0[r13]
 	ei
 #ifdef LOG_INH_ENTER
 	/* 割込みハンドラアドレス，割込み優先度，割込み番号を退避 */

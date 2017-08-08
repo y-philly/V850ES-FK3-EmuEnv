@@ -136,6 +136,33 @@ Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint
 	return STD_E_OK;
 }
 
+bool token_split_merge(const TokenContainerType *token_container, uint8 start_index, TokenStringType *out)
+{
+	uint32 i;
+	TokenStringType tmp;
+
+	for (i = start_index; i < token_container->num; i++) {
+		switch (token_container->array[i].type) {
+		case TOKEN_TYPE_STRING:
+			tmp.len = sprintf((char*)&tmp.str[0], "%s ", (char*)token_container->array[i].body.str.str);
+			(void)token_merge(out, &tmp);
+			break;
+		case TOKEN_TYPE_VALUE_DEC:
+			tmp.len = sprintf((char*)&tmp.str[0], "%d ", token_container->array[i].body.dec.value);
+			(void)token_merge(out, &tmp);
+			break;
+		case TOKEN_TYPE_VALUE_HEX:
+			tmp.len = sprintf((char*)&tmp.str[0], "0x%x ", token_container->array[i].body.hex.value);
+			(void)token_merge(out, &tmp);
+			break;
+		default:
+			break;
+		}
+	}
+	return TRUE;
+}
+
+
 bool token_merge(TokenStringType *dest, const TokenStringType *src)
 {
 	if ((dest->len + src->len) > (TOKEN_STRING_MAX_SIZE - 1)) {

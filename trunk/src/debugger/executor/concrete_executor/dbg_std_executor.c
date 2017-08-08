@@ -459,10 +459,11 @@ void dbg_std_executor_memset(void *executor)
 	ret = cpuemu_get_addr_pointer(addr, &data);
 	if (ret == STD_E_OK) {
 		*data = value;
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	} else {
 		printf("ERROR:can not find addr:0x%x\n", addr);
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 	}
-
 	 return;
 }
 void dbg_std_executor_serialin(void *executor)

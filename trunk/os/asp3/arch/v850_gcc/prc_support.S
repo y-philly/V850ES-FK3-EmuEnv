@@ -154,6 +154,7 @@ _dispatch:
 	Lea		dispatch_r, r10
 	sst.w	r10, TCB_pc[ep]
 
+_exit_and_dispatch:
 	di
 	Lea		_lock_flag , r10
 	st.w	r0 , 0[r10]
@@ -209,7 +210,6 @@ dispatch_r:
 	 *  dispatcherは，タスクコンテキスト・CPUロック状態・割込み優先度マスク全解
 	 *  除状態・ディスパッチ許可状態で呼び出される．
 	 */
-_exit_and_dispatch:
 dispatcher:
 #ifdef LOG_DSP_ENTER
 	Lea		__kernel_p_runtsk, r21

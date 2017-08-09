@@ -36,6 +36,7 @@ DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
 	DbgModeType mode;
 	//printf("dbg_parse:str=%s len=%u\n", str, len);
 
+	//memset(&token_container, 0, sizeof(TokenContainerType));
 	if ((len == 0) && (last_command != NULL)) {
 		/*
 		 * 改行の場合は，最後のコマンドを実行する．
@@ -52,6 +53,7 @@ DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
 		arg->original_str[len] = '\0';
 		arg->std_id = DBG_CMD_STD_ID_PARSE_ERROR;
 		arg->run = dbg_std_executor_parse_error;
+		memset(arg->parsed_args, 0, sizeof(arg->parsed_args));
 	}
 
 	/*

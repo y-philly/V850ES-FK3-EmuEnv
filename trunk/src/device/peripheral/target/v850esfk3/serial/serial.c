@@ -90,7 +90,7 @@ void device_do_serial(SerialDeviceType *serial)
 				//受信データをセットする．
 				(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
 				//受信割込みを上げる
-				//printf("serial interrupt\n");
+				//printf("serial interrupt:%c\n", data);
 				device_raise_int(INTNO_INTUD0R);
 				serial->last_raised_counter = 1000U;
 			}

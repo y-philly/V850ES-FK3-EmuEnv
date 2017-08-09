@@ -94,6 +94,10 @@ _start_dispatch:
 
 	add		r19, sp
 
+	/* CPUロック解除状態にする */
+	Lea		_lock_flag , r10
+	st.w	r0, 0[r10]
+
 	/*
 	 * 割込み優先度マスク全解除状態にする
 	 */
@@ -277,10 +281,6 @@ _start_r:
 #ifdef TOPPERS_SUPPORT_OVRHDR
 	jarl	__kernel_ovrtimer_start , lp
 #endif	/* TOPPERS_SUPPORT_OVRHDR */
-	/* CPUロック解除状態にする */
-	Lea		_lock_flag , r10
-	st.w	r0, 0[r10]
-
 	/* 自タスク（p_runtsk）の起動番地を，拡張情報をパラメータとして呼び出す */
 	mov		r21, ep		/* ep = p_runtsk */
 	ld.w	0[ep], ep 	/* ep = *p_runtsk */
@@ -546,9 +546,6 @@ return_to_idle:
 	/* タスクのスタックに保存したスクラッチレジスタ等を捨てる */
 	mov		sp , ep	/* EPへ切り替え */
 
-	Lea		_lock_flag , r10
-	st.w	r0 , 0[r10]
-
 	/* 割込み優先度マスクは，全解除状態（TIPM_ENAALL）になって
 							いなければならない … (*i) */
 	mov 	INTPRI_ENAALL, r6
@@ -594,8 +591,6 @@ ret_int:
 	/*
 	 * di状態で呼び出される
 	 */
-	Lea		_lock_flag , r6
-	st.w	r0 , 0[r6]
 
 	/* 割込み優先度マスクは，全解除状態（TIPM_ENAALL）になって
 										いなければならない … (*i) */

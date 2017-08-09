@@ -95,12 +95,6 @@ _start_dispatch:
 	add		r19, sp
 
 	/*
-	 * CPUロック状態にする
-	 */
-	Lea		_lock_flag , r10
-	mov 	true, r6
-	st.w	r6, 0[r10]
-	/*
 	 * 割込み優先度マスク全解除状態にする
 	 */
 	mov 	INTPRI_ENAALL, r6
@@ -159,12 +153,27 @@ _dispatch:
 	sst.w	sp, TCB_sp[ep]
 	Lea		dispatch_r, r10
 	sst.w	r10, TCB_pc[ep]
-	
+
+	di
+	Lea		_lock_flag , r10
+	st.w	r0 , 0[r10]
+	mov 	INTPRI_ENAALL, r6
+	jarl 	_set_intpri, lp
+	ei
+
 	/* dispatcherに分岐する */
 	br		dispatcher
 
 	/* ディスパッチャの復帰ルーチン */
 dispatch_r:
+	di
+	Lea		_lock_flag , r10
+	mov		true, r11
+	st.w	r11 , 0[r10]
+	mov 	INTPRI_LOCK, r6
+	jarl 	_set_intpri, lp
+	ei
+
 	mov		sp, ep
 	sld.w	56[ep], r2
 	sld.w	52[ep], r10
@@ -192,7 +201,7 @@ dispatch_r:
 	sld.w	0[ep], ep
 	addi	8, ep, sp
 #endif	/* TOPPERS_SUPPORT_OVRHDR */
-	jmp		lp
+	jmp		[lp]
 
 	/*
 	 *  タスクディスパッチャ
@@ -208,6 +217,7 @@ dispatcher:
 	jarl	_log_dsp_enter , lp
 #endif	/* LOG_DSP_ENTER */
 dispatcher_0:
+	di
 	Lea		__kernel_p_runtsk, r21
 	Lea		__kernel_p_schedtsk, r20
 	ld.w	0[r20], r22
@@ -218,11 +228,12 @@ dispatcher_0:
 	mov		r22, ep
 	sld.w	TCB_pc[ep], r20
 	sld.w	TCB_sp[ep], sp
+	ei
 #ifdef LOG_DSP_LEAVE
 	ld.w	0[r21] , r6	/* 引数にp_runtskを指定 */
 	jarl	_log_dsp_leave , lp
 #endif	/* LOG_DSP_LEAVE */
-	jmp		r20
+	jmp		[r20]	/* goto ret_int_r or dispatch_r */
 
 	/*
 	 * アイドルループ
@@ -231,9 +242,6 @@ pre_idle:
 	/* 割り込みスタックに切り替え */
 	Lea		__kernel_istkpt, sp
 	ld.w	0[sp], sp
-	/* CPUロック状態の解除 */
-	Lea		_lock_flag , r20
-	st.w	r0, 0[r20]
 
 idle_loop:
 	/* 割り込み待ち */
@@ -248,10 +256,6 @@ idle_loop:
 	nop
 	nop
 	
-	/* CPUロック状態へ移行 */
-	Lea		_lock_flag , r20
-	mov		true, r21
-	st.w	r21, 0[r20]
 	ei
 
 	/* ディスパッチャへ */
@@ -286,7 +290,7 @@ _start_r:
 	/* タスク本体から復帰した場合にext_tskに分岐する設定を行う */
 	Lea		_ext_tsk, lp
 	/* タスク本体へ */
-	jmp		r10
+	jmp		[r10]
 
 /*
  *  割込みハンドラ
@@ -412,10 +416,6 @@ save_tsksp:
 	 */
 	st.w	r13 , 0[sp]
 call_int_handler:
-	/* CPUロック解除状態にする（受け付けた割込みよりも優先度の高い割込みを
-												受け付けるようにする） */
-	Lea		_lock_flag , r13
-	st.w	r0, 0[r13]
 	ei
 #ifdef LOG_INH_ENTER
 	/* 割込みハンドラアドレス，割込み優先度，割込み番号を退避 */
@@ -446,7 +446,7 @@ call_int_handler:
 
 	Lea		end_int_handler, lp
 	/* 割込みハンドラを呼び出す */
-	jmp		r10
+	jmp		[r10]
 
 end_int_handler:
 #ifdef LOG_INH_LEAVE
@@ -546,10 +546,8 @@ return_to_idle:
 	/* タスクのスタックに保存したスクラッチレジスタ等を捨てる */
 	mov		sp , ep	/* EPへ切り替え */
 
-	/* CPUロック状態にする … (*h) */
 	Lea		_lock_flag , r10
-	mov		true, r11
-	st.w	r11 , 0[r10]
+	st.w	r0 , 0[r10]
 
 	/* 割込み優先度マスクは，全解除状態（TIPM_ENAALL）になって
 							いなければならない … (*i) */
@@ -596,10 +594,8 @@ ret_int:
 	/*
 	 * di状態で呼び出される
 	 */
-	/* CPUロック状態にする … (*h) */
-	Lea		_lock_flag , r6			/* ロックフラグをtrueに */
-	mov		true , r7
-	st.w	r7 , 0[r6]
+	Lea		_lock_flag , r6
+	st.w	r0 , 0[r6]
 
 	/* 割込み優先度マスクは，全解除状態（TIPM_ENAALL）になって
 										いなければならない … (*i) */
@@ -774,7 +770,7 @@ call_exc_handler:
 	Lea		end_exc_handler , lp
 	/* ハンドラ起動 */
 	ei
-	jmp		r10
+	jmp		[r10]
 end_exc_handler:
 	di
 #ifdef LOG_EXC_LEAVE

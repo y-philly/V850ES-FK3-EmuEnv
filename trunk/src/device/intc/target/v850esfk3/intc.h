@@ -122,6 +122,11 @@ static inline uint32 intc_regaddr_icn(uint32 intno)
 
 #define INTC_REG_IMR7	0xFFFFF10E
 
+#define INTC_REG_xxICnStr	0xFFFFF110
+#define INTC_REG_xxICnEnd	0xFFFFF1F8
+
+#define MASK_INTC_ADDR(addr) ((addr) & 0x03FFFFFF)
+
 /*
  * 5.3．6 インライン・プライオリティ・レジスタ(ISPR)
  */

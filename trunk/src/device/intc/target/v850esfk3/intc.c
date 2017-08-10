@@ -139,6 +139,13 @@ static void set_wait_intno(int intno, uint32 lvl)
 		intc_control.is_waiting_lvl[intno] = lvl;
 		intc_control.waiting_lvl_num[intno] = 1;
 		intc_control.waiting_int_num++;
+		//printf("set_wait_intno:intno=%d lvl=%d waiting num=%d current_intno=%d\n",
+		//		intno, intc_control.is_waiting_lvl[intno], intc_control.waiting_int_num,
+		//		intc_control.current_intno);
+	}
+	else {
+		//printf("set_wait_intno:intno=%d : can not set waiting num=%d current_intno=%d\n",
+		//		intno, intc_control.waiting_int_num, intc_control.current_intno);
 	}
 }
 static void clr_wait_intno(int intno)
@@ -195,7 +202,7 @@ static int get_maxpri_itno(TargetCoreType *cpu)
 		if (intc_control.is_waiting_lvl[i] == INTC_NUM_INTLVL) {
 			continue;
 		}
-		if (intc_control.current_intno == i) {
+		if ((intc_control.current_intno > 0) && (intc_control.current_intno == i)) {
 			/*
 			 * すでに実行中のものはチェック対象外．
 			 */
@@ -234,6 +241,7 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 	uint8 *ispr;
 	uint32 *pregaddr;
 	uint8 lvl;
+	//printf("intc_raise INT(%d) enter\n", intno);
 
 	(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_0, (INTC_REG_ISPR & intc_region->mask), (uint8**)&pregaddr);
 
@@ -251,8 +259,9 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 	/*
 	 * PSW.ID
 	 */
-	if (CPU_ISSET_ID(&cpu->reg) == TRUE) {
-		//printf("can not raise INT(%d) because ID is set\n", intno);
+	if ((CPU_ISSET_ID(&cpu->reg) == TRUE)) {
+		//printf("can not raise INT(%d) because ID is set, halt=%u\n", intno,
+		//		intc_control.cpu->cores[CPU_CONFIG_CORE_ID_0].core.is_halt);
 		return;
 	}
 
@@ -265,6 +274,7 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 	}
 
 	intc_control.current_intno = intno;
+	//printf("intc_raise:current_intno_changed off=%u:%d\n", intc_control.saved_intno_off, intc_control.current_intno);
 
 	cpu->reg.eipc = cpu->reg.pc;
 	cpu->reg.eipsw = cpu->reg.psw;
@@ -278,9 +288,11 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 
 	cpu->reg.pc = INTC_MASK_INTR_ADDR(intno);
 
-	if (intno >= 100) {
-		//printf("RAISED INT(%d):waiting_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
-	}
+	//if (intno >= 20) {
+	//	printf("RAISED INT(%d):waiting_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
+	//}
+
+	intc_control.cpu->cores[CPU_CONFIG_CORE_ID_0].core.is_halt = FALSE;
 	return;
 }
 
@@ -357,9 +369,11 @@ void intc_clr_currlvl_ispr(TargetCoreType *cpu)
 	if (intc_control.saved_intno_off > 0) {
 		intc_control.saved_intno_off--;
 		intc_control.current_intno = intc_control.saved_intno_stack[intc_control.saved_intno_off];
+		//printf("current_intno_changed off=%u:%d\n", intc_control.saved_intno_off, intc_control.current_intno);
 	}
 	else {
 		intc_control.current_intno = -1;
+		//printf("current_intno_changed off=%u:%d\n", intc_control.saved_intno_off, intc_control.current_intno);
 	}
 	return;
 }
@@ -448,9 +462,11 @@ static void intc_raise_pending_intr(TargetCoreType *cpu)
 	maxlvl_intno = get_maxpri_itno(cpu);
 
 	if (maxlvl_intno < 0) {
+		//printf("not found intno\n");
 		return;
 	}
 	if (maxlvl_intno == intc_control.current_intno) {
+		//printf("can not raise INT(%d) because already intr is set\n", maxlvl_intno);
 		return;
 	}
 
@@ -498,34 +514,44 @@ static int get_imrno(uint32 regaddr, uint32**imraddr)
 	int imrno = -1;
 	*imraddr = (uint32*)(regaddr & 0x03FFFFFF);
 	switch (regaddr) {
-	case INTC_REG_IMR0:
+	case MASK_INTC_ADDR(INTC_REG_IMR0):
 		imrno = 0;
 		break;
-	case INTC_REG_IMR1:
+	case MASK_INTC_ADDR(INTC_REG_IMR1):
 		imrno = 1;
 		break;
-	case INTC_REG_IMR2:
+	case MASK_INTC_ADDR(INTC_REG_IMR2):
 		imrno = 2;
 		break;
-	case INTC_REG_IMR3:
+	case MASK_INTC_ADDR(INTC_REG_IMR3):
 		imrno = 3;
 		break;
-	case INTC_REG_IMR4:
+	case MASK_INTC_ADDR(INTC_REG_IMR4):
 		imrno = 4;
 		break;
-	case INTC_REG_IMR5:
+	case MASK_INTC_ADDR(INTC_REG_IMR5):
 		imrno = 5;
 		break;
-	case INTC_REG_IMR6:
+	case MASK_INTC_ADDR(INTC_REG_IMR6):
 		imrno = 6;
 		break;
-	case INTC_REG_IMR7:
+	case MASK_INTC_ADDR(INTC_REG_IMR7):
 		imrno = 7;
 		break;
 	default:
 		break;
 	}
 	return imrno;
+}
+static int get_xxICn(uint32 regaddr)
+{
+	if (regaddr < MASK_INTC_ADDR(INTC_REG_xxICnStr)) {
+		return -1;
+	}
+	else if (regaddr > MASK_INTC_ADDR(INTC_REG_xxICnEnd)) {
+		return -1;
+	}
+	return (regaddr - MASK_INTC_ADDR(INTC_REG_xxICnStr)) / 2;
 }
 
 static void intc_hook_update_reg8(uint32 regaddr, uint8 data)
@@ -540,30 +566,37 @@ static void intc_hook_update_reg8(uint32 regaddr, uint8 data)
 	int intno;
 
 	imrno = get_imrno(regaddr, &imraddr);
-	if (imrno < 0) {
-		return;
-	}
-	pintno = imrno * 16;
-	for (i = 0; i < 8; i++, pintno++) {
-		if (pintno == INTC_PINTNO_NOUSE) {
-			continue;
-		}
-		intno = intc_pintno2intno(pintno);
-		if (intno > INTC_INTNO_MAX) {
-			continue;
-		}
-		regaddr32 = intc_regaddr_icn(intno);
-		(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_0, (regaddr32 & intc_region->mask), (uint8**)&pregaddr32);
+	if (imrno >= 0) {
+		pintno = imrno * 16;
+		for (i = 0; i < 8; i++, pintno++) {
+			if (pintno == INTC_PINTNO_NOUSE) {
+				continue;
+			}
+			intno = intc_pintno2intno(pintno);
+			if (intno > INTC_INTNO_MAX) {
+				continue;
+			}
+			regaddr32 = intc_regaddr_icn(intno);
+			(void)intc_get_pointer(intc_region, CPU_CONFIG_CORE_ID_0, (regaddr32 & intc_region->mask), (uint8**)&pregaddr32);
 
-		xxICn = (uint8*)pregaddr32;
-		if (data & 1 << i) {
-			*xxICn |= (1 << 6);
-			//printf("xxIcn(intno=%d):set\n", intno);
+			xxICn = (uint8*)pregaddr32;
+			if (data & 1 << i) {
+				*xxICn |= (1 << 6);
+				//printf("xxIcn(intno=%d):set\n", intno);
+			}
+			else {
+				*xxICn &= ~(1 << 6);
+				//printf("xxIcn(intno=%d):clear\n", intno);
+				//clr_wait_intno(pintno);
+			}
 		}
-		else {
-			*xxICn &= ~(1 << 6);
+	}
+	else {
+		intno = get_xxICn(regaddr);
+		//printf("intc_hook_update_reg8:regaddr=0x%x %d\n", regaddr, intno);
+		if (intno >= 0) {
+			intc_clr_currlvl_ispr(NULL);
 			//printf("xxIcn(intno=%d):clear\n", intno);
-			clr_wait_intno(pintno);
 		}
 	}
 	return;

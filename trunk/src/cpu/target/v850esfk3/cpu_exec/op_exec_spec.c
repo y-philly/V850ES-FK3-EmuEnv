@@ -155,7 +155,7 @@ int op_exec_reti(TargetCoreType *cpu)
 int op_exec_halt(TargetCoreType *cpu)
 {
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: HALT:0x%x\n", cpu->reg.pc, cpu->reg.pc + 4));
-	//printf("0x%x: HALT:0x%x\n", cpu->cpu.pc, cpu->cpu.pc + 4);
+	//printf("0x%x: HALT:0x%x\n", cpu->reg.pc, cpu->reg.pc + 4);
 	//fflush(stdout);
 	cpu->is_halt = TRUE;
 	cpu->reg.pc += 4;

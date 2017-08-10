@@ -44,6 +44,7 @@
 
 #include <sil.h>
 #include "tSCIF_tecsgen.h"
+#include "prc_config.h"
 
 /*
  *  プリミティブな送信／受信関数
@@ -232,6 +233,7 @@ void
 eiRxISR_main(CELLIDX idx)
 {
 	CELLCB	*p_cellcb = GET_CELLCB(idx);
+	(void)x_clear_int(INTNO_INTUD0R);
 
 	if (scif_getready(p_cellcb)) {
 		/*

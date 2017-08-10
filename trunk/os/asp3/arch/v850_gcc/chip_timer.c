@@ -226,7 +226,7 @@ target_hrt_raise_event(void)
 	SetTimerStopTAA(TIMER_DTIM_ID);
 
 	/* 差分タイマの割込み要求のクリア */
-	HwcounterDisableInterrupt(TIMER_DTIM_INTNO);
+	HwcounterClearInterrupt(TIMER_DTIM_INTNO);
 
 	/*
 	 *  hrtcnt後に割込みが発生するように設定する．
@@ -251,6 +251,7 @@ target_hrt_raise_event(void)
 void
 target_hrt_handler(void)
 {
+	HwcounterClearInterrupt(TIMER_DTIM_INTNO);
 	/*
 	 *  高分解能タイマ割込みを処理する．
 	 */

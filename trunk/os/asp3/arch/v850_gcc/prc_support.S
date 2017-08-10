@@ -118,6 +118,7 @@ _start_dispatch:
  	.globl	_dispatch
  	.globl	_exit_and_dispatch
 _dispatch:
+	di
 #ifdef TOPPERS_SUPPORT_OVRHDR
 	addi	-8, sp, sp
 	st.w	ep , 0[sp]
@@ -157,6 +158,7 @@ _dispatch:
 	sst.w	r10, TCB_pc[ep]
 
 _exit_and_dispatch:
+	di
 	Lea		_lock_flag , r10
 	st.w	r0 , 0[r10]
 	mov 	INTPRI_ENAALL, r6

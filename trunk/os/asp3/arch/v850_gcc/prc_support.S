@@ -104,8 +104,6 @@ _start_dispatch:
 	mov 	INTPRI_ENAALL, r6
 	jarl 	_set_intpri, lp
 
-	ei
-
 	/* dispatcher_0に分岐する */
 	br		dispatcher_0
 
@@ -159,18 +157,19 @@ _dispatch:
 	sst.w	r10, TCB_pc[ep]
 
 _exit_and_dispatch:
-	di
 	Lea		_lock_flag , r10
 	st.w	r0 , 0[r10]
 	mov 	INTPRI_ENAALL, r6
 	jarl 	_set_intpri, lp
-	ei
 
 	/* dispatcherに分岐する */
 	br		dispatcher
 
 	/* ディスパッチャの復帰ルーチン */
 dispatch_r:
+	/*
+	 * di状態で呼び出される
+	 */
 	Lea		_lock_flag , r10
 	mov		true, r11
 	st.w	r11 , 0[r10]
@@ -220,7 +219,6 @@ dispatcher:
 	jarl	_log_dsp_enter , lp
 #endif	/* LOG_DSP_ENTER */
 dispatcher_0:
-	di
 	Lea		__kernel_p_runtsk, r21
 	Lea		__kernel_p_schedtsk, r20
 	ld.w	0[r20], r22
@@ -260,6 +258,9 @@ idle_loop:
 	
 	ei
 
+	/* ここで割り込みを受け付ける */
+
+	di
 	/* ディスパッチャへ */
 	br	dispatcher_0
 	
@@ -523,6 +524,9 @@ return_to_task:
 	cmp		r10,r11
 	bne		ret_int
 return_to_task_0:
+	/*
+	 * di状態で呼び出される
+	 */
 	/* (p_runtsk == p_schedtsk) */
 #ifdef TOPPERS_SUPPORT_OVRHDR
 	addi	-8, sp, sp
@@ -549,9 +553,6 @@ return_to_idle:
 							いなければならない … (*i) */
 	mov 	INTPRI_ENAALL, r6
 	jarl 	_set_intpri, lp
-
-	/* 割り込み禁止解除 */
-	ei
 
 	/*	dispatcher_0に分岐する */
 	br 		dispatcher_0
@@ -623,13 +624,13 @@ ret_int:
 	
 	/* dispatcherに分岐する */
 	/* ディスパッチャへ */
-	ldsr	r0, eipsw	/* 割込みは許可状態でよい */
-	Lea		dispatcher, r10
-	ldsr	r10, eipc
-	reti
+	br dispatcher
 
 	.globl ret_int_r
 ret_int_r:
+	/*
+	 * di状態で呼び出される
+	 */
 	/*
 	 * タスクコンテキスト・CPUロック状態・割込み優先度マスク全解除
 	 * 状態・ディスパッチ許可状態

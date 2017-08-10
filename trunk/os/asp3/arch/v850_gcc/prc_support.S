@@ -171,13 +171,11 @@ _exit_and_dispatch:
 
 	/* ディスパッチャの復帰ルーチン */
 dispatch_r:
-	di
 	Lea		_lock_flag , r10
 	mov		true, r11
 	st.w	r11 , 0[r10]
 	mov 	INTPRI_LOCK, r6
 	jarl 	_set_intpri, lp
-	ei
 
 	mov		sp, ep
 	sld.w	56[ep], r2
@@ -206,6 +204,7 @@ dispatch_r:
 	sld.w	0[ep], ep
 	addi	8, ep, sp
 #endif	/* TOPPERS_SUPPORT_OVRHDR */
+	ei
 	jmp		[lp]
 
 	/*
@@ -232,12 +231,11 @@ dispatcher_0:
 	mov		r22, ep
 	sld.w	TCB_pc[ep], r20
 	sld.w	TCB_sp[ep], sp
-	ei
 #ifdef LOG_DSP_LEAVE
 	ld.w	0[r21] , r6	/* 引数にp_runtskを指定 */
 	jarl	_log_dsp_leave , lp
 #endif	/* LOG_DSP_LEAVE */
-	jmp		[r20]	/* goto ret_int_r or dispatch_r */
+	jmp		[r20]	/* goto ret_int_r or dispatch_r or start_r */
 
 	/*
 	 * アイドルループ
@@ -290,6 +288,7 @@ _start_r:
 	/* タスク本体から復帰した場合にext_tskに分岐する設定を行う */
 	Lea		_ext_tsk, lp
 	/* タスク本体へ */
+	ei
 	jmp		[r10]
 
 /*
@@ -416,7 +415,6 @@ save_tsksp:
 	 */
 	st.w	r13 , 0[sp]
 call_int_handler:
-	ei
 #ifdef LOG_INH_ENTER
 	/* 割込みハンドラアドレス，割込み優先度，割込み番号を退避 */
 	addi	-20, sp, sp
@@ -445,17 +443,18 @@ call_int_handler:
 #endif	/* LOG_INH_LEAVE */
 
 	Lea		end_int_handler, lp
+	ei
 	/* 割込みハンドラを呼び出す */
 	jmp		[r10]
 
 end_int_handler:
+	/* 割り込み禁止 */
+	di
 #ifdef LOG_INH_LEAVE
 	ld.w	0[sp] , r6
 	add		4 , sp
 	jarl	_log_inh_leave , lp
 #endif	/* LOG_INH_LEAVE */
-	/* 割り込み禁止 */
-	di
 	/* intnestをデクリメント */
 	Lea		_intnest, r11
 	ld.bu	0[r11], r10

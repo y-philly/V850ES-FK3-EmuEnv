@@ -23,10 +23,6 @@ target_initialize(void)
 
 	prc_initialize();
 
-
-	target_fput_initialize();
-
-
 	clr_bit(LED1_BITPOS , LED1_ADDRESS);
 	clr_bit(LED1_BITPOS , PCMT);
 
@@ -57,31 +53,4 @@ target_exit(void)
 	while(i)
 		;
 
-}
-
-static void target_fput_initialize(void)
-{
-
-	clr_bit(7 , UA0CTL0);
-
-
-	sil_wrb_mem((void *)UA0CTL1 , TARGET_FPUTC_UAnCTL1_SETTING);
-	sil_wrb_mem((void *)UA0CTL2 , TARGET_FPUTC_UAnCTL2_SETTING);
-
-
-	sil_wrb_mem((void *)UA0CTL0 , 0xD2);
-}
-
-
-void
-target_fput_log(char c)
-{
-	if (c == '\n') {
-		while((sil_reb_mem((void *)TARGET_FPUTC_UAnSTR) & 0x80) != 0x00)
-			;
-		sil_wrb_mem((void *)TARGET_FPUTC_UAnTX , '\r');
-	}
-	while((sil_reb_mem((void *)TARGET_FPUTC_UAnSTR) & 0x80) != 0x00)
-		;
-	sil_wrb_mem((void *)TARGET_FPUTC_UAnTX , c);
 }

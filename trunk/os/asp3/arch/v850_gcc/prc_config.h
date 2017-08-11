@@ -125,6 +125,7 @@ get_intpri(void)
 {
 	return current_intpri;
 }
+extern bool_t check_intno_cfg(INTNO intno);
 
 /*
  *	現在の割込み優先度マスク(内部表現)の設定

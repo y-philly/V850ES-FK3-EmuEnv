@@ -80,7 +80,6 @@ x_lock_cpu(void)
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int_all();
 
-	//save_imr();	/* 現在のIMRを退避 */
 	set_intpri(INTPRI_LOCK);
 	lock_flag = true;
 
@@ -94,8 +93,6 @@ x_unlock_cpu(void)
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int_all();
 
-	//restore_imr();	/* IMRを復帰 */
-	//set_intpri(current_intpri);
 	set_intpri(INTPRI_ENAALL);
 	lock_flag = false;
 
@@ -108,7 +105,6 @@ x_unlock_cpu_all(void)
 	/* 途中で割込みが入ってはならないため，割込みを禁止する． */
 	disable_int_all();
 
-	//restore_imr();	/* IMRを復帰 */
 	set_intpri(INTPRI_ENAALL);
 	lock_flag = false;
 

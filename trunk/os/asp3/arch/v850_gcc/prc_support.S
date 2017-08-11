@@ -808,8 +808,6 @@ _call_exit_kernel:
 	/* 非タスクコンテキストに切り替え */
 	Lea		__kernel_istkpt, sp
 	ld.w	0[sp], sp
-	/* TODO jarl	_exit_kernel , lp */
-	/* 戻ってくることはないが，万が一戻ってきた場合のため無限ループ */
 	di
 _call_exit_kernel_loop:
 	br		_call_exit_kernel_loop

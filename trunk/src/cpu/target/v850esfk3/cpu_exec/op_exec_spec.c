@@ -148,7 +148,7 @@ int op_exec_reti(TargetCoreType *cpu)
 		//fflush(stdout);
 		cpu->reg.pc = cpu->reg.eipc;
 		cpu->reg.psw = cpu->reg.eipsw;
-		intc_clr_currlvl_ispr(cpu);
+		//intc_clr_currlvl_ispr(cpu);
 	}
 	return 0;
 }

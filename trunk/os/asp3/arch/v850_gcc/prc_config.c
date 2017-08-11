@@ -95,7 +95,8 @@ x_unlock_cpu(void)
 	disable_int_all();
 
 	//restore_imr();	/* IMRを復帰 */
-	set_intpri(current_intpri);
+	//set_intpri(current_intpri);
+	set_intpri(INTPRI_ENAALL);
 	lock_flag = false;
 
 	/* 割込み解除 */

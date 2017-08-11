@@ -562,17 +562,16 @@ static void intc_hook_update_reg8(uint32 regaddr, uint8 data)
 	uint32 regaddr32;
 	uint32 *pregaddr32;
 	int i;
-	int pintno;
 	int intno;
 
+	//printf("intc_hook_update_reg8:regaddr=0x%x data=0x%x\n", regaddr, data);
 	imrno = get_imrno(regaddr, &imraddr);
 	if (imrno >= 0) {
-		pintno = imrno * 16;
-		for (i = 0; i < 8; i++, pintno++) {
-			if (pintno == INTC_PINTNO_NOUSE) {
+		intno = imrno * 16;
+		for (i = 0; i < 8; i++, intno++) {
+			if (intno == INTC_PINTNO_NOUSE) {
 				continue;
 			}
-			intno = intc_pintno2intno(pintno);
 			if (intno > INTC_INTNO_MAX) {
 				continue;
 			}
@@ -609,19 +608,18 @@ static void intc_hook_update_reg16(uint32 regaddr, uint16 data)
 	uint32 regaddr32;
 	uint32 *pregaddr32;
 	int i;
-	int pintno;
 	int intno;
 
 	imrno = get_imrno(regaddr, &imraddr);
 	if (imrno < 0) {
 		return;
 	}
-	pintno = imrno * 16;
-	for (i = 0; i < 16; i++, pintno++) {
-		if (pintno == INTC_PINTNO_NOUSE) {
+	//printf("intc_hook_update_reg16:regaddr=0x%x data=0x%x\n", regaddr, data);
+	intno = imrno * 16;
+	for (i = 0; i < 16; i++, intno++) {
+		if (intno == INTC_PINTNO_NOUSE) {
 			continue;
 		}
-		intno = intc_pintno2intno(pintno);
 		if (intno > INTC_INTNO_MAX) {
 			continue;
 		}
